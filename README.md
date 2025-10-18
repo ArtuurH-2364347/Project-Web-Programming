@@ -1,1 +1,49 @@
-# Project-Web-Programming
+# Readme Project Web Programming
+
+## Checklist:
+
+1. Individueel.
+
+    - [ ] Account aanmaken 
+    - [ ] inloggen
+    - [ ] Profiel aanmaken/aanpassen
+    - [ ] Wachtwoordenhashing
+
+2. sociaal.
+
+    - [ ] Vrienden toevoegen
+    - [ ] reisgroep aanmaken
+    - [ ] rechten binnen groep beheren (via rollen? beheerder, lid, etc)
+
+3. De reis plannen
+
+    - [ ] Reis aanmaken (individueel of met groep)
+    - [ ] Stops toevoegen
+    - [ ] Indien groep, stops voorstellen en stemming laten gebeuren
+    - [ ] Reis voorstellen op kaart (google maps api integratie?)
+    - [ ] tickets uploaden
+    - [ ] reis-planning downloaden als text file
+
+4. Tijdens de reis.
+
+    - [ ] overzicht dagplanning
+    - [ ] budgetmanagement (uitgaves toevoegen per persoon, eventueel met categorien)
+    - [ ] tickets/vouchers per activiteit bekijken
+    - [ ] Dit moet allemaal offline kunnen
+
+5. Na de reis.
+
+    - [ ] Budgetanalyse (overzicht van wie wat heeft betaald)
+    - [ ] Terugbetalingsberekening (optie om te berekenen wat iedereen elkaar terug moet betalen)
+    - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
+
+## Gebruikte APIs met huidige planning:
+
+1. Browser APIs:
+    - [File API](https://www.example.com)
+    - [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API)
+    - [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) voor offline gebruik?
+
+2. Externe APIs:
+    - Google maps of alternatieve
+    - misschien een api voor het weer?
