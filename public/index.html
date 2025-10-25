@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TravelBuddy</title>
+
+  <link href="css/bootstrap.css" rel="stylesheet">
+
+  <style>
+    body.home-page {
+      background-image: url('images/paris.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      min-height: 100vh;
+    }
+
+    body.home-page::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.4);
+      z-index: -1;
+    }
+
+    .hero-text {
+      color: white;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+    }
+  </style>
+</head>
+<body class="home-page d-flex flex-column min-vh-100">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">TravelBuddy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Your profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Today's schedule</a></li>
+          <li class="nav-item"><a class="nav-link btn btn-primary text-white ms-2" href="#">Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <section class="text-center py-5">
+    <div class="container hero-text">
+      <h1 class="display-4 fw-bold">Discover Your Next Adventure</h1>
+      <p class="lead mb-4">Connect with travelers and explore the world together</p>
+      <a href="#" class="btn btn-success btn-lg">Get Started</a>
+    </div>
+  </section>
+
+  <section class="py-5">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card">
+            <img src="images/placeholder.png" class="card-img-top" alt="Planning">
+            <div class="card-body">
+              <h5 class="card-title">Planning</h5>
+              <p class="card-text">Plan trips with friends!</p>
+              <a href="#" class="btn btn-primary">Find friends</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img src="images/placeholder.png" class="card-img-top" alt="schedule">
+            <div class="card-body">
+              <h5 class="card-title">Daily schedule</h5>
+              <p class="card-text">Your daily schedule updates automatically!</p>
+              <a href="#" class="btn btn-primary">Today's schedule</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <img src="images/placeholder.png" class="card-img-top" alt="budget">
+            <div class="card-body">
+              <h5 class="card-title">Budget tracking</h5>
+              <p class="card-text">Easily track your budget so you never overspend.</p>
+              <a href="#" class="btn btn-primary">Current overview</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-light py-4 mt-auto">
+    <div class="container text-center">
+      <p>2025 TravelBuddy.</p>
+    </div>
+  </footer>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
