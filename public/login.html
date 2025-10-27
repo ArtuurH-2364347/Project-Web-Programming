@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login – TravelBuddy</title>
+
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    body.login-page {
+      background-image: url('images/background.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      min-height: 100vh;
+    }
+
+    body.login-page::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: -1;
+    }
+
+    .login-card {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      padding: 2rem;
+    }
+  </style>
+</head>
+<body class="login-page d-flex flex-column min-vh-100">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">TravelBuddy</a>
+    </div>
+  </nav>
+
+  <main class="flex-grow-1 d-flex align-items-center justify-content-center">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-5">
+          <div class="login-card">
+            <h2 class="text-center mb-4">Welcome Back</h2>
+            <form>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" placeholder="you@example.com" required>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+            <p class="text-center mt-3">Don’t have an account? <a href="#">Sign up</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-light py-4 mt-auto">
+    <div class="container text-center">
+      <p>2025 TravelBuddy.</p>
+    </div>
+  </footer>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
