@@ -32,7 +32,7 @@ app.get("/", (request, response) => {
 // Your routes here ...
 app.use(
   session({
-    secret: "some-secret-key", // should be an env variable in production
+    secret: "some-secret-key",
     resave: false,
     saveUninitialized: true,
   })

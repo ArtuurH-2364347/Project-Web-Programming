@@ -1,17 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= name %>'s Profile</title>
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= name %>'s Profile – TravelBuddy</title>
+
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <style>
+    body {
+      background-image: url('/images/travel-background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .profile-header img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .friends-list {
+      background-color: #f8f9fa;
+      border-radius: 0.75rem;
+      padding: 1rem;
+    }
+
+    footer {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+  </style>
 </head>
-<body class="bg-light">
-  <div class="container py-5">
-    <h1 class="mb-3">Welcome, <%= name %>!</h1>
-    <p><strong>Email:</strong> <%= email %></p>
-    <p><strong>Bio:</strong> <%= bio || "No bio set" %></p>
-    <a href="/logout" class="btn btn-danger mt-3">Logout</a>
-  </div>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/profile">Your Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Today's Schedule</a></li>
+          <li class="nav-item"><a class="nav-link text-danger" href="/logout">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Profile Content -->
+  <main class="container">
+    <div class="overlay">
+      <div class="profile-header mb-4">
+        <img src="/images/default-avatar.png" alt="Profile picture" />
+        <div>
+          <h2 class="fw-bold mb-0"><%= name %></h2>
+          <p class="text-muted mb-0"><%= email %></p>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <h4>Biography</h4>
+        <p><%= bio || "You haven’t written your bio yet." %></p>
+      </div>
+
+      <div>
+        <h4>Friends</h4>
+        <div class="friends-list">
+          <p class="text-muted">friends list placeholder</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-4 mt-5 text-center">
+    <p class="mb-0">2025 TravelBuddy</p>
+  </footer>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
