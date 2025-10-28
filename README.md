@@ -5,7 +5,7 @@
 1. Individueel.
 
     - [ ] Account aanmaken 
-    - [ ] inloggen
+    - [x] inloggen
     - [ ] Profiel aanmaken/aanpassen
     - [ ] Wachtwoordenhashing
 
