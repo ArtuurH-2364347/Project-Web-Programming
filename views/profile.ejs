@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= name %>'s Profile</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+    <h1 class="mb-3">Welcome, <%= name %>!</h1>
+    <p><strong>Email:</strong> <%= email %></p>
+    <p><strong>Bio:</strong> <%= bio || "No bio set" %></p>
+    <a href="/logout" class="btn btn-danger mt-3">Logout</a>
+  </div>
+</body>
+</html>

@@ -1,8 +1,16 @@
 FROM uhinf/webprogramming:2526
 
-# Copy all project files into container
+# Copy your project files into the container
 COPY . /website
 
-COPY public/index.html /website/public/default.html
+# Set working directory
+WORKDIR /website
 
-WORKDIR /website/public
+# Install Node dependencies
+RUN npm install
+
+# Expose the port your Node app listens on
+EXPOSE 8080
+
+# Start the Node server instead of nginx
+CMD ["node", "app.js"]
