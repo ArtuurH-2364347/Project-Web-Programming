@@ -1,16 +1,17 @@
-FROM uhinf/webprogramming:2526
+# Use a base Node image
+FROM node:22
 
-# Copy your project files into the container
-COPY . /website
+# Create app directory
+WORKDIR /app
 
-# Set working directory
-WORKDIR /website
+# Copy only package files first (to leverage Docker caching)
+COPY package*.json ./
 
-# Install Node dependencies
-RUN npm install
+# Copy the rest of the project
+COPY . .
 
-# Expose the port your Node app listens on
+# Expose the app port
 EXPOSE 8080
 
-# Start the Node server instead of nginx
+# Start the server
 CMD ["node", "app.js"]
