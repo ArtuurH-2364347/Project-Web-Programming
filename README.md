@@ -1,5 +1,15 @@
 # Readme Project Web Programming
 
+## Gebruikte tijd:
+
+Begindatum: 9 oktober
+
+Deadline: 18 december
+
+Overige dagen: 50
+
+Gepasseerde tijd: 30%
+
 ## Checklist:
 
 1. Individueel.
@@ -40,6 +50,10 @@
     - [ ] Budgetanalyse (overzicht van wie wat heeft betaald)
     - [ ] Terugbetalingsberekening (optie om te berekenen wat iedereen elkaar terug moet betalen)
     - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
+
+6. Diverse extras.
+
+    - [ ] mooiere error pages (email in gebruik, user not found, ...)
 
 ## Gebruikte APIs met huidige planning:
 
