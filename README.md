@@ -25,9 +25,14 @@ Gepasseerde tijd: 30%
     - [ ] profielfotos
 2. sociaal.
 
-    - [ ] Vrienden toevoegen
+    - [x] Vrienden toevoegen
+
+        - > momenteel eenzijdig, beter om "friend request te sturen"
     - [ ] reisgroep aanmaken
     - [ ] rechten binnen groep beheren (via rollen? beheerder, lid, etc)
+
+    extra:
+    - [ ] vrienden systeem ombouwen naar request-systeem
 
 3. De reis plannen
 

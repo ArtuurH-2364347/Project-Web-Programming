@@ -12,6 +12,7 @@ export function InitializeDatabase() {
   db.pragma("temp_store = memory;");
 
   // tabel maken als die nog niet bestaat
+  // gebruikers table
   db.prepare(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,6 +22,18 @@ export function InitializeDatabase() {
       bio TEXT
     )
   `).run();
+
+  //friends table
+  db.prepare(`
+  CREATE TABLE IF NOT EXISTS friends (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    friend_id INTEGER NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(id),
+    FOREIGN KEY(friend_id) REFERENCES users(id),
+    UNIQUE(user_id, friend_id)
+  )
+`).run();
 
   // voorbeeldaccounts toevoegen
   const count = db.prepare("SELECT COUNT(*) AS count FROM users").get().count;
@@ -63,5 +76,32 @@ export function createUser(name, email, password, bio) {
   const insert = db.prepare("INSERT INTO users (name, email, passwordHash, bio) VALUES (?, ?, ?, ?)");
   insert.run(name, email, passwordHash, bio);
 }
+
+//vriend toevoegen
+export function addFriend(userId, friendEmail) {
+  const friend = db.prepare("SELECT id FROM users WHERE email = ?").get(friendEmail);
+  if (!friend) return { success: false, message: "User not found" };
+
+  // Prevent adding yourself
+  if (friend.id === userId) return { success: false, message: "You cannot add yourself" };
+
+  // Check if already friends
+  const existing = db.prepare("SELECT * FROM friends WHERE user_id = ? AND friend_id = ?").get(userId, friend.id);
+  if (existing) return { success: false, message: "Already friends" };
+
+  db.prepare("INSERT INTO friends (user_id, friend_id) VALUES (?, ?)").run(userId, friend.id);
+  return { success: true, message: "Friend added!" };
+}
+
+//vrienden opvragen
+export function getFriends(userId) {
+  return db.prepare(`
+    SELECT u.name, u.email 
+    FROM users u
+    JOIN friends f ON u.id = f.friend_id
+    WHERE f.user_id = ?
+  `).all(userId);
+}
+
 
 export default db;

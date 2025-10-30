@@ -71,6 +71,8 @@
   <!-- Profile Content -->
   <main class="container">
     <div class="overlay">
+
+      <!-- Profile Header -->
       <div class="profile-header mb-4">
         <img src="/images/default-avatar.png" alt="Profile picture" />
         <div>
@@ -79,17 +81,52 @@
         </div>
       </div>
 
+      <!-- Optional Feedback Message -->
+      <% if (message) { %>
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+          <%= message %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <!-- Bio -->
       <div class="mb-4">
         <h4>Biography</h4>
         <p><%= bio || "You haven’t written your bio yet." %></p>
       </div>
 
-      <a href="/edit-profile" class="btn btn-secondary mt-3">Edit Profile</a>
+      <a href="/edit-profile" class="btn btn-secondary mb-4">Edit Profile</a>
 
+      <!-- Friends Section -->
       <div>
         <h4>Friends</h4>
+
+        <!-- Add Friend Form -->
+        <form action="/add-friend" method="POST" class="d-flex gap-2 mb-3">
+          <input
+            type="email"
+            name="friendEmail"
+            class="form-control"
+            placeholder="Enter your friend's email"
+            required
+          />
+          <button type="submit" class="btn btn-primary">Add Friend</button>
+        </form>
+
+        <!-- Friends List -->
         <div class="friends-list">
-          <p class="text-muted">friends list placeholder</p>
+          <% if (friends && friends.length > 0) { %>
+            <ul class="list-group list-group-flush">
+              <% friends.forEach(friend => { %>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span><strong><%= friend.name %></strong></span>
+                  <small class="text-muted"><%= friend.email %></small>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p class="text-muted">You don’t have any friends yet. Add someone above!</p>
+          <% } %>
         </div>
       </div>
     </div>

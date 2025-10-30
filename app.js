@@ -1,7 +1,7 @@
 import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
-import db, { InitializeDatabase, getUserByEmail, createUser } from "./db.js";
+import db, { InitializeDatabase, getUserByEmail, createUser, addFriend, getFriends } from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -89,14 +89,15 @@ app.post("/register", async (req, res) => {
 
 // Profile route
 app.get("/profile", (req, res) => {
-  if (!req.session.user) {
-    return res.redirect("/login.html");
-  }
+  if (!req.session.user) return res.redirect("/login.html");
 
+  const friends = getFriends(req.session.user.id);
   res.render("profile", {
     name: req.session.user.name,
     email: req.session.user.email,
-    bio: req.session.user.bio
+    bio: req.session.user.bio,
+    friends,
+    message: null
   });
 });
 
@@ -130,6 +131,37 @@ app.post("/edit-profile", (req, res) => {
   req.session.user.bio = bio;
 
   res.redirect("/profile");
+});
+
+// Show profile page (with friends)
+app.get("/profile", (req, res) => {
+  if (!req.session.user) return res.redirect("/login.html");
+
+  const friends = getFriends(req.session.user.id);
+  res.render("profile", {
+    name: req.session.user.name,
+    email: req.session.user.email,
+    bio: req.session.user.bio,
+    friends
+  });
+});
+
+// Handle adding a friend
+app.post("/add-friend", (req, res) => {
+  if (!req.session.user) return res.redirect("/login.html");
+
+  const { friendEmail } = req.body;
+  const result = addFriend(req.session.user.id, friendEmail);
+
+  // Re-render profile with message
+  const friends = getFriends(req.session.user.id);
+  res.render("profile", {
+    name: req.session.user.name,
+    email: req.session.user.email,
+    bio: req.session.user.bio,
+    friends,
+    message: result.message
+  });
 });
 
 
