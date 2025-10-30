@@ -4,11 +4,15 @@
 
 1. Individueel.
 
-    - [ ] Account aanmaken 
+    - [x] Account aanmaken 
     - [x] inloggen
-    - [ ] Profiel aanmaken/aanpassen
-    - [ ] Wachtwoordenhashing
+    - [x] Profiel aanmaken/aanpassen
+    - [x] Wachtwoordenhashing
 
+    extra:
+    - [ ] registreren logt ook automatisch in
+    - [ ] oogje om naar wachtwoord te kijken terwijl je het invult
+    - [ ] profielfotos
 2. sociaal.
 
     - [ ] Vrienden toevoegen
