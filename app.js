@@ -1,7 +1,7 @@
 import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
-import { InitializeDatabase, getUserByEmail, createUser } from "./db.js";
+import db, { InitializeDatabase, getUserByEmail, createUser } from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -99,6 +99,39 @@ app.get("/profile", (req, res) => {
     bio: req.session.user.bio
   });
 });
+
+// Edit profile page (GET)
+app.get("/edit-profile", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login.html");
+  }
+
+  res.render("edit-profile", {
+    name: req.session.user.name,
+    bio: req.session.user.bio
+  });
+});
+
+// Handle edit profile form (POST)
+app.post("/edit-profile", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login.html");
+  }
+
+  const { name, bio } = req.body;
+  const userId = req.session.user.id;
+
+  // Update database
+  const stmt = db.prepare("UPDATE users SET name = ?, bio = ? WHERE id = ?");
+  stmt.run(name, bio, userId);
+
+  // Update session data
+  req.session.user.name = name;
+  req.session.user.bio = bio;
+
+  res.redirect("/profile");
+});
+
 
 // Logout route
 app.get("/logout", (req, res) => {

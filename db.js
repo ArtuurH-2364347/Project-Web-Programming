@@ -63,3 +63,5 @@ export function createUser(name, email, password, bio) {
   const insert = db.prepare("INSERT INTO users (name, email, passwordHash, bio) VALUES (?, ?, ?, ?)");
   insert.run(name, email, passwordHash, bio);
 }
+
+export default db;

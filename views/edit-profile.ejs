@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile – TravelBuddy</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+    <h1 class="mb-4">Edit Your Profile</h1>
+
+    <form action="/edit-profile" method="POST" class="bg-white p-4 rounded shadow-sm">
+      <div class="mb-3">
+        <label for="name" class="form-label fw-bold">Name</label>
+        <input type="text" id="name" name="name" value="<%= name %>" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="bio" class="form-label fw-bold">Biography</label>
+        <textarea id="bio" name="bio" class="form-control" rows="4"><%= bio %></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+      <a href="/profile" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+  </div>
+</body>
+</html>
