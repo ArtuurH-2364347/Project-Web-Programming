@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login – TravelBuddy</title>
+  <title>Register – TravelBuddy</title>
 
   <link rel="stylesheet" href="css/bootstrap.css">
   <link rel="stylesheet" href="css/style.css">
 
   <style>
-    body.login-page {
-      background-image: url('images/paris.jpg');
+    body.register-page {
+      background-image: url('images/bali.jpg');
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
       min-height: 100vh;
     }
 
-    body.login-page::before {
+    body.register-page::before {
       content: "";
       position: fixed;
       top: 0; left: 0;
@@ -26,7 +26,7 @@
       z-index: -1;
     }
 
-    .login-card {
+    .register-card {
       background-color: rgba(255, 255, 255, 0.9);
       border-radius: 1rem;
       box-shadow: 0 4px 20px rgba(0,0,0,0.2);
@@ -34,20 +34,10 @@
     }
   </style>
 </head>
-<body class="login-page d-flex flex-column min-vh-100">
+<body class="register-page d-flex flex-column min-vh-100">
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="#">TravelBuddy</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Your profile</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Today's schedule</a></li>
-        </ul>
-      </div>
+      <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
     </div>
   </nav>
 
@@ -55,20 +45,28 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-5">
-          <div class="login-card">
-            <h2 class="text-center mb-4">Welcome Back</h2>
-            <form action="/login" method="POST">
+          <div class="register-card">
+            <h2 class="text-center mb-4">Create an Account</h2>
+            <form method="POST" action="/register">
+              <div class="mb-3">
+                <label for="name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+              </div>
               <div class="mb-3">
                 <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+                <input type="email" class="form-control" id="email" name="email" required>
               </div>
               <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                <input type="password" class="form-control" id="password" name="password" required>
               </div>
-              <button type="submit" class="btn btn-primary w-100">Login</button>
+              <div class="mb-3">
+                <label for="bio" class="form-label">Bio (optional)</label>
+                <textarea class="form-control" id="bio" name="bio" rows="3"></textarea>
+              </div>
+              <button type="submit" class="btn btn-success w-100">Sign Up</button>
             </form>
-            <p class="text-center mt-3">Don’t have an account? <a href="/register">Sign up</a></p>
+            <p class="text-center mt-3">Already have an account? <a href="/login">Login</a></p>
           </div>
         </div>
       </div>

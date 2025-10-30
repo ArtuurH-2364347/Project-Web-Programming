@@ -1,7 +1,7 @@
 import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
-import { InitializeDatabase, getUserByEmail } from "./db.js";
+import { InitializeDatabase, getUserByEmail, createUser } from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -60,6 +60,31 @@ app.post("/login", async (req, res) => {
 
   req.session.user = user;
   res.redirect("/profile");
+});
+
+// Serve registratie pagina
+app.get("/register", (req, res) => {
+  res.sendFile(process.cwd() + "/public/register.html");
+});
+
+// Handle registratie form
+app.post("/register", async (req, res) => {
+  const { name, email, password, bio } = req.body;
+
+  const existingUser = getUserByEmail(email);
+  if (existingUser) {
+    return res
+      .status(400)
+      .send("<h3>Email already in use. <a href='/register'>Try again</a></h3>");
+  }
+
+  try {
+    createUser(name, email, password, bio || "");
+    res.redirect("/login");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("<h3>Registration failed. Please try again later.</h3>");
+  }
 });
 
 // Profile route
