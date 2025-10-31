@@ -46,19 +46,19 @@ Gepasseerde tijd: 30%
 4. Tijdens de reis.
 
     - [ ] overzicht dagplanning
-    - [ ] budgetmanagement (uitgaves toevoegen per persoon, eventueel met categorien)
     - [ ] tickets/vouchers per activiteit bekijken
     - [ ] Dit moet allemaal offline kunnen
 
 5. Na de reis.
 
-    - [ ] Budgetanalyse (overzicht van wie wat heeft betaald)
-    - [ ] Terugbetalingsberekening (optie om te berekenen wat iedereen elkaar terug moet betalen)
     - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
 
 6. Diverse extras.
 
     - [ ] mooiere error pages (email in gebruik, user not found, ...)
+    - [ ] budgetmanagement (uitgaves toevoegen per persoon, eventueel met categorien)
+    - [ ] Budgetanalyse (overzicht van wie wat heeft betaald)
+    - [ ] Terugbetalingsberekening (optie om te berekenen wat iedereen elkaar terug moet betalen)
 
 ## Gebruikte APIs met huidige planning:
 
