@@ -11,6 +11,9 @@ Overige dagen: 50
 Gepasseerde tijd: 30%
 
 ## Checklist:
+0. overkoepelend.
+
+    - [ ] renderd mooi op mobile
 
 1. Individueel.
 
