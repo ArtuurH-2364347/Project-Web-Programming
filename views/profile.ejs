@@ -59,10 +59,24 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link active" href="/profile">Your Profile</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Today's Schedule</a></li>
-          <li class="nav-item"><a class="nav-link text-danger" href="/logout">Logout</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/profile">Your Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Today's Schedule</a>
+          </li>
+          <% if (!user) { %>
+            <li class="nav-item">
+              <a class="nav-link btn btn-primary text-white ms-2" href="/login">Login</a>
+            </li>
+          <% } else { %>
+            <li class="nav-item">
+              <a class="nav-link btn btn-danger text-white ms-2" href="/logout">Logout</a>
+            </li>
+          <% } %>
         </ul>
       </div>
     </div>

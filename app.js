@@ -26,10 +26,6 @@ app.use((request, response, next) => {
   next();
 });
 
-app.get("/", (request, response) => {
-  response.send("Hello World!");
-});
-
 // Your routes here ...
 app.use(
   session({
@@ -40,9 +36,15 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: true }));
+
+app.get("/", (request, response) => {
+  response.render("index", { user: request.session.user });
+});
+
 // Serve login page
 app.get("/login", (req, res) => {
-  res.sendFile(process.cwd() + "/public/login.html");
+  if (req.session.user) return res.redirect("/profile");
+  res.render("login", { user: null });
 });
 
 // Handle login form
@@ -65,7 +67,8 @@ app.post("/login", async (req, res) => {
 
 // Serve registratie pagina
 app.get("/register", (req, res) => {
-  res.sendFile(process.cwd() + "/public/register.html");
+  if (req.session.user) return res.redirect("/profile");
+  res.render("register", { user: null });
 });
 
 // Handle registratie form
@@ -90,12 +93,13 @@ app.post("/register", async (req, res) => {
 
 // Profile route
 app.get("/profile", (req, res) => {
-  if (!req.session.user) return res.redirect("/login.html");
+  if (!req.session.user) return res.redirect("/login");
 
   const friends = getFriends(req.session.user.id);
   const requests = getPendingRequests(req.session.user.id)
 
   res.render("profile", {
+    user: req.session.user,
     name: req.session.user.name,
     email: req.session.user.email,
     bio: req.session.user.bio,
@@ -183,7 +187,7 @@ app.post("/remove-friend/:id", (req, res) => {
 
 // Logout route
 app.get("/logout", (req, res) => {
-  req.session.destroy(() => res.redirect("/login.html"));
+  req.session.destroy(() => res.redirect("/login"));
 });
 
 
