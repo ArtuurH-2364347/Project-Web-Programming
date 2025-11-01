@@ -114,19 +114,28 @@
         </form>
 
         <!-- Friends List -->
-        <div class="friends-list">
-          <% if (friends && friends.length > 0) { %>
-            <ul class="list-group list-group-flush">
-              <% friends.forEach(friend => { %>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <span><strong><%= friend.name %></strong></span>
-                  <small class="text-muted"><%= friend.email %></small>
-                </li>
-              <% }) %>
-            </ul>
-          <% } else { %>
-            <p class="text-muted">You don’t have any friends yet. Add someone above!</p>
-          <% } %>
+        <div>
+          <h4>Friends</h4>
+          <div class="friends-list">
+            <% if (friends && friends.length > 0) { %>
+              <ul class="list-group list-group-flush">
+                <% friends.forEach(friend => { %>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong><%= friend.name %></strong>
+                      <br>
+                      <small class="text-muted"><%= friend.email %></small>
+                    </div>
+                    <form action="/remove-friend/<%= friend.id %>" method="POST" style="margin: 0;">
+                      <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                    </form>
+                  </li>
+                <% }) %>
+              </ul>
+            <% } else { %>
+              <p class="text-muted">You have no friends yet.</p>
+            <% } %>
+          </div>
         </div>
         <!-- Friend Requests -->
           <div class="mt-4">

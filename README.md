@@ -21,7 +21,7 @@
 2. sociaal.
 
     - [x] Vrienden toevoegen
-    - [ ] Vrienden verwijderen
+    - [x] Vrienden verwijderen
     - [ ] reisgroep aanmaken
     - [ ] rechten binnen groep beheren (via rollen? beheerder, lid, etc)
 

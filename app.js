@@ -1,8 +1,8 @@
 import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
-import db, { InitializeDatabase, getUserByEmail, createUser, addFriend, getFriends,   sendFriendRequest,
-  getPendingRequests, acceptFriendRequest, rejectFriendRequest } from "./db.js";
+import db, { InitializeDatabase, getUserByEmail, createUser, getFriends,   sendFriendRequest,
+  getPendingRequests, acceptFriendRequest, rejectFriendRequest, removeFriend } from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -169,6 +169,17 @@ app.post("/reject-request/:id", (req, res) => {
   res.redirect("/profile");
 });
 
+app.post("/remove-friend/:id", (req, res) => {
+  if (!req.session.user) return res.redirect("/login.html");
+
+  const friendId = parseInt(req.params.id);
+  const result = removeFriend(req.session.user.id, friendId);
+
+  console.log(`Removed friend relation between ${req.session.user.id} and ${friendId}`);
+
+  res.redirect("/profile");
+});
+
 
 // Logout route
 app.get("/logout", (req, res) => {
@@ -193,4 +204,3 @@ InitializeDatabase();
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-
