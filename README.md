@@ -17,17 +17,16 @@
     - [ ] oogje om naar wachtwoord te kijken terwijl je het invult
     - [ ] profielfotos
     - [ ] wachtwoord 2 keer ingeven bij registreren en vergelijken
-    
+
 2. sociaal.
 
     - [x] Vrienden toevoegen
-
-        - > momenteel eenzijdig, beter om "friend request te sturen"
+    - [ ] Vrienden verwijderen
     - [ ] reisgroep aanmaken
     - [ ] rechten binnen groep beheren (via rollen? beheerder, lid, etc)
 
     extra:
-    - [ ] vrienden systeem ombouwen naar request-systeem
+    - [x] vrienden systeem ombouwen naar request-systeem
 
 3. De reis plannen
 
