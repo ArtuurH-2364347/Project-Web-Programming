@@ -23,8 +23,8 @@ export function InitializeDatabase() {
     )
   `).run();
 
-  //friends table
-  db.prepare(`
+// Symmetrische friends table
+db.prepare(`
   CREATE TABLE IF NOT EXISTS friends (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -32,6 +32,19 @@ export function InitializeDatabase() {
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(friend_id) REFERENCES users(id),
     UNIQUE(user_id, friend_id)
+  )
+`).run();
+
+// Friend requests table
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS friend_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender_id INTEGER NOT NULL,
+    receiver_id INTEGER NOT NULL,
+    status TEXT CHECK(status IN ('pending','accepted','rejected')) DEFAULT 'pending',
+    FOREIGN KEY(sender_id) REFERENCES users(id),
+    FOREIGN KEY(receiver_id) REFERENCES users(id),
+    UNIQUE(sender_id, receiver_id)
   )
 `).run();
 
@@ -92,6 +105,64 @@ export function addFriend(userId, friendEmail) {
   db.prepare("INSERT INTO friends (user_id, friend_id) VALUES (?, ?)").run(userId, friend.id);
   return { success: true, message: "Friend added!" };
 }
+
+// Send a friend request
+export function sendFriendRequest(senderId, receiverEmail) {
+  const receiver = db.prepare("SELECT id FROM users WHERE email = ?").get(receiverEmail);
+  if (!receiver) return { success: false, message: "User not found." };
+  if (receiver.id === senderId) return { success: false, message: "You cannot add yourself." };
+
+  // Check if already friends
+  const alreadyFriends = db.prepare(`
+    SELECT 1 FROM friends 
+    WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)
+  `).get(senderId, receiver.id, receiver.id, senderId);
+  if (alreadyFriends) return { success: false, message: "You are already friends." };
+
+  // Check for existing request
+  const existingRequest = db.prepare(`
+    SELECT * FROM friend_requests 
+    WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
+  `).get(senderId, receiver.id, receiver.id, senderId);
+  if (existingRequest) return { success: false, message: "Friend request already exists." };
+
+  db.prepare(`
+    INSERT INTO friend_requests (sender_id, receiver_id, status)
+    VALUES (?, ?, 'pending')
+  `).run(senderId, receiver.id);
+
+  return { success: true, message: "Friend request sent!" };
+}
+
+// onbeantwoorde requests opvragen
+export function getPendingRequests(userId) {
+  return db.prepare(`
+    SELECT fr.id, u.name, u.email
+    FROM friend_requests fr
+    JOIN users u ON u.id = fr.sender_id
+    WHERE fr.receiver_id = ? AND fr.status = 'pending'
+  `).all(userId);
+}
+
+// friend request accepteren
+export function acceptFriendRequest(requestId) {
+  const request = db.prepare("SELECT * FROM friend_requests WHERE id = ?").get(requestId);
+  if (!request) return { success: false, message: "Request not found." };
+
+  // friend request symetrisch toevoegen
+  db.prepare("INSERT OR IGNORE INTO friends (user_id, friend_id) VALUES (?, ?)").run(request.sender_id, request.receiver_id);
+  db.prepare("INSERT OR IGNORE INTO friends (user_id, friend_id) VALUES (?, ?)").run(request.receiver_id, request.sender_id);
+
+  db.prepare("UPDATE friend_requests SET status = 'accepted' WHERE id = ?").run(requestId);
+  return { success: true, message: "Friend request accepted!" };
+}
+
+// friend request denyen
+export function rejectFriendRequest(requestId) {
+  db.prepare("UPDATE friend_requests SET status = 'rejected' WHERE id = ?").run(requestId);
+  return { success: true, message: "Friend request rejected." };
+}
+
 
 //vrienden opvragen
 export function getFriends(userId) {

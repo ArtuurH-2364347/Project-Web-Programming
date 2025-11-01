@@ -1,7 +1,8 @@
 import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
-import db, { InitializeDatabase, getUserByEmail, createUser, addFriend, getFriends } from "./db.js";
+import db, { InitializeDatabase, getUserByEmail, createUser, addFriend, getFriends,   sendFriendRequest,
+  getPendingRequests, acceptFriendRequest, rejectFriendRequest } from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -92,11 +93,14 @@ app.get("/profile", (req, res) => {
   if (!req.session.user) return res.redirect("/login.html");
 
   const friends = getFriends(req.session.user.id);
+  const requests = getPendingRequests(req.session.user.id)
+
   res.render("profile", {
     name: req.session.user.name,
     email: req.session.user.email,
     bio: req.session.user.bio,
     friends,
+    requests,
     message: null
   });
 });
@@ -133,35 +137,36 @@ app.post("/edit-profile", (req, res) => {
   res.redirect("/profile");
 });
 
-// Show profile page (with friends)
-app.get("/profile", (req, res) => {
-  if (!req.session.user) return res.redirect("/login.html");
-
-  const friends = getFriends(req.session.user.id);
-  res.render("profile", {
-    name: req.session.user.name,
-    email: req.session.user.email,
-    bio: req.session.user.bio,
-    friends
-  });
-});
-
 // Handle adding a friend
 app.post("/add-friend", (req, res) => {
   if (!req.session.user) return res.redirect("/login.html");
 
   const { friendEmail } = req.body;
-  const result = addFriend(req.session.user.id, friendEmail);
-
-  // Re-render profile with message
+  const result = sendFriendRequest(req.session.user.id, friendEmail);
   const friends = getFriends(req.session.user.id);
+  const requests = getPendingRequests(req.session.user.id) || [];
   res.render("profile", {
     name: req.session.user.name,
     email: req.session.user.email,
     bio: req.session.user.bio,
     friends,
+    requests,
     message: result.message
   });
+});
+
+app.post("/accept-request/:id", (req, res) => {
+  if (!req.session.user) return res.redirect("/login.html");
+  const { id } = req.params;
+  const result = acceptFriendRequest(id);
+  res.redirect("/profile");
+});
+
+app.post("/reject-request/:id", (req, res) => {
+  if (!req.session.user) return res.redirect("/login.html");
+  const { id } = req.params;
+  const result = rejectFriendRequest(id);
+  res.redirect("/profile");
 });
 
 

@@ -1,15 +1,5 @@
 # Readme Project Web Programming
 
-## Gebruikte tijd:
-
-Begindatum: 9 oktober
-
-Deadline: 18 december
-
-Overige dagen: 50
-
-Gepasseerde tijd: 30%
-
 ## Checklist:
 0. overkoepelend.
 
@@ -26,6 +16,8 @@ Gepasseerde tijd: 30%
     - [ ] registreren logt ook automatisch in
     - [ ] oogje om naar wachtwoord te kijken terwijl je het invult
     - [ ] profielfotos
+    - [ ] wachtwoord 2 keer ingeven bij registreren en vergelijken
+    
 2. sociaal.
 
     - [x] Vrienden toevoegen
