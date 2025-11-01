@@ -53,6 +53,7 @@
     - [ ] budgetmanagement (uitgaves toevoegen per persoon, eventueel met categorien)
     - [ ] Budgetanalyse (overzicht van wie wat heeft betaald)
     - [ ] Terugbetalingsberekening (optie om te berekenen wat iedereen elkaar terug moet betalen)
+    - [ ] admin accounts-systeem die accounts kan verwijderen/editen etc
 
 ## Gebruikte APIs met huidige planning:
 
