@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create New Group – TravelBuddy</title>
+
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <style>
+    body {
+      background-image: url('/images/travel-background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      padding: 2rem;
+      margin-top: 2rem;
+      max-width: 600px;
+    }
+
+    footer {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/profile">Your Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/groups">Groups</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/schedule">Today's Schedule</a>
+          </li>
+          <% if (!user) { %>
+            <li class="nav-item">
+              <a class="nav-link btn btn-primary text-white ms-2" href="/login">Login</a>
+            </li>
+          <% } else { %>
+            <li class="nav-item">
+              <a class="nav-link btn btn-danger text-white ms-2" href="/logout">Logout</a>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Create Group Form -->
+  <main class="container d-flex justify-content-center">
+    <div class="overlay w-100">
+      <h2 class="fw-bold mb-4 text-center">Create a New Group</h2>
+
+      <% if (typeof message !== 'undefined' && message) { %>
+        <div class="alert alert-info"><%= message %></div>
+      <% } %>
+
+      <form action="/groups" method="POST">
+        <div class="mb-3">
+          <label for="groupName" class="form-label">Group Name</label>
+          <input type="text" id="groupName" name="name" class="form-control" placeholder="Enter group name" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description (optional)</label>
+          <textarea id="description" name="description" class="form-control" rows="3" placeholder="Describe your group..."></textarea>
+        </div>
+
+        <% if (friends && friends.length > 0) { %>
+          <div class="mb-3">
+            <label for="members" class="form-label">Add Friends</label>
+            <select id="members" name="members" class="form-select" multiple size="5">
+              <% friends.forEach(friend => { %>
+                <option value="<%= friend.id %>"><%= friend.name %> (<%= friend.email %>)</option>
+              <% }) %>
+            </select>
+            <small class="text-muted">Hold Ctrl (Cmd on Mac) to select multiple friends.</small>
+          </div>
+        <% } else { %>
+          <div class="alert alert-warning">
+            You have no friends yet. <a href="/profile">Add friends</a> to invite them to your group.
+          </div>
+        <% } %>
+
+        <button type="submit" class="btn btn-primary w-100">Create Group</button>
+        <a href="/groups" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
+      </form>
+    </div>
+  </main>
+
+  <footer class="py-4 mt-5 text-center">
+    <p class="mb-0">2025 TravelBuddy</p>
+  </footer>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

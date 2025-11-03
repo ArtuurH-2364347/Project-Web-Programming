@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= name %>'s Profile – TravelBuddy</title>
+  <title><%= user.name %>'s Profile – TravelBuddy</title>
 
   <link rel="stylesheet" href="/css/bootstrap.css" />
   <link rel="stylesheet" href="/css/style.css" />
@@ -57,25 +57,21 @@
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
+
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
             <a class="nav-link" href="/">Home</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/profile">Your Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Today's Schedule</a>
-          </li>
-          <% if (!user) { %>
-            <li class="nav-item">
-              <a class="nav-link btn btn-primary text-white ms-2" href="/login">Login</a>
-            </li>
+
+          <% if (user) { %>
+            <li class="nav-item"><a class="nav-link" href="/profile">Your Profile</a></li>
+            <li class="nav-item"><a class="nav-link" href="/groups">Groups</a></li>
+            <li class="nav-item"><a class="nav-link" href="/schedule">Today's Schedule</a></li>
+            <li class="nav-item"><a class="nav-link btn btn-danger text-white ms-2" href="/logout">Logout</a></li>
           <% } else { %>
-            <li class="nav-item">
-              <a class="nav-link btn btn-danger text-white ms-2" href="/logout">Logout</a>
-            </li>
+            <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+            <li class="nav-item"><a class="nav-link btn btn-primary text-white ms-2" href="/login">Login</a></li>
           <% } %>
         </ul>
       </div>
@@ -90,8 +86,8 @@
       <div class="profile-header mb-4">
         <img src="/images/default-avatar.png" alt="Profile picture" />
         <div>
-          <h2 class="fw-bold mb-0"><%= name %></h2>
-          <p class="text-muted mb-0"><%= email %></p>
+          <h2 class="fw-bold mb-0"><%= user.name %></h2>
+          <p class="text-muted mb-0"><%= user.email %></p>
         </div>
       </div>
 
@@ -106,78 +102,71 @@
       <!-- Bio -->
       <div class="mb-4">
         <h4>Biography</h4>
-        <p><%= bio || "You haven’t written your bio yet." %></p>
+        <p><%= user.bio || "You haven’t written your bio yet." %></p>
       </div>
 
       <a href="/edit-profile" class="btn btn-secondary mb-4">Edit Profile</a>
 
-      <!-- Friends Section -->
-      <div>
-        <h4>Friends</h4>
-
-        <!-- Add Friend Form -->
-        <form action="/add-friend" method="POST" class="d-flex gap-2 mb-3">
-          <input
-            type="email"
-            name="friendEmail"
-            class="form-control"
-            placeholder="Enter your friend's email"
-            required
-          />
+      <!-- Add Friend Form -->
+      <div class="mb-4">
+        <h4>Add a Friend</h4>
+        <form action="/add-friend" method="POST" class="d-flex gap-2">
+          <input type="email" name="friendEmail" class="form-control" placeholder="Enter your friend's email" required />
           <button type="submit" class="btn btn-primary">Add Friend</button>
         </form>
-
-        <!-- Friends List -->
-        <div>
-          <h4>Friends</h4>
-          <div class="friends-list">
-            <% if (friends && friends.length > 0) { %>
-              <ul class="list-group list-group-flush">
-                <% friends.forEach(friend => { %>
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                      <strong><%= friend.name %></strong>
-                      <br>
-                      <small class="text-muted"><%= friend.email %></small>
-                    </div>
-                    <form action="/remove-friend/<%= friend.id %>" method="POST" style="margin: 0;">
-                      <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
-                    </form>
-                  </li>
-                <% }) %>
-              </ul>
-            <% } else { %>
-              <p class="text-muted">You have no friends yet.</p>
-            <% } %>
-          </div>
-        </div>
-        <!-- Friend Requests -->
-          <div class="mt-4">
-            <h4>Friend Requests</h4>
-            <div class="friends-list">
-              <% if (requests && requests.length > 0) { %>
-                <ul class="list-group list-group-flush">
-                  <% requests.forEach(request => { %>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      <div>
-                        <strong><%= request.name %></strong>
-                        <small class="text-muted">(<%= request.email %>)</small>
-                      </div>
-                      <form action="/accept-request/<%= request.id %>" method="POST" class="d-inline">
-                        <button type="submit" class="btn btn-success btn-sm">Accept</button>
-                      </form>
-                      <form action="/reject-request/<%= request.id %>" method="POST" class="d-inline">
-                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                      </form>
-                    </li>
-                  <% }) %>
-                </ul>
-              <% } else { %>
-                <p class="text-muted">No pending friend requests.</p>
-              <% } %>
-            </div>
-          </div>
       </div>
+
+      <!-- Friends List -->
+      <div class="mb-4">
+        <h4>Friends</h4>
+        <div class="friends-list">
+          <% if (friends && friends.length > 0) { %>
+            <ul class="list-group list-group-flush">
+              <% friends.forEach(friend => { %>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong><%= friend.name %></strong><br>
+                    <small class="text-muted"><%= friend.email %></small>
+                  </div>
+                  <form action="/remove-friend/<%= friend.id %>" method="POST" style="margin: 0;">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                  </form>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p class="text-muted">You have no friends yet.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Friend Requests -->
+      <div class="mb-4">
+        <h4>Friend Requests</h4>
+        <div class="friends-list">
+          <% if (requests && requests.length > 0) { %>
+            <ul class="list-group list-group-flush">
+              <% requests.forEach(request => { %>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong><%= request.name %></strong>
+                    <small class="text-muted">(<%= request.email %>)</small>
+                  </div>
+                  <form action="/accept-request/<%= request.id %>" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                  </form>
+                  <form action="/reject-request/<%= request.id %>" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                  </form>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p class="text-muted">No pending friend requests.</p>
+          <% } %>
+        </div>
+      </div>
+
     </div>
   </main>
 

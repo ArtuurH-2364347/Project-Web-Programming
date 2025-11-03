@@ -38,30 +38,43 @@
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
+
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
             <a class="nav-link" href="/">Home</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/profile">Your Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Today's Schedule</a>
-          </li>
-          <% if (!user) { %>
+
+          <% if (user) { %>
             <li class="nav-item">
-              <a class="nav-link btn btn-primary text-white ms-2" href="/login">Login</a>
+              <a class="nav-link" href="/profile">Your Profile</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="/groups">Groups</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="/schedule">Today's Schedule</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link btn btn-danger text-white ms-2" href="/logout">Logout</a>
             </li>
           <% } else { %>
             <li class="nav-item">
-              <a class="nav-link btn btn-danger text-white ms-2" href="/logout">Logout</a>
+              <a class="nav-link" href="/register">Register</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link btn btn-primary text-white ms-2" href="/login">Login</a>
             </li>
           <% } %>
         </ul>
       </div>
     </div>
   </nav>
+
 
   <section class="text-center py-5">
     <div class="container hero-text">

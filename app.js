@@ -2,7 +2,7 @@ import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
 import db, { InitializeDatabase, getUserByEmail, createUser, getFriends,   sendFriendRequest,
-  getPendingRequests, acceptFriendRequest, rejectFriendRequest, removeFriend } from "./db.js";
+  getPendingRequests, acceptFriendRequest, rejectFriendRequest, removeFriend, createGroup, getUserGroups } from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -141,18 +141,18 @@ app.post("/edit-profile", (req, res) => {
   res.redirect("/profile");
 });
 
+
 // Handle adding a friend
 app.post("/add-friend", (req, res) => {
-  if (!req.session.user) return res.redirect("/login.html");
+  if (!req.session.user) return res.redirect("/login");
 
   const { friendEmail } = req.body;
   const result = sendFriendRequest(req.session.user.id, friendEmail);
   const friends = getFriends(req.session.user.id);
   const requests = getPendingRequests(req.session.user.id) || [];
+  
   res.render("profile", {
-    name: req.session.user.name,
-    email: req.session.user.email,
-    bio: req.session.user.bio,
+    user: req.session.user,
     friends,
     requests,
     message: result.message
@@ -160,29 +160,75 @@ app.post("/add-friend", (req, res) => {
 });
 
 app.post("/accept-request/:id", (req, res) => {
-  if (!req.session.user) return res.redirect("/login.html");
+  if (!req.session.user) return res.redirect("/login");
+
   const { id } = req.params;
-  const result = acceptFriendRequest(id);
+  acceptFriendRequest(id);
+
   res.redirect("/profile");
 });
 
 app.post("/reject-request/:id", (req, res) => {
-  if (!req.session.user) return res.redirect("/login.html");
+  if (!req.session.user) return res.redirect("/login");
+
   const { id } = req.params;
-  const result = rejectFriendRequest(id);
+  rejectFriendRequest(id);
+
   res.redirect("/profile");
 });
 
 app.post("/remove-friend/:id", (req, res) => {
-  if (!req.session.user) return res.redirect("/login.html");
+  if (!req.session.user) return res.redirect("/login");
 
   const friendId = parseInt(req.params.id);
-  const result = removeFriend(req.session.user.id, friendId);
-
-  console.log(`Removed friend relation between ${req.session.user.id} and ${friendId}`);
+  removeFriend(req.session.user.id, friendId);
 
   res.redirect("/profile");
 });
+
+// Groups overview
+app.get("/groups", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const groups = getUserGroups(req.session.user.id);
+  res.render("groups", { user: req.session.user, groups, message: null });
+});
+
+// Show create-group form
+app.get("/groups/new", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const friends = getFriends(req.session.user.id);
+
+  res.render("new-group", {
+    user: req.session.user,
+    message: null,
+    friends
+  });
+});
+
+
+// Handle create-group form
+app.post("/groups", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const { name, description, members } = req.body;
+
+  // Create the group
+  const groupId = createGroup(name, description, req.session.user.id);
+
+  // members may be undefined if none selected
+  if (members && members.length > 0) {
+    // Ensure members is always an array
+    const memberIds = Array.isArray(members) ? members : [members];
+    memberIds.forEach(friendId => {
+      db.prepare("INSERT INTO group_members (user_id, group_id) VALUES (?, ?)").run(friendId, groupId);
+    });
+  }
+
+  res.redirect("/groups");
+});
+
 
 
 // Logout route

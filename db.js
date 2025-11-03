@@ -23,8 +23,8 @@ export function InitializeDatabase() {
     )
   `).run();
 
-// Symmetrische friends table
-db.prepare(`
+  // Symmetrische friends table
+  db.prepare(`
   CREATE TABLE IF NOT EXISTS friends (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -32,11 +32,11 @@ db.prepare(`
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(friend_id) REFERENCES users(id),
     UNIQUE(user_id, friend_id)
-  )
-`).run();
+    )
+  `).run();
 
-// Friend requests table
-db.prepare(`
+  // Friend requests table
+  db.prepare(`
   CREATE TABLE IF NOT EXISTS friend_requests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     sender_id INTEGER NOT NULL,
@@ -45,8 +45,29 @@ db.prepare(`
     FOREIGN KEY(sender_id) REFERENCES users(id),
     FOREIGN KEY(receiver_id) REFERENCES users(id),
     UNIQUE(sender_id, receiver_id)
+    )
+  `).run();
+
+  db.prepare(`
+  CREATE TABLE IF NOT EXISTS groups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    owner_id INTEGER,
+    FOREIGN KEY(owner_id) REFERENCES users(id)
   )
 `).run();
+
+  db.prepare(`
+  CREATE TABLE IF NOT EXISTS group_members (
+    user_id INTEGER,
+    group_id INTEGER,
+    PRIMARY KEY(user_id, group_id),
+    FOREIGN KEY(user_id) REFERENCES users(id),
+    FOREIGN KEY(group_id) REFERENCES groups(id)
+  )
+  `).run();
+
 
   // voorbeeldaccounts toevoegen
   const count = db.prepare("SELECT COUNT(*) AS count FROM users").get().count;
@@ -197,5 +218,37 @@ export function removeFriend(userId, friendId) {
   return { success: true, message: "Friend removed successfully." };
 }
 
+export function createGroup(name, description, ownerId) {
+  const stmt = db.prepare("INSERT INTO groups (name, description, owner_id) VALUES (?, ?, ?)");
+  const result = stmt.run(name, description, ownerId);
+
+  // Automatically add the owner as a member
+  db.prepare("INSERT INTO group_members (user_id, group_id) VALUES (?, ?)").run(ownerId, result.lastInsertRowid);
+  return result.lastInsertRowid;
+}
+
+
+export function getUserGroups(userId) {
+  const groups = db.prepare(`
+    SELECT g.id, g.name, g.description
+    FROM groups g
+    JOIN group_members gm ON gm.group_id = g.id
+    WHERE gm.user_id = ?
+  `).all(userId);
+
+  groups.forEach(group => {
+    const members = db.prepare(`
+      SELECT u.id, u.name, u.email
+      FROM users u
+      JOIN group_members gm ON gm.user_id = u.id
+      WHERE gm.group_id = ?
+    `).all(group.id);
+    
+    group.members = members;
+    group.memberCount = members.length;
+  });
+
+  return groups;
+}
 
 export default db;
