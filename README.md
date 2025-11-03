@@ -14,9 +14,9 @@
 
     extra:
     - [ ] registreren logt ook automatisch in
-    - [ ] oogje om naar wachtwoord te kijken terwijl je het invult
+    - [x] oogje om naar wachtwoord te kijken terwijl je het invult
     - [ ] profielfotos
-    - [ ] wachtwoord 2 keer ingeven bij registreren en vergelijken
+    - [x] wachtwoord 2 keer ingeven bij registreren en vergelijken
 
 2. sociaal.
 
