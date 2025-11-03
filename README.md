@@ -54,6 +54,7 @@
     - [ ] Budgetanalyse (overzicht van wie wat heeft betaald)
     - [ ] Terugbetalingsberekening (optie om te berekenen wat iedereen elkaar terug moet betalen)
     - [ ] admin accounts-systeem die accounts kan verwijderen/editen etc
+    - [ ] functionaliteit om meer vrienden te zoeken
 
 ## Gebruikte APIs met huidige planning:
 
