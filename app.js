@@ -2,7 +2,8 @@ import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
 import db, { InitializeDatabase, getUserByEmail, createUser, getFriends,   sendFriendRequest,
-  getPendingRequests, acceptFriendRequest, rejectFriendRequest, removeFriend, createGroup, getUserGroups } from "./db.js";
+  getPendingRequests, acceptFriendRequest, rejectFriendRequest, removeFriend, createGroup, getUserGroups
+, getGroupById, getGroupMembers, isGroupMember, updateMemberRole, removeGroupMember } from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -207,8 +208,7 @@ app.get("/groups/new", (req, res) => {
   });
 });
 
-
-// Handle create-group form
+//create group form
 app.post("/groups", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
@@ -222,13 +222,92 @@ app.post("/groups", (req, res) => {
     // Ensure members is always an array
     const memberIds = Array.isArray(members) ? members : [members];
     memberIds.forEach(friendId => {
-      db.prepare("INSERT INTO group_members (user_id, group_id) VALUES (?, ?)").run(friendId, groupId);
+      db.prepare("INSERT INTO group_members (user_id, group_id, role) VALUES (?, ?, 'member')").run(friendId, groupId);
     });
   }
 
   res.redirect("/groups");
 });
 
+// View individual group
+app.get("/groups/:id", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const groupId = parseInt(req.params.id);
+  const group = getGroupById(groupId);
+  
+  if (!group) {
+    return res.status(404).send("Group not found");
+  }
+
+  // Check if user is a member
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership) {
+    return res.status(403).send("You are not a member of this group");
+  }
+
+  const members = getGroupMembers(groupId);
+  const isAdmin = membership.role === 'admin';
+
+  res.render("view-group", {
+    user: req.session.user,
+    group,
+    members,
+    isAdmin,
+    message: null
+  });
+});
+
+// Promote member to admin
+app.post("/groups/:id/promote/:userId", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const groupId = parseInt(req.params.id);
+  const userId = parseInt(req.params.userId);
+
+  // Check if current user is admin
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership || membership.role !== 'admin') {
+    return res.status(403).send("Only admins can promote members");
+  }
+
+  updateMemberRole(groupId, userId, 'admin');
+  res.redirect(`/groups/${groupId}`);
+});
+
+// Demote admin to member
+app.post("/groups/:id/demote/:userId", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const groupId = parseInt(req.params.id);
+  const userId = parseInt(req.params.userId);
+
+  // Check if current user is admin
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership || membership.role !== 'admin') {
+    return res.status(403).send("Only admins can demote members");
+  }
+
+  updateMemberRole(groupId, userId, 'member');
+  res.redirect(`/groups/${groupId}`);
+});
+
+// Remove member from group
+app.post("/groups/:id/remove/:userId", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const groupId = parseInt(req.params.id);
+  const userId = parseInt(req.params.userId);
+
+  // Check if current user is admin
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership || membership.role !== 'admin') {
+    return res.status(403).send("Only admins can remove members");
+  }
+
+  removeGroupMember(groupId, userId);
+  res.redirect(`/groups/${groupId}`);
+});
 
 
 // Logout route

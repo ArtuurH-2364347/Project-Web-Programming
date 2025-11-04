@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= group.name %> – TravelBuddy</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    body {
+      background-image: url('/images/travel-background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+    .member-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border: 1px solid #dee2e6;
+      transition: all 0.2s;
+    }
+    .member-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .member-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: bold;
+      border: 3px solid white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .admin-badge {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .member-badge {
+      background-color: #6c757d;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .group-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+    }
+    .admin-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+    footer {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/profile">Your Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/groups">Groups</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/schedule">Today's Schedule</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link btn btn-danger ms-2" href="/logout">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Group Content -->
+  <main class="container">
+    <div class="overlay">
+      <!-- Group Header -->
+      <div class="group-header">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h2 class="fw-bold mb-2"><%= group.name %></h2>
+            <p class="mb-0 opacity-75">
+              <%= group.description || "No description provided." %>
+            </p>
+          </div>
+          <a href="/groups" class="btn btn-light">
+            ← Back to Groups
+          </a>
+        </div>
+      </div>
+
+      <% if (message) { %>
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+          <%= message %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <!-- Members Section -->
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="fw-bold mb-0">
+            Members (<%= members.length %>)
+          </h4>
+          <% if (isAdmin) { %>
+            <span class="badge bg-success">You're an Admin</span>
+          <% } %>
+        </div>
+
+        <% if (members && members.length > 0) { %>
+          <% 
+            const admins = members.filter(m => m.role === 'admin');
+            const regularMembers = members.filter(m => m.role === 'member');
+          %>
+
+          <!-- Admins -->
+          <% if (admins.length > 0) { %>
+            <h6 class="text-muted mb-2">Administrators</h6>
+            <% admins.forEach(member => { %>
+              <div class="member-card">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="member-avatar">
+                      <%= member.name.charAt(0).toUpperCase() %>
+                    </div>
+                    <div>
+                      <div class="d-flex align-items-center gap-2">
+                        <strong><%= member.name %></strong>
+                        <span class="admin-badge">Admin</span>
+                        <% if (member.id === user.id) { %>
+                          <span class="badge bg-info">You</span>
+                        <% } %>
+                      </div>
+                      <small class="text-muted"><%= member.email %></small>
+                    </div>
+                  </div>
+
+                  <% if (isAdmin && member.id !== user.id) { %>
+                    <div class="admin-controls">
+                      <form action="/groups/<%= group.id %>/demote/<%= member.id %>" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-outline-warning btn-sm" title="Demote to Member">
+                          Demote
+                        </button>
+                      </form>
+                      <form action="/groups/<%= group.id %>/remove/<%= member.id %>" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this member?')">
+                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Remove from Group">
+                          Remove
+                        </button>
+                      </form>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+
+          <!-- Regular Members -->
+          <% if (regularMembers.length > 0) { %>
+            <h6 class="text-muted mb-2 mt-4">Members</h6>
+            <% regularMembers.forEach(member => { %>
+              <div class="member-card">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="member-avatar" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);">
+                      <%= member.name.charAt(0).toUpperCase() %>
+                    </div>
+                    <div>
+                      <div class="d-flex align-items-center gap-2">
+                        <strong><%= member.name %></strong>
+                        <span class="member-badge">Member</span>
+                        <% if (member.id === user.id) { %>
+                          <span class="badge bg-info">You</span>
+                        <% } %>
+                      </div>
+                      <small class="text-muted"><%= member.email %></small>
+                    </div>
+                  </div>
+
+                  <% if (isAdmin && member.id !== user.id) { %>
+                    <div class="admin-controls">
+                      <form action="/groups/<%= group.id %>/promote/<%= member.id %>" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-outline-success btn-sm" title="Promote to Admin">
+                          Promote
+                        </button>
+                      </form>
+                      <form action="/groups/<%= group.id %>/remove/<%= member.id %>" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this member?')">
+                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Remove from Group">
+                          Remove
+                        </button>
+                      </form>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+
+        <% } else { %>
+          <p class="text-muted">No members in this group yet.</p>
+        <% } %>
+      </div>
+
+      <!-- Admin Actions Section -->
+      <% if (isAdmin) { %>
+        <div class="mt-4 p-3 bg-light rounded">
+          <h5 class="mb-3">Admin Actions</h5>
+          <p class="text-muted mb-3">As an admin, you can manage group members and settings.</p>
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" disabled>Add Members (Coming Soon)</button>
+            <button class="btn btn-outline-secondary" disabled>Edit Group Details (Coming Soon)</button>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </main>
+
+  <footer class="py-4 mt-5 text-center">
+    <p class="mb-0">2025 TravelBuddy</p>
+  </footer>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

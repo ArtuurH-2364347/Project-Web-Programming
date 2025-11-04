@@ -58,15 +58,16 @@ export function InitializeDatabase() {
   )
 `).run();
 
-  db.prepare(`
+db.prepare(`
   CREATE TABLE IF NOT EXISTS group_members (
     user_id INTEGER,
     group_id INTEGER,
+    role TEXT CHECK(role IN ('admin','member')) DEFAULT 'member',
     PRIMARY KEY(user_id, group_id),
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(group_id) REFERENCES groups(id)
   )
-  `).run();
+`).run();
 
 
   // voorbeeldaccounts toevoegen
@@ -222,8 +223,8 @@ export function createGroup(name, description, ownerId) {
   const stmt = db.prepare("INSERT INTO groups (name, description, owner_id) VALUES (?, ?, ?)");
   const result = stmt.run(name, description, ownerId);
 
-  // Automatically add the owner as a member
-  db.prepare("INSERT INTO group_members (user_id, group_id) VALUES (?, ?)").run(ownerId, result.lastInsertRowid);
+  // Automatically add the owner as an admin member
+  db.prepare("INSERT INTO group_members (user_id, group_id, role) VALUES (?, ?, 'admin')").run(ownerId, result.lastInsertRowid);
   return result.lastInsertRowid;
 }
 
@@ -249,6 +250,42 @@ export function getUserGroups(userId) {
   });
 
   return groups;
+}
+
+export function getGroupById(groupId) {
+  return db.prepare("SELECT * FROM groups WHERE id = ?").get(groupId);
+}
+
+export function getGroupMembers(groupId) {
+  return db.prepare(`
+    SELECT u.id, u.name, u.email, gm.role
+    FROM users u
+    JOIN group_members gm ON gm.user_id = u.id
+    WHERE gm.group_id = ?
+    ORDER BY gm.role DESC, u.name ASC
+  `).all(groupId);
+}
+
+export function isGroupMember(userId, groupId) {
+  return db.prepare(`
+    SELECT role FROM group_members 
+    WHERE user_id = ? AND group_id = ?
+  `).get(userId, groupId);
+}
+
+export function updateMemberRole(groupId, userId, newRole) {
+  db.prepare(`
+    UPDATE group_members 
+    SET role = ? 
+    WHERE group_id = ? AND user_id = ?
+  `).run(newRole, groupId, userId);
+}
+
+export function removeGroupMember(groupId, userId) {
+  db.prepare(`
+    DELETE FROM group_members 
+    WHERE group_id = ? AND user_id = ?
+  `).run(groupId, userId);
 }
 
 export default db;
