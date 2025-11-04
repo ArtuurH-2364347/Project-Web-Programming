@@ -76,6 +76,18 @@
       display: flex;
       gap: 0.5rem;
     }
+    .trip-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      border: 1px solid #dee2e6;
+      transition: all 0.2s;
+      margin-bottom: 1rem;
+    }
+    .trip-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
     footer {
       background-color: rgba(255, 255, 255, 0.8);
     }
@@ -101,7 +113,7 @@
             <a class="nav-link" href="/groups">Groups</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/schedule">Today's Schedule</a>
+            <a class="nav-link" href="/schedule">Schedule</a>
           </li>
           <li class="nav-item">
             <a class="nav-link btn btn-danger ms-2" href="/logout">Logout</a>
@@ -129,12 +141,56 @@
         </div>
       </div>
 
+      <% if (isAdmin) { %>
+        <div class="mb-4">
+          <a href="/groups/<%= group.id %>/trips/new" class="btn btn-success">
+            + Plan New Trip
+          </a>
+        </div>
+      <% } %>
+
       <% if (message) { %>
         <div class="alert alert-info alert-dismissible fade show" role="alert">
           <%= message %>
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
       <% } %>
+
+      <!-- Trips Section -->
+      <div class="mb-4">
+        <h4 class="fw-bold mb-3">Planned Trips</h4>
+        
+        <% if (trips && trips.length > 0) { %>
+          <% trips.forEach(trip => { %>
+            <div class="trip-card">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <h5 class="fw-bold mb-2"><%= trip.name %></h5>
+                  <% if (trip.destination) { %>
+                    <p class="text-muted mb-2">📍 <%= trip.destination %></p>
+                  <% } %>
+                  <p class="mb-0">
+                    <small style="color: #6c757d;">
+                      📅 <%= new Date(trip.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %> 
+                      - 
+                      <%= new Date(trip.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                    </small>
+                  </p>
+                </div>
+                <a href="/trips/<%= trip.id %>" class="btn btn-primary btn-sm ms-3">View Schedule</a>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div style="background-color: #f8f9fa; border-radius: 0.75rem; padding: 1.5rem; text-align: center;">
+            <p class="text-muted mb-0">No trips planned yet. 
+              <% if (isAdmin) { %>
+                <a href="/groups/<%= group.id %>/trips/new" class="fw-bold">Create your first trip!</a>
+              <% } %>
+            </p>
+          </div>
+        <% } %>
+      </div>
 
       <!-- Members Section -->
       <div class="mb-4">

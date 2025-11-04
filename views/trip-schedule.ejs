@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= trip.name %> – Schedule</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    body {
+      background-image: url('/images/travel-background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+    .trip-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+    }
+    .day-section {
+      margin-bottom: 2rem;
+    }
+    .day-header {
+      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .activity-card {
+      background: white;
+      border-left: 4px solid #667eea;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+    }
+    .activity-card:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      transform: translateX(4px);
+    }
+    .activity-time {
+      color: #667eea;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    .activity-location {
+      color: #6c757d;
+      font-size: 0.85rem;
+    }
+    .add-activity-form {
+      background-color: #f8f9fa;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    footer {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/profile">Your Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/groups">Groups</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/schedule">Schedule</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link btn btn-danger ms-2" href="/logout">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Trip Schedule Content -->
+  <main class="container">
+    <div class="overlay">
+      <!-- Trip Header -->
+      <div class="trip-header">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h2 class="fw-bold mb-2"><%= trip.name %></h2>
+            <% if (trip.destination) { %>
+              <p class="mb-2 opacity-75">📍 <%= trip.destination %></p>
+            <% } %>
+            <p class="mb-0 opacity-75">
+              📅 <%= new Date(trip.start_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
+              - 
+              <%= new Date(trip.end_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
+            </p>
+          </div>
+          <div>
+            <a href="/groups/<%= group.id %>" class="btn btn-light">← Back to Group</a>
+          </div>
+        </div>
+      </div>
+
+      <% if (message) { %>
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+          <%= message %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <!-- Timeline -->
+      <div class="timeline">
+        <% 
+          const startDate = new Date(trip.start_date);
+          const endDate = new Date(trip.end_date);
+          const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+          
+          for (let i = 0; i < daysDiff; i++) {
+            const currentDate = new Date(startDate);
+            currentDate.setDate(startDate.getDate() + i);
+            const dateString = currentDate.toISOString().split('T')[0];
+            const dayActivities = activitiesByDate[dateString] || [];
+        %>
+        
+        <div class="day-section">
+          <div class="day-header">
+            <h5 class="mb-0 fw-bold">
+              Day <%= i + 1 %> - <%= currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) %>
+            </h5>
+          </div>
+
+          <% if (dayActivities.length > 0) { %>
+            <% dayActivities.forEach(activity => { %>
+              <div class="activity-card">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="flex-grow-1">
+                    <% if (activity.time) { %>
+                      <div class="activity-time mb-1">🕐 <%= activity.time %></div>
+                    <% } %>
+                    <h6 class="mb-1"><%= activity.title %></h6>
+                    <% if (activity.location) { %>
+                      <div class="activity-location mb-1">📍 <%= activity.location %></div>
+                    <% } %>
+                    <% if (activity.description) { %>
+                      <p class="text-muted mb-1 small"><%= activity.description %></p>
+                    <% } %>
+                    <small class="text-muted">Added by <%= activity.creator_name || 'Unknown' %></small>
+                  </div>
+                  
+                  <% if (isAdmin || activity.created_by === user.id) { %>
+                    <form action="/activities/<%= activity.id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete this activity?')">
+                      <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p class="text-muted ms-3">No activities planned for this day yet.</p>
+          <% } %>
+        </div>
+
+        <% } %>
+      </div>
+
+      <!-- Add Activity Form -->
+      <div class="add-activity-form">
+        <h5 class="mb-3">Add New Activity</h5>
+        <form action="/trips/<%= trip.id %>/activities" method="POST">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="title" class="form-label">Activity Title *</label>
+              <input type="text" id="title" name="title" class="form-control" placeholder="e.g., Visit Eiffel Tower" required />
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="date" class="form-label">Date *</label>
+              <input type="date" id="date" name="date" class="form-control" 
+                     min="<%= trip.start_date %>" 
+                     max="<%= trip.end_date %>" required />
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="time" class="form-label">Time</label>
+              <input type="time" id="time" name="time" class="form-control" />
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" id="location" name="location" class="form-control" placeholder="e.g., Champ de Mars, Paris" />
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="2" placeholder="Additional details..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Add Activity</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 mt-5 text-center">
+    <p class="mb-0">2025 TravelBuddy</p>
+  </footer>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

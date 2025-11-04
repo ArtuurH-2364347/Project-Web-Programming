@@ -3,7 +3,8 @@ import session from "express-session";
 import bcrypt from "bcrypt";
 import db, { InitializeDatabase, getUserByEmail, createUser, getFriends,   sendFriendRequest,
   getPendingRequests, acceptFriendRequest, rejectFriendRequest, removeFriend, createGroup, getUserGroups
-, getGroupById, getGroupMembers, isGroupMember, updateMemberRole, removeGroupMember } from "./db.js";
+, getGroupById, getGroupMembers, isGroupMember, updateMemberRole, removeGroupMember, createTrip, createActivity
+, getGroupTrips, getTripById, getTripActivities, deleteActivity, getUserTrips } from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -248,12 +249,14 @@ app.get("/groups/:id", (req, res) => {
 
   const members = getGroupMembers(groupId);
   const isAdmin = membership.role === 'admin';
+    const trips = getGroupTrips(groupId);
 
   res.render("view-group", {
     user: req.session.user,
     group,
     members,
     isAdmin,
+    trips,
     message: null
   });
 });
@@ -309,6 +312,141 @@ app.post("/groups/:id/remove/:userId", (req, res) => {
   res.redirect(`/groups/${groupId}`);
 });
 
+// Schedule overview - shows all trips user is part of
+app.get("/schedule", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const trips = getUserTrips(req.session.user.id);
+  
+  res.render("schedule", {
+    user: req.session.user,
+    trips
+  });
+});
+
+// View specific trip schedule
+app.get("/trips/:id", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const tripId = parseInt(req.params.id);
+  const trip = getTripById(tripId);
+  
+  if (!trip) {
+    return res.status(404).send("Trip not found");
+  }
+
+  // Check if user is member of the group
+  const membership = isGroupMember(req.session.user.id, trip.group_id);
+  if (!membership) {
+    return res.status(403).send("You are not a member of this group");
+  }
+
+  const activities = getTripActivities(tripId);
+  const group = getGroupById(trip.group_id);
+  const isAdmin = membership.role === 'admin';
+
+  // Group activities by date
+  const activitiesByDate = {};
+  activities.forEach(activity => {
+    if (!activitiesByDate[activity.date]) {
+      activitiesByDate[activity.date] = [];
+    }
+    activitiesByDate[activity.date].push(activity);
+  });
+
+  res.render("trip-schedule", {
+    user: req.session.user,
+    trip,
+    group,
+    activities,
+    activitiesByDate,
+    isAdmin,
+    message: null
+  });
+});
+
+// Show form to create new trip
+app.get("/groups/:id/trips/new", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const groupId = parseInt(req.params.id);
+  const group = getGroupById(groupId);
+  
+  if (!group) {
+    return res.status(404).send("Group not found");
+  }
+
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership) {
+    return res.status(403).send("You are not a member of this group");
+  }
+
+  res.render("new-trip", {
+    user: req.session.user,
+    group
+  });
+});
+
+// Handle creating new trip
+app.post("/groups/:id/trips", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const groupId = parseInt(req.params.id);
+  const { name, destination, startDate, endDate } = req.body;
+
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership || membership.role !== 'admin') {
+    return res.status(403).send("Only admins can create trips");
+  }
+
+  const tripId = createTrip(groupId, name, destination, startDate, endDate);
+  res.redirect(`/trips/${tripId}`);
+});
+
+// Add activity to trip
+app.post("/trips/:id/activities", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const tripId = parseInt(req.params.id);
+  const { title, description, location, date, time } = req.body;
+
+  const trip = getTripById(tripId);
+  if (!trip) {
+    return res.status(404).send("Trip not found");
+  }
+
+  const membership = isGroupMember(req.session.user.id, trip.group_id);
+  if (!membership) {
+    return res.status(403).send("You are not a member of this group");
+  }
+
+  createActivity(tripId, title, description, location, date, time, req.session.user.id);
+  res.redirect(`/trips/${tripId}`);
+});
+
+// Delete activity
+app.post("/activities/:id/delete", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const activityId = parseInt(req.params.id);
+  
+  // Get activity to find trip_id for redirect
+  const activity = db.prepare("SELECT * FROM activities WHERE id = ?").get(activityId);
+  if (!activity) {
+    return res.status(404).send("Activity not found");
+  }
+
+  const trip = getTripById(activity.trip_id);
+  const membership = isGroupMember(req.session.user.id, trip.group_id);
+  
+  // Only admins or the creator can delete
+  if (!membership || (membership.role !== 'admin' && activity.created_by !== req.session.user.id)) {
+    return res.status(403).send("You don't have permission to delete this activity");
+  }
+
+  deleteActivity(activityId);
+  res.redirect(`/trips/${activity.trip_id}`);
+});
 
 // Logout route
 app.get("/logout", (req, res) => {

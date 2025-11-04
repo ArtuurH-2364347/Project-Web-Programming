@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plan New Trip – TravelBuddy</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    body {
+      background-image: url('/images/travel-background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      padding: 2rem;
+      margin-top: 2rem;
+      max-width: 600px;
+    }
+    footer {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/profile">Your Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/groups">Groups</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/schedule">Schedule</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link btn btn-danger ms-2" href="/logout">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Create Trip Form -->
+  <main class="container d-flex justify-content-center">
+    <div class="overlay w-100">
+      <h2 class="fw-bold mb-4 text-center">Plan a New Trip</h2>
+      <p class="text-center text-muted mb-4">for <strong><%= group.name %></strong></p>
+
+      <form action="/groups/<%= group.id %>/trips" method="POST">
+        <div class="mb-3">
+          <label for="name" class="form-label">Trip Name *</label>
+          <input type="text" id="name" name="name" class="form-control" 
+                 placeholder="e.g., Summer Paris Adventure" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="destination" class="form-label">Destination</label>
+          <input type="text" id="destination" name="destination" class="form-control" 
+                 placeholder="e.g., Paris, France" />
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="startDate" class="form-label">Start Date *</label>
+            <input type="date" id="startDate" name="startDate" class="form-control" required />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="endDate" class="form-label">End Date *</label>
+            <input type="date" id="endDate" name="endDate" class="form-control" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Create Trip</button>
+        <a href="/groups/<%= group.id %>" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
+      </form>
+    </div>
+  </main>
+
+  <footer class="py-4 mt-5 text-center">
+    <p class="mb-0">2025 TravelBuddy</p>
+  </footer>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Ensure end date is after start date
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+
+    startDateInput.addEventListener('change', () => {
+      endDateInput.min = startDateInput.value;
+      if (endDateInput.value && endDateInput.value < startDateInput.value) {
+        endDateInput.value = startDateInput.value;
+      }
+    });
+  </script>
+</body>
+</html>

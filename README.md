@@ -30,8 +30,9 @@
 
 3. De reis plannen
 
-    - [ ] Reis aanmaken (individueel of met groep)
-    - [ ] Stops toevoegen
+    - [x] Reis aanmaken (individueel of met groep)
+    - [x] Stops toevoegen
+    - [ ] checking of stops niet overlappen
     - [ ] Indien groep, stops voorstellen en stemming laten gebeuren
     - [ ] Reis voorstellen op kaart (google maps api integratie?)
     - [ ] tickets uploaden
@@ -39,9 +40,9 @@
 
 4. Tijdens de reis.
 
-    - [ ] overzicht dagplanning
+    - [ ] overzicht persoonlijke dagplanning (los van groepen) 
     - [ ] tickets/vouchers per activiteit bekijken
-    - [ ] Dit moet allemaal offline kunnen
+    - [ ] Dit moet allemaal offline kunnen?
 
 5. Na de reis.
 

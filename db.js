@@ -69,6 +69,35 @@ db.prepare(`
   )
 `).run();
 
+// Trips table
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS trips (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    destination TEXT,
+    start_date TEXT NOT NULL,
+    end_date TEXT NOT NULL,
+    FOREIGN KEY(group_id) REFERENCES groups(id)
+  )
+`).run();
+
+// Activities table
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS activities (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    trip_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    location TEXT,
+    date TEXT NOT NULL,
+    time TEXT,
+    created_by INTEGER,
+    FOREIGN KEY(trip_id) REFERENCES trips(id),
+    FOREIGN KEY(created_by) REFERENCES users(id)
+  )
+`).run();
+
 
   // voorbeeldaccounts toevoegen
   const count = db.prepare("SELECT COUNT(*) AS count FROM users").get().count;
@@ -286,6 +315,62 @@ export function removeGroupMember(groupId, userId) {
     DELETE FROM group_members 
     WHERE group_id = ? AND user_id = ?
   `).run(groupId, userId);
+}
+
+// Trip functions
+export function createTrip(groupId, name, destination, startDate, endDate) {
+  const stmt = db.prepare(`
+    INSERT INTO trips (group_id, name, destination, start_date, end_date) 
+    VALUES (?, ?, ?, ?, ?)
+  `);
+  const result = stmt.run(groupId, name, destination, startDate, endDate);
+  return result.lastInsertRowid;
+}
+
+export function getGroupTrips(groupId) {
+  return db.prepare(`
+    SELECT * FROM trips 
+    WHERE group_id = ? 
+    ORDER BY start_date DESC
+  `).all(groupId);
+}
+
+export function getTripById(tripId) {
+  return db.prepare("SELECT * FROM trips WHERE id = ?").get(tripId);
+}
+
+export function getTripActivities(tripId) {
+  return db.prepare(`
+    SELECT a.*, u.name as creator_name
+    FROM activities a
+    LEFT JOIN users u ON u.id = a.created_by
+    WHERE a.trip_id = ?
+    ORDER BY a.date ASC, a.time ASC
+  `).all(tripId);
+}
+
+export function createActivity(tripId, title, description, location, date, time, createdBy) {
+  const stmt = db.prepare(`
+    INSERT INTO activities (trip_id, title, description, location, date, time, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  const result = stmt.run(tripId, title, description, location, date, time, createdBy);
+  return result.lastInsertRowid;
+}
+
+export function deleteActivity(activityId) {
+  db.prepare("DELETE FROM activities WHERE id = ?").run(activityId);
+}
+
+export function getUserTrips(userId) {
+  return db.prepare(`
+    SELECT DISTINCT t.*, g.name as group_name
+    FROM trips t
+    JOIN groups g ON g.id = t.group_id
+    JOIN group_members gm ON gm.group_id = g.id
+    WHERE gm.user_id = ?
+    ORDER BY t.start_date DESC
+  `).all(userId);
 }
 
 export default db;
