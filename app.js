@@ -190,6 +190,22 @@ app.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/login"));
 });
 
+// Tour page route
+app.get("/tour", (req, res) => {
+  res.render("tour", {
+    user: req.session.user,
+    tourTitle: "Your Travel Schedule",
+    images: [
+      "/images/placeholder1.jpg",
+      "/images/placeholder2.jpg"
+    ],
+    stops: [
+      { name: "Stop 1", description: "Example location or activity." },
+      { name: "Stop 2", description: "Another example stop." },
+      { name: "Stop 3", description: "You can replace these with real tour data later." }
+    ]
+  });
+});
 
 // Middleware for unknown routes
 // Must be last in pipeline
