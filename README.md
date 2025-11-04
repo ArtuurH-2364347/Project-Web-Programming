@@ -23,7 +23,7 @@
     - [x] Vrienden toevoegen
     - [x] Vrienden verwijderen
     - [x] reisgroep aanmaken
-    - [ ] rechten binnen groep beheren (via rollen? beheerder, lid, etc)
+    - [x] rechten binnen groep beheren (via rollen? beheerder, lid, etc)
 
     extra:
     - [x] vrienden systeem ombouwen naar request-systeem
