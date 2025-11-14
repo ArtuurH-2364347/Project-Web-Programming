@@ -192,20 +192,18 @@ app.get("/logout", (req, res) => {
 
 // Tour page route
 app.get("/tour", (req, res) => {
-  res.render("tour", {
+  res.render("reispagina", {
     user: req.session.user,
-    tourTitle: "Your Travel Schedule",
-    images: [
-      "/images/placeholder1.jpg",
-      "/images/placeholder2.jpg"
-    ],
+    tourTitle: "Today's Adventure",
+    images: ["/images/placeholder.png", "/images/placeholder.png"],
     stops: [
-      { name: "Stop 1", description: "Example location or activity." },
-      { name: "Stop 2", description: "Another example stop." },
-      { name: "Stop 3", description: "You can replace these with real tour data later." }
+      { name: "Eiffel Tower", description: "Morning visit and photoshoot." },
+      { name: "Louvre Museum", description: "Art tour in the afternoon." },
+      { name: "Seine River Cruise", description: "Evening boat ride." }
     ]
   });
 });
+
 
 // Middleware for unknown routes
 // Must be last in pipeline
