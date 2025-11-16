@@ -67,7 +67,6 @@
 2. Externe APIs:
     - Google maps of alternatieve
     - misschien een api voor het weer?
-    - api voor agende/schedule?
-    - [Photon api] (https://photon.komoot.io/)
+    - [x] [Photon api](https://photon.komoot.io/)
     
     
