@@ -37,4 +37,7 @@ database.db-shm
 database.db-wal
 
 # Uploaded files (profile pictures)
-public/uploads/
+public/uploads/*
+!public/uploads/.gitkeep
+public/uploads/profiles/*
+!public/uploads/profiles/.gitkeep
