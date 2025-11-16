@@ -41,3 +41,4 @@ public/uploads/*
 !public/uploads/.gitkeep
 public/uploads/profiles/*
 !public/uploads/profiles/.gitkeep
+!public/uploads/Placeholder_*.png
