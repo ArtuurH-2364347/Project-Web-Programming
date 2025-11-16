@@ -31,14 +31,3 @@ Thumbs.db
 **/Dockerfile~
 **/docker-compose.yml~
 
-# Database
-database.db
-database.db-shm
-database.db-wal
-
-# Uploaded files (profile pictures)
-public/uploads/*
-!public/uploads/.gitkeep
-public/uploads/profiles/*
-!public/uploads/profiles/.gitkeep
-!public/uploads/Placeholder_*.png
