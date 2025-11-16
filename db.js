@@ -19,7 +19,8 @@ export function InitializeDatabase() {
       name TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
       passwordHash TEXT NOT NULL,
-      bio TEXT
+      bio TEXT,
+      profile_picture TEXT
     )
   `).run();
 
@@ -317,7 +318,7 @@ export function getGroupById(groupId) {
 
 export function getGroupMembers(groupId) {
   return db.prepare(`
-    SELECT u.id, u.name, u.email, gm.role
+    SELECT u.id, u.name, u.email, u.profile_picture, gm.role
     FROM users u
     JOIN group_members gm ON gm.user_id = u.id
     WHERE gm.group_id = ?

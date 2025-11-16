@@ -84,7 +84,11 @@
 
       <!-- Profile Header -->
       <div class="profile-header mb-4">
-        <img src="/images/default-avatar.png" alt="Profile picture" />
+        <% if (user.profile_picture) { %>
+          <img src="<%= user.profile_picture %>" alt="Profile picture" />
+        <% } else { %>
+          <img src="/images/default-avatar.png" alt="Profile picture" />
+        <% } %>
         <div>
           <h2 class="fw-bold mb-0"><%= user.name %></h2>
           <p class="text-muted mb-0"><%= user.email %></p>

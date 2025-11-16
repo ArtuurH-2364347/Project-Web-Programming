@@ -1,6 +1,9 @@
 import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import db, { 
   InitializeDatabase, getUserByEmail, createUser, getFriends, 
   sendFriendRequest, getPendingRequests, acceptFriendRequest, 
@@ -12,6 +15,9 @@ import db, {
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // set the view engine to ejs
 // Use EJS templates
@@ -30,6 +36,32 @@ app.use((request, response, next) => {
     `Request URL: ${request.url} @ ${new Date().toLocaleString("nl-BE")}`
   );
   next();
+});
+
+// Configure multer for profile picture uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/uploads/profiles/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+  fileFilter: function (req, file, cb) {
+    const filetypes = /jpeg|jpg|png|gif/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Only image files are allowed!'));
+  }
 });
 
 // Your routes here ...
@@ -122,27 +154,33 @@ app.get("/edit-profile", (req, res) => {
   }
 
   res.render("edit-profile", {
-    name: req.session.user.name,
-    bio: req.session.user.bio
+    user: req.session.user
   });
 });
 
-// Handle edit profile form (POST)
-app.post("/edit-profile", (req, res) => {
+// Handle edit profile form (POST) - with profile picture upload
+app.post("/edit-profile", upload.single('profilePicture'), (req, res) => {
   if (!req.session.user) {
-    return res.redirect("/login.html");
+    return res.redirect("/login");
   }
 
   const { name, bio } = req.body;
   const userId = req.session.user.id;
 
+  // Check if a new profile picture was uploaded
+  let profilePicture = req.session.user.profile_picture; // Keep existing if no new upload
+  if (req.file) {
+    profilePicture = '/uploads/profiles/' + req.file.filename;
+  }
+
   // Update database
-  const stmt = db.prepare("UPDATE users SET name = ?, bio = ? WHERE id = ?");
-  stmt.run(name, bio, userId);
+  const stmt = db.prepare("UPDATE users SET name = ?, bio = ?, profile_picture = ? WHERE id = ?");
+  stmt.run(name, bio, profilePicture, userId);
 
   // Update session data
   req.session.user.name = name;
   req.session.user.bio = bio;
+  req.session.user.profile_picture = profilePicture;
 
   res.redirect("/profile");
 });

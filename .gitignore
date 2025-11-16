@@ -30,3 +30,11 @@ Thumbs.db
 # Docker artifacts (optional)
 **/Dockerfile~
 **/docker-compose.yml~
+
+# Database
+database.db
+database.db-shm
+database.db-wal
+
+# Uploaded files (profile pictures)
+public/uploads/
