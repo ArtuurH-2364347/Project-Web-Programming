@@ -33,7 +33,7 @@
     - [x] Reis aanmaken (individueel of met groep)
     - [x] Stops toevoegen
     - [ ] checking of stops niet overlappen
-    - [ ] Indien groep, stops voorstellen en stemming laten gebeuren
+    - [x] Indien groep, stops voorstellen en stemming laten gebeuren
     - [ ] Reis voorstellen op kaart (google maps api integratie?)
     - [ ] tickets uploaden
     - [ ] reis-planning downloaden als text file
