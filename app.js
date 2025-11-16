@@ -1,10 +1,14 @@
 import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
-import db, { InitializeDatabase, getUserByEmail, createUser, getFriends,   sendFriendRequest,
-  getPendingRequests, acceptFriendRequest, rejectFriendRequest, removeFriend, createGroup, getUserGroups
-, getGroupById, getGroupMembers, isGroupMember, updateMemberRole, removeGroupMember, createTrip, createActivity
-, getGroupTrips, getTripById, getTripActivities, deleteActivity, getUserTrips } from "./db.js";
+import db, { 
+  InitializeDatabase, getUserByEmail, createUser, getFriends, 
+  sendFriendRequest, getPendingRequests, acceptFriendRequest, 
+  rejectFriendRequest, removeFriend, createGroup, getUserGroups,
+  getGroupById, getGroupMembers, isGroupMember, updateMemberRole, removeGroupMember,
+  createTrip, getGroupTrips, getTripById, getTripActivities, createActivity, deleteActivity, getUserTrips,
+  createActivitySuggestion, getTripSuggestions, getSuggestionVotes, getUserVote, castVote, approveSuggestion, deleteSuggestion
+} from "./db.js";
 
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
@@ -344,6 +348,22 @@ app.get("/trips/:id", (req, res) => {
   const activities = getTripActivities(tripId);
   const group = getGroupById(trip.group_id);
   const isAdmin = membership.role === 'admin';
+  const suggestions = getTripSuggestions(tripId);
+  const groupMembers = getGroupMembers(trip.group_id);
+  const totalMembers = groupMembers.length;
+  const votesNeeded = Math.ceil(totalMembers / 2);
+
+  // Add vote counts and user's vote to each suggestion
+  suggestions.forEach(suggestion => {
+    const votes = getSuggestionVotes(suggestion.id);
+    suggestion.yesVotes = votes.filter(v => v.vote === 'yes').length;
+    suggestion.noVotes = votes.filter(v => v.vote === 'no').length;
+    suggestion.totalVotes = votes.length;
+    suggestion.votesNeeded = votesNeeded;
+    
+    const userVote = getUserVote(suggestion.id, req.session.user.id);
+    suggestion.userVote = userVote ? userVote.vote : null;
+  });
 
   // Group activities by date
   const activitiesByDate = {};
@@ -361,8 +381,91 @@ app.get("/trips/:id", (req, res) => {
     activities,
     activitiesByDate,
     isAdmin,
+    suggestions,
+    totalMembers,
+    votesNeeded,
     message: null
   });
+});
+
+// Create activity suggestion (instead of directly creating activity)
+app.post("/trips/:id/activities", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const tripId = parseInt(req.params.id);
+  const { title, description, location, date, time } = req.body;
+
+  const trip = getTripById(tripId);
+  if (!trip) {
+    return res.status(404).send("Trip not found");
+  }
+
+  const membership = isGroupMember(req.session.user.id, trip.group_id);
+  if (!membership) {
+    return res.status(403).send("You are not a member of this group");
+  }
+
+  // Create suggestion instead of activity
+  createActivitySuggestion(tripId, title, description, location, date, time, req.session.user.id);
+  res.redirect(`/trips/${tripId}`);
+});
+
+// Vote on activity suggestion
+app.post("/suggestions/:id/vote", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const suggestionId = parseInt(req.params.id);
+  const { vote } = req.body; // 'yes' or 'no'
+
+  const suggestion = db.prepare("SELECT * FROM activity_suggestions WHERE id = ?").get(suggestionId);
+  if (!suggestion) {
+    return res.status(404).send("Suggestion not found");
+  }
+
+  const trip = getTripById(suggestion.trip_id);
+  const membership = isGroupMember(req.session.user.id, trip.group_id);
+  if (!membership) {
+    return res.status(403).send("You are not a member of this group");
+  }
+
+  // Cast the vote
+  castVote(suggestionId, req.session.user.id, vote);
+
+  // Check if we have enough votes to approve
+  const votes = getSuggestionVotes(suggestionId);
+  const yesVotes = votes.filter(v => v.vote === 'yes').length;
+  const groupMembers = getGroupMembers(trip.group_id);
+  const votesNeeded = Math.ceil(groupMembers.length / 2);
+
+  if (yesVotes >= votesNeeded) {
+    // Approve and convert to activity
+    approveSuggestion(suggestionId);
+  }
+
+  res.redirect(`/trips/${suggestion.trip_id}`);
+});
+
+// Delete activity suggestion
+app.post("/suggestions/:id/delete", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const suggestionId = parseInt(req.params.id);
+  const suggestion = db.prepare("SELECT * FROM activity_suggestions WHERE id = ?").get(suggestionId);
+  
+  if (!suggestion) {
+    return res.status(404).send("Suggestion not found");
+  }
+
+  const trip = getTripById(suggestion.trip_id);
+  const membership = isGroupMember(req.session.user.id, trip.group_id);
+
+  // Only admins or the suggester can delete
+  if (!membership || (membership.role !== 'admin' && suggestion.suggested_by !== req.session.user.id)) {
+    return res.status(403).send("You don't have permission to delete this suggestion");
+  }
+
+  deleteSuggestion(suggestionId);
+  res.redirect(`/trips/${suggestion.trip_id}`);
 });
 
 // Show form to create new trip

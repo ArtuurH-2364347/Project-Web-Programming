@@ -98,6 +98,36 @@ db.prepare(`
   )
 `).run();
 
+// Activity suggestions table (pending activities that need votes)
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS activity_suggestions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    trip_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    location TEXT,
+    date TEXT NOT NULL,
+    time TEXT,
+    suggested_by INTEGER NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(trip_id) REFERENCES trips(id),
+    FOREIGN KEY(suggested_by) REFERENCES users(id)
+  )
+`).run();
+
+// Votes table
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS activity_votes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    suggestion_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    vote TEXT CHECK(vote IN ('yes','no')) NOT NULL,
+    FOREIGN KEY(suggestion_id) REFERENCES activity_suggestions(id),
+    FOREIGN KEY(user_id) REFERENCES users(id),
+    UNIQUE(suggestion_id, user_id)
+  )
+`).run();
+
 
   // voorbeeldaccounts toevoegen
   const count = db.prepare("SELECT COUNT(*) AS count FROM users").get().count;
@@ -371,6 +401,83 @@ export function getUserTrips(userId) {
     WHERE gm.user_id = ?
     ORDER BY t.start_date DESC
   `).all(userId);
+}
+
+// Activity suggestion functions
+export function createActivitySuggestion(tripId, title, description, location, date, time, suggestedBy) {
+  const stmt = db.prepare(`
+    INSERT INTO activity_suggestions (trip_id, title, description, location, date, time, suggested_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  const result = stmt.run(tripId, title, description, location, date, time, suggestedBy);
+  return result.lastInsertRowid;
+}
+
+export function getTripSuggestions(tripId) {
+  return db.prepare(`
+    SELECT s.*, u.name as suggester_name
+    FROM activity_suggestions s
+    LEFT JOIN users u ON u.id = s.suggested_by
+    WHERE s.trip_id = ?
+    ORDER BY s.created_at DESC
+  `).all(tripId);
+}
+
+export function getSuggestionVotes(suggestionId) {
+  return db.prepare(`
+    SELECT v.*, u.name as voter_name
+    FROM activity_votes v
+    LEFT JOIN users u ON u.id = v.user_id
+    WHERE v.suggestion_id = ?
+  `).all(suggestionId);
+}
+
+export function getUserVote(suggestionId, userId) {
+  return db.prepare(`
+    SELECT vote FROM activity_votes
+    WHERE suggestion_id = ? AND user_id = ?
+  `).get(suggestionId, userId);
+}
+
+export function castVote(suggestionId, userId, vote) {
+  const stmt = db.prepare(`
+    INSERT INTO activity_votes (suggestion_id, user_id, vote)
+    VALUES (?, ?, ?)
+    ON CONFLICT(suggestion_id, user_id) 
+    DO UPDATE SET vote = excluded.vote
+  `);
+  stmt.run(suggestionId, userId, vote);
+}
+
+export function getSuggestionById(suggestionId) {
+  return db.prepare("SELECT * FROM activity_suggestions WHERE id = ?").get(suggestionId);
+}
+
+export function deleteSuggestion(suggestionId) {
+  // Delete votes first (foreign key constraint)
+  db.prepare("DELETE FROM activity_votes WHERE suggestion_id = ?").run(suggestionId);
+  // Then delete the suggestion
+  db.prepare("DELETE FROM activity_suggestions WHERE id = ?").run(suggestionId);
+}
+
+export function approveSuggestion(suggestionId) {
+  const suggestion = getSuggestionById(suggestionId);
+  if (!suggestion) return false;
+
+  // Create the activity
+  createActivity(
+    suggestion.trip_id,
+    suggestion.title,
+    suggestion.description,
+    suggestion.location,
+    suggestion.date,
+    suggestion.time,
+    suggestion.suggested_by
+  );
+
+  // Delete the suggestion and votes
+  deleteSuggestion(suggestionId);
+  return true;
 }
 
 export default db;
