@@ -54,6 +54,7 @@
     - [ ] admin accounts-systeem die accounts kan verwijderen/editen etc
     - [ ] functionaliteit om meer vrienden te zoeken
     - [ ] lettertjes in de groepen zijn profielfotos
+    - [ ] default profiel foto fixen (renderd momenteel niet)
 
 ## Gebruikte APIs met huidige planning:
 
