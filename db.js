@@ -91,6 +91,8 @@ db.prepare(`
     title TEXT NOT NULL,
     description TEXT,
     location TEXT,
+    latitude REAL,
+    longitude REAL,
     date TEXT NOT NULL,
     start_time TEXT NOT NULL,
     end_time TEXT NOT NULL,
@@ -100,7 +102,7 @@ db.prepare(`
   )
 `).run();
 
-// Activity suggestions table (pending activities that need votes)
+// Suggestions table
 db.prepare(`
   CREATE TABLE IF NOT EXISTS activity_suggestions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -108,6 +110,8 @@ db.prepare(`
     title TEXT NOT NULL,
     description TEXT,
     location TEXT,
+    latitude REAL,
+    longitude REAL,
     date TEXT NOT NULL,
     start_time TEXT NOT NULL,
     end_time TEXT NOT NULL,
@@ -382,12 +386,12 @@ export function getTripActivities(tripId) {
   `).all(tripId);
 }
 
-export function createActivity(tripId, title, description, location, date, startTime, endTime, createdBy) {
+export function createActivity(tripId, title, description, location, latitude, longitude, date, startTime, endTime, createdBy) {
   const stmt = db.prepare(`
-    INSERT INTO activities (trip_id, title, description, location, date, start_time, end_time, created_by)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO activities (trip_id, title, description, location, latitude, longitude, date, start_time, end_time, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  const result = stmt.run(tripId, title, description, location, date, startTime, endTime, createdBy);
+  const result = stmt.run(tripId, title, description, location, latitude, longitude, date, startTime, endTime, createdBy);
   return result.lastInsertRowid;
 }
 
@@ -407,12 +411,12 @@ export function getUserTrips(userId) {
 }
 
 // Activity suggestion functions
-export function createActivitySuggestion(tripId, title, description, location, date, startTime, endTime, suggestedBy) {
+export function createActivitySuggestion(tripId, title, description, location, latitude, longitude, date, startTime, endTime, suggestedBy) {
   const stmt = db.prepare(`
-    INSERT INTO activity_suggestions (trip_id, title, description, location, date, start_time, end_time, suggested_by)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO activity_suggestions (trip_id, title, description, location, latitude, longitude, date, start_time, end_time, suggested_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  const result = stmt.run(tripId, title, description, location, date, startTime, endTime, suggestedBy);
+  const result = stmt.run(tripId, title, description, location, latitude, longitude, date, startTime, endTime, suggestedBy);
   return result.lastInsertRowid;
 }
 
@@ -467,12 +471,13 @@ export function approveSuggestion(suggestionId) {
   const suggestion = getSuggestionById(suggestionId);
   if (!suggestion) return false;
 
-  // activiteit aanmaken
   createActivity(
     suggestion.trip_id,
     suggestion.title,
     suggestion.description,
     suggestion.location,
+    suggestion.latitude,
+    suggestion.longitude,
     suggestion.date,
     suggestion.start_time,
     suggestion.end_time,

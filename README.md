@@ -34,7 +34,7 @@
     - [x] Stops toevoegen
     - [x] checking of stops niet overlappen
     - [x] Indien groep, stops voorstellen en stemming laten gebeuren
-    - [ ] Reis voorstellen op kaart (google maps api integratie?)
+    - [x] Reis voorstellen op kaart
     - [ ] tickets uploaden
     - [ ] reis-planning downloaden als text file
 
@@ -56,6 +56,10 @@
     - [ ] lettertjes in de groepen zijn profielfotos
     - [ ] default profiel foto fixen (renderd momenteel niet)
 
+7. Final bugchecks!!!!.
+
+    - [ ] checken voor text format issues
+
 ## Gebruikte APIs met huidige planning:
 
 1. Browser APIs:
@@ -64,8 +68,10 @@
     - [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) voor offline gebruik?
 
 2. Externe APIs:
-    - Google maps of alternatieve
-    - misschien een api voor het weer?
+    - [x] [Leaflet met OSM*](https://leafletjs.com/)
     - [x] [Photon api](https://photon.komoot.io/)
+    - misschien een api voor het weer?
+
+* Leaflet is zelf geen API, maar maakt gebruik van OSM api om map data te verkrijgen
     
     

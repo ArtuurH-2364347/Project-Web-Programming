@@ -39,7 +39,7 @@ app.use((request, response, next) => {
   next();
 });
 
-// Configure multer for profile picture uploads
+// Multer configureren voor pfps
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'public/uploads/profiles/');
@@ -148,7 +148,7 @@ app.get("/profile", (req, res) => {
   });
 });
 
-// Edit profile page (GET)
+// Edit profile page 
 app.get("/edit-profile", (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login.html");
@@ -159,7 +159,7 @@ app.get("/edit-profile", (req, res) => {
   });
 });
 
-// Handle edit profile form (POST) - with profile picture upload
+// Handle edit profile form
 app.post("/edit-profile", upload.single('profilePicture'), (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login");
@@ -168,8 +168,7 @@ app.post("/edit-profile", upload.single('profilePicture'), (req, res) => {
   const { name, bio } = req.body;
   const userId = req.session.user.id;
 
-  // Check if a new profile picture was uploaded
-  let profilePicture = req.session.user.profile_picture; // Keep existing if no new upload
+  let profilePicture = req.session.user.profile_picture;
   if (req.file) {
     profilePicture = '/uploads/profiles/' + req.file.filename;
   }
@@ -187,7 +186,7 @@ app.post("/edit-profile", upload.single('profilePicture'), (req, res) => {
 });
 
 
-// Handle adding a friend
+// Handle vriend toevoegen
 app.post("/add-friend", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
@@ -258,12 +257,12 @@ app.post("/groups", (req, res) => {
 
   const { name, description, members } = req.body;
 
-  // Create the group
+  // groep aanmaken
   const groupId = createGroup(name, description, req.session.user.id);
 
-  // members may be undefined if none selected
+  // members kunnen undefined zijn als er geen zijn geselecteerd
   if (members && members.length > 0) {
-    // Ensure members is always an array
+    // members moet altijd een array zijn
     const memberIds = Array.isArray(members) ? members : [members];
     memberIds.forEach(friendId => {
       db.prepare("INSERT INTO group_members (user_id, group_id, role) VALUES (?, ?, 'member')").run(friendId, groupId);
@@ -273,7 +272,7 @@ app.post("/groups", (req, res) => {
   res.redirect("/groups");
 });
 
-// View individual group
+// bekijk specifieke groep
 app.get("/groups/:id", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
@@ -284,7 +283,7 @@ app.get("/groups/:id", (req, res) => {
     return res.status(404).send("Group not found");
   }
 
-  // Check if user is a member
+  // check of user een member is
   const membership = isGroupMember(req.session.user.id, groupId);
   if (!membership) {
     return res.status(403).send("You are not a member of this group");
@@ -304,14 +303,14 @@ app.get("/groups/:id", (req, res) => {
   });
 });
 
-// Promote member to admin
+// Promote member tot admin
 app.post("/groups/:id/promote/:userId", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
   const groupId = parseInt(req.params.id);
   const userId = parseInt(req.params.userId);
 
-  // Check if current user is admin
+  // Check of member een admin is
   const membership = isGroupMember(req.session.user.id, groupId);
   if (!membership || membership.role !== 'admin') {
     return res.status(403).send("Only admins can promote members");
@@ -321,14 +320,14 @@ app.post("/groups/:id/promote/:userId", (req, res) => {
   res.redirect(`/groups/${groupId}`);
 });
 
-// Demote admin to member
+// Demote admin tot member
 app.post("/groups/:id/demote/:userId", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
   const groupId = parseInt(req.params.id);
   const userId = parseInt(req.params.userId);
 
-  // Check if current user is admin
+  // Check of member een admin is
   const membership = isGroupMember(req.session.user.id, groupId);
   if (!membership || membership.role !== 'admin') {
     return res.status(403).send("Only admins can demote members");
@@ -338,14 +337,14 @@ app.post("/groups/:id/demote/:userId", (req, res) => {
   res.redirect(`/groups/${groupId}`);
 });
 
-// Remove member from group
+// member uit groep smijten
 app.post("/groups/:id/remove/:userId", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
   const groupId = parseInt(req.params.id);
   const userId = parseInt(req.params.userId);
 
-  // Check if current user is admin
+  // Check of user een member is
   const membership = isGroupMember(req.session.user.id, groupId);
   if (!membership || membership.role !== 'admin') {
     return res.status(403).send("Only admins can remove members");
@@ -355,7 +354,7 @@ app.post("/groups/:id/remove/:userId", (req, res) => {
   res.redirect(`/groups/${groupId}`);
 });
 
-// Schedule overview - shows all trips user is part of
+// Schedule overview
 app.get("/schedule", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
@@ -432,7 +431,7 @@ app.post("/trips/:id/activities", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
   const tripId = parseInt(req.params.id);
-  const { title, description, location, date, startTime, endTime } = req.body;
+  const { title, description, location, latitude, longitude, date, startTime, endTime } = req.body;  // Add latitude and longitude here
 
   const trip = getTripById(tripId);
   if (!trip) {
@@ -497,17 +496,29 @@ app.post("/trips/:id/activities", (req, res) => {
     });
   }
 
-  // siggestion maken
-  createActivitySuggestion(tripId, title, description, location, date, startTime, endTime, req.session.user.id);
+  // suggestion maken - ADD LATITUDE AND LONGITUDE HERE
+  createActivitySuggestion(
+    tripId, 
+    title, 
+    description, 
+    location, 
+    latitude || null, 
+    longitude || null, 
+    date, 
+    startTime, 
+    endTime, 
+    req.session.user.id
+  );
+  
   res.redirect(`/trips/${tripId}`);
 });
 
-// Vote on activity suggestion
+// stemmen op suggestion
 app.post("/suggestions/:id/vote", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
   const suggestionId = parseInt(req.params.id);
-  const { vote } = req.body; // 'yes' or 'no'
+  const { vote } = req.body; // 'yes' of 'no'
 
   const suggestion = db.prepare("SELECT * FROM activity_suggestions WHERE id = ?").get(suggestionId);
   if (!suggestion) {
@@ -523,14 +534,14 @@ app.post("/suggestions/:id/vote", (req, res) => {
   // Cast the vote
   castVote(suggestionId, req.session.user.id, vote);
 
-  // Check if we have enough votes to approve
+  // Checken of we genoeg stemmen hebben
   const votes = getSuggestionVotes(suggestionId);
   const yesVotes = votes.filter(v => v.vote === 'yes').length;
   const groupMembers = getGroupMembers(trip.group_id);
   const votesNeeded = Math.ceil(groupMembers.length / 2);
 
   if (yesVotes >= votesNeeded) {
-    // Approve and convert to activity
+    // goedkeuren en toevoegen aan activiteiten
     approveSuggestion(suggestionId);
   }
 
@@ -595,27 +606,6 @@ app.post("/groups/:id/trips", (req, res) => {
   }
 
   const tripId = createTrip(groupId, name, destination, startDate, endDate);
-  res.redirect(`/trips/${tripId}`);
-});
-
-// Add activity to trip
-app.post("/trips/:id/activities", (req, res) => {
-  if (!req.session.user) return res.redirect("/login");
-
-  const tripId = parseInt(req.params.id);
-  const { title, description, location, date, time } = req.body;
-
-  const trip = getTripById(tripId);
-  if (!trip) {
-    return res.status(404).send("Trip not found");
-  }
-
-  const membership = isGroupMember(req.session.user.id, trip.group_id);
-  if (!membership) {
-    return res.status(403).send("You are not a member of this group");
-  }
-
-  createActivity(tripId, title, description, location, date, time, req.session.user.id);
   res.redirect(`/trips/${tripId}`);
 });
 
