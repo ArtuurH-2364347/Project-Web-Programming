@@ -92,7 +92,8 @@ db.prepare(`
     description TEXT,
     location TEXT,
     date TEXT NOT NULL,
-    time TEXT,
+    start_time TEXT NOT NULL,
+    end_time TEXT NOT NULL,
     created_by INTEGER,
     FOREIGN KEY(trip_id) REFERENCES trips(id),
     FOREIGN KEY(created_by) REFERENCES users(id)
@@ -108,7 +109,8 @@ db.prepare(`
     description TEXT,
     location TEXT,
     date TEXT NOT NULL,
-    time TEXT,
+    start_time TEXT NOT NULL,
+    end_time TEXT NOT NULL,
     suggested_by INTEGER NOT NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(trip_id) REFERENCES trips(id),
@@ -376,16 +378,16 @@ export function getTripActivities(tripId) {
     FROM activities a
     LEFT JOIN users u ON u.id = a.created_by
     WHERE a.trip_id = ?
-    ORDER BY a.date ASC, a.time ASC
+    ORDER BY a.date ASC, a.start_time ASC
   `).all(tripId);
 }
 
-export function createActivity(tripId, title, description, location, date, time, createdBy) {
+export function createActivity(tripId, title, description, location, date, startTime, endTime, createdBy) {
   const stmt = db.prepare(`
-    INSERT INTO activities (trip_id, title, description, location, date, time, created_by)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO activities (trip_id, title, description, location, date, start_time, end_time, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  const result = stmt.run(tripId, title, description, location, date, time, createdBy);
+  const result = stmt.run(tripId, title, description, location, date, startTime, endTime, createdBy);
   return result.lastInsertRowid;
 }
 
@@ -405,12 +407,12 @@ export function getUserTrips(userId) {
 }
 
 // Activity suggestion functions
-export function createActivitySuggestion(tripId, title, description, location, date, time, suggestedBy) {
+export function createActivitySuggestion(tripId, title, description, location, date, startTime, endTime, suggestedBy) {
   const stmt = db.prepare(`
-    INSERT INTO activity_suggestions (trip_id, title, description, location, date, time, suggested_by)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO activity_suggestions (trip_id, title, description, location, date, start_time, end_time, suggested_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  const result = stmt.run(tripId, title, description, location, date, time, suggestedBy);
+  const result = stmt.run(tripId, title, description, location, date, startTime, endTime, suggestedBy);
   return result.lastInsertRowid;
 }
 
@@ -455,9 +457,9 @@ export function getSuggestionById(suggestionId) {
 }
 
 export function deleteSuggestion(suggestionId) {
-  // Delete votes first (foreign key constraint)
+  // eerst stem deleten
   db.prepare("DELETE FROM activity_votes WHERE suggestion_id = ?").run(suggestionId);
-  // Then delete the suggestion
+  // dan suggestion deleten
   db.prepare("DELETE FROM activity_suggestions WHERE id = ?").run(suggestionId);
 }
 
@@ -465,20 +467,63 @@ export function approveSuggestion(suggestionId) {
   const suggestion = getSuggestionById(suggestionId);
   if (!suggestion) return false;
 
-  // Create the activity
+  // activiteit aanmaken
   createActivity(
     suggestion.trip_id,
     suggestion.title,
     suggestion.description,
     suggestion.location,
     suggestion.date,
-    suggestion.time,
+    suggestion.start_time,
+    suggestion.end_time,
     suggestion.suggested_by
   );
 
   // Delete the suggestion and votes
   deleteSuggestion(suggestionId);
   return true;
+}
+
+export function checkActivityOverlap(tripId, date, startTime, endTime, excludeActivityId = null) {
+  // Alle activiteiten met dezelfde datum nemen
+  let query = `
+    SELECT * FROM activities 
+    WHERE trip_id = ? AND date = ?
+  `;
+  let params = [tripId, date];
+  
+  if (excludeActivityId) {
+    query += ` AND id != ?`;
+    params.push(excludeActivityId);
+  }
+  
+  const activities = db.prepare(query).all(...params);
+  
+  // overlap checken
+  for (const activity of activities) {
+    // format omzetten
+    const newStart = timeToMinutes(startTime);
+    const newEnd = timeToMinutes(endTime);
+    const existingStart = timeToMinutes(activity.start_time);
+    const existingEnd = timeToMinutes(activity.end_time);
+    
+    // checken voor overlap
+    if (newStart < existingEnd && newEnd > existingStart) {
+      return {
+        hasOverlap: true,
+        conflictingActivity: activity
+      };
+    }
+  }
+  
+  return { hasOverlap: false };
+}
+
+// format omzet functie
+function timeToMinutes(timeString) {
+  if (!timeString) return 0;
+  const [hours, minutes] = timeString.split(':').map(Number);
+  return hours * 60 + minutes;
 }
 
 export default db;

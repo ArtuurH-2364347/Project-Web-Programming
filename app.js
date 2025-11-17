@@ -10,7 +10,8 @@ import db, {
   rejectFriendRequest, removeFriend, createGroup, getUserGroups,
   getGroupById, getGroupMembers, isGroupMember, updateMemberRole, removeGroupMember,
   createTrip, getGroupTrips, getTripById, getTripActivities, createActivity, deleteActivity, getUserTrips,
-  createActivitySuggestion, getTripSuggestions, getSuggestionVotes, getUserVote, castVote, approveSuggestion, deleteSuggestion
+  createActivitySuggestion, getTripSuggestions, getSuggestionVotes, getUserVote, castVote, approveSuggestion, 
+  deleteSuggestion, checkActivityOverlap
 } from "./db.js";
 
 const app = express();
@@ -426,12 +427,12 @@ app.get("/trips/:id", (req, res) => {
   });
 });
 
-// Create activity suggestion (instead of directly creating activity)
+// suggestions aanmaken met validatie
 app.post("/trips/:id/activities", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
   const tripId = parseInt(req.params.id);
-  const { title, description, location, date, time } = req.body;
+  const { title, description, location, date, startTime, endTime } = req.body;
 
   const trip = getTripById(tripId);
   if (!trip) {
@@ -443,8 +444,61 @@ app.post("/trips/:id/activities", (req, res) => {
     return res.status(403).send("You are not a member of this group");
   }
 
-  // Create suggestion instead of activity
-  createActivitySuggestion(tripId, title, description, location, date, time, req.session.user.id);
+  // input valideren
+  if (!startTime || !endTime) {
+    return res.status(400).send("Start and end times are required");
+  }
+
+  if (startTime >= endTime) {
+    return res.status(400).send("End time must be after start time");
+  }
+
+  // overlaps checken
+  const overlapCheck = checkActivityOverlap(tripId, date, startTime, endTime);
+  if (overlapCheck.hasOverlap) {
+    const conflict = overlapCheck.conflictingActivity;
+    const suggestions = getTripSuggestions(tripId);
+    const activities = getTripActivities(tripId);
+    const group = getGroupById(trip.group_id);
+    const isAdmin = membership.role === 'admin';
+    const groupMembers = getGroupMembers(trip.group_id);
+    const totalMembers = groupMembers.length;
+    const votesNeeded = Math.ceil(totalMembers / 2);
+
+    suggestions.forEach(suggestion => {
+      const votes = getSuggestionVotes(suggestion.id);
+      suggestion.yesVotes = votes.filter(v => v.vote === 'yes').length;
+      suggestion.noVotes = votes.filter(v => v.vote === 'no').length;
+      suggestion.totalVotes = votes.length;
+      suggestion.votesNeeded = votesNeeded;
+      const userVote = getUserVote(suggestion.id, req.session.user.id);
+      suggestion.userVote = userVote ? userVote.vote : null;
+    });
+
+    const activitiesByDate = {};
+    activities.forEach(activity => {
+      if (!activitiesByDate[activity.date]) {
+        activitiesByDate[activity.date] = [];
+      }
+      activitiesByDate[activity.date].push(activity);
+    });
+
+    return res.render("trip-schedule", {
+      user: req.session.user,
+      trip,
+      group,
+      activities,
+      activitiesByDate,
+      isAdmin,
+      suggestions,
+      totalMembers,
+      votesNeeded,
+      message: `Time conflict! This overlaps with "${conflict.title}" (${conflict.start_time} - ${conflict.end_time})`
+    });
+  }
+
+  // siggestion maken
+  createActivitySuggestion(tripId, title, description, location, date, startTime, endTime, req.session.user.id);
   res.redirect(`/trips/${tripId}`);
 });
 

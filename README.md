@@ -32,7 +32,7 @@
 
     - [x] Reis aanmaken (individueel of met groep)
     - [x] Stops toevoegen
-    - [ ] checking of stops niet overlappen
+    - [x] checking of stops niet overlappen
     - [x] Indien groep, stops voorstellen en stemming laten gebeuren
     - [ ] Reis voorstellen op kaart (google maps api integratie?)
     - [ ] tickets uploaden
@@ -51,11 +51,9 @@
 6. Diverse extras.
 
     - [ ] mooiere error pages (email in gebruik, user not found, ...)
-    - [ ] budgetmanagement (uitgaves toevoegen per persoon, eventueel met categorien)
-    - [ ] Budgetanalyse (overzicht van wie wat heeft betaald)
-    - [ ] Terugbetalingsberekening (optie om te berekenen wat iedereen elkaar terug moet betalen)
     - [ ] admin accounts-systeem die accounts kan verwijderen/editen etc
     - [ ] functionaliteit om meer vrienden te zoeken
+    - [ ] lettertjes in de groepen zijn profielfotos
 
 ## Gebruikte APIs met huidige planning:
 
