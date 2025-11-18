@@ -4,6 +4,16 @@
 0. overkoepelend.
 
     - [ ] renderd mooi op mobile
+    - [ ] edit-profile.ejs
+    - [ ] groups.ejs
+    - [x] index.ejs
+    - [x] login.ejs
+    - [ ] new-group.ejs
+    - [ ] new-trip.ejs
+    - [x] profile.ejs
+    - [x] register.ejs
+    - [ ] trip-schedule.ejs
+    - [ ] view-group.ejs
 
 1. Individueel.
 
