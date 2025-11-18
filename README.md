@@ -4,8 +4,8 @@
 0. overkoepelend.
 
     - [ ] renderd mooi op mobile
-    - [ ] edit-profile.ejs
-    - [ ] groups.ejs
+    - [x] edit-profile.ejs
+    - [x] groups.ejs
     - [x] index.ejs
     - [x] login.ejs
     - [ ] new-group.ejs
