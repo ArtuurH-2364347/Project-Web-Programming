@@ -7,89 +7,135 @@
 
   <link rel="stylesheet" href="/css/bootstrap.css" />
   <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
   <style>
     body {
-      background-image: url('/images/travel-background.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
+      background-color: #fef9ef;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    .overlay {
-      background-color: rgba(255, 255, 255, 0.9);
-      border-radius: 1rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    /* Same navbar styles as Login */
+    .navbar {
+      background-color: #2d5f5d;
+      padding: 1rem 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .navbar-brand {
+      color: white !important;
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+    .navbar-brand:hover { color: #e8b4b8 !important; }
+    .navbar-nav .nav-link {
+      color: rgba(255,255,255,0.85) !important;
+      margin: 0 0.5rem;
+    }
+    .navbar-nav .nav-link:hover { color: #e8b4b8 !important; }
+    .navbar .btn-primary, .navbar .btn-danger {
+      background-color: #e8b4b8;
+      border: none;
+      color: #2d5f5d;
+    }
+    .navbar .btn-primary:hover, .navbar .btn-danger:hover {
+      background-color: #d99fa4;
+    }
+
+    /* Card */
+    .form-card {
+      background-color: rgba(255,255,255,0.98);
+      border-radius: 0.75rem;
+      box-shadow: 0 8px 30px rgba(17,24,39,0.08);
       padding: 2rem;
-      margin-top: 2rem;
-      max-width: 600px;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s;
+      margin-top: 3rem;
+    }
+    .form-card:hover {
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+
+    .btn-hero {
+      background-color: #e8b4b8;
+      border: none;
+      padding: 0.8rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #2d5f5d;
+      transition: 0.3s;
+    }
+    .btn-hero:hover {
+      background-color: #d99fa4;
+      transform: translateY(-3px);
     }
 
     footer {
-      background-color: rgba(255, 255, 255, 0.8);
+      background-color: #2d5f5d;
+      color: #fef9ef;
+      padding: 1.5rem 0;
+      margin-top: auto;
+      text-align: center;
+      border-top: 3px solid #c17767;
     }
   </style>
 </head>
+
 <body>
+
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
+      <a class="navbar-brand" href="/">TravelBuddy</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
+
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/profile">Your Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/groups">Groups</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/schedule">Today's Schedule</a>
-          </li>
+
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/profile">Your Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="/groups">Groups</a></li>
+          <li class="nav-item"><a class="nav-link" href="/schedule">Today's Schedule</a></li>
+
           <% if (!user) { %>
-            <li class="nav-item">
-              <a class="nav-link btn btn-primary" href="/login">Login</a>
-            </li>
+            <li class="nav-item"><a class="nav-link btn btn-primary" href="/login">Login</a></li>
           <% } else { %>
-            <li class="nav-item">
-              <a class="nav-link btn btn-danger" href="/logout">Logout</a>
-            </li>
+            <li class="nav-item"><a class="nav-link btn btn-danger" href="/logout">Logout</a></li>
           <% } %>
+
         </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Create Group Form -->
+  <!-- Form -->
   <main class="container d-flex justify-content-center">
-    <div class="overlay w-100">
-      <h2 class="fw-bold mb-4 text-center">Create a New Group</h2>
+    <div class="form-card w-100 col-11 col-sm-9 col-md-7 col-lg-6">
+
+      <h2 class="text-center mb-4" style="color:#2d5f5d; font-weight:700">Create a New Group</h2>
 
       <% if (typeof message !== 'undefined' && message) { %>
         <div class="alert alert-info"><%= message %></div>
       <% } %>
 
       <form action="/groups" method="POST">
+
         <div class="mb-3">
-          <label for="groupName" class="form-label">Group Name</label>
-          <input type="text" id="groupName" name="name" class="form-control" placeholder="Enter group name" required />
+          <label class="form-label">Group Name</label>
+          <input type="text" id="groupName" name="name" class="form-control" placeholder="Enter group name" required>
         </div>
 
         <div class="mb-3">
-          <label for="description" class="form-label">Description (optional)</label>
+          <label class="form-label">Description (optional)</label>
           <textarea id="description" name="description" class="form-control" rows="3" placeholder="Describe your group..."></textarea>
         </div>
 
         <% if (friends && friends.length > 0) { %>
           <div class="mb-3">
-            <label for="members" class="form-label">Add Friends</label>
+            <label class="form-label">Add Friends</label>
             <select id="members" name="members" class="form-select" multiple size="5">
               <% friends.forEach(friend => { %>
                 <option value="<%= friend.id %>"><%= friend.name %> (<%= friend.email %>)</option>
@@ -103,16 +149,19 @@
           </div>
         <% } %>
 
-        <button type="submit" class="btn btn-primary w-100">Create Group</button>
-        <a href="/groups" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
+        <button type="submit" class="btn-hero w-100 mb-2">Create Group</button>
+        <a href="/groups" class="btn btn-outline-secondary w-100">Cancel</a>
+
       </form>
+
     </div>
   </main>
 
-  <footer class="py-4 mt-5 text-center">
-    <p class="mb-0">2025 TravelBuddy</p>
+  <footer>
+    <p class="mb-0">© 2025 TravelBuddy</p>
   </footer>
 
   <script src="/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

@@ -33,15 +33,19 @@
     - [x] Vrienden toevoegen
     - [x] Vrienden verwijderen
     - [x] reisgroep aanmaken
+    - [ ] reisgroep verwijderen
     - [x] rechten binnen groep beheren (via rollen? beheerder, lid, etc)
+    - [ ] Mensen toevoegen/verwijderen aan een reeds bestaande groep
 
     extra:
     - [x] vrienden systeem ombouwen naar request-systeem
 
 3. De reis plannen
 
-    - [x] Reis aanmaken (individueel of met groep)
+    - [x] Reis aanmaken
+    - [ ] Reis verwijderen
     - [x] Stops toevoegen
+    - [ ] Stops verwijderen
     - [x] checking of stops niet overlappen
     - [x] Indien groep, stops voorstellen en stemming laten gebeuren
     - [x] Reis voorstellen op kaart
@@ -67,9 +71,10 @@
 7. Extra functionaliteit
 
     - [ ] Reis downloaden als pdf file
-    - [ ] profiel-pagina personalisatie
+    - [ ] profiel-pagina personalisatie ( [x] pfp kiezen, [ ] achtergrond kiezen)
     - [ ] Reis uploaden als template met review
     - [ ] templates instant kunnen toepassen
+    - [ ] kunnen kijken naar andere hun profiel
 
 8. Final bugchecks!!!!.
 

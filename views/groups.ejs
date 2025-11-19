@@ -10,7 +10,6 @@
       background-color: #fef9ef;
     }
 
-    /* Navbar - matching home page */
     .navbar {
       background-color: #2d5f5d;
       padding: 1rem 0;
@@ -68,7 +67,6 @@
       transform: translateY(-2px);
     }
 
-    /* Hero Section - matching home page */
     .hero-section {
       background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
       padding: 5rem 0;
@@ -135,7 +133,6 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 
-    /* Groups section */
     .groups-section {
       padding: 3rem 0;
     }
@@ -212,7 +209,6 @@
       color: white;
     }
 
-    /* Quote section - matching home page */
     .quote-section {
       background: linear-gradient(135deg, rgba(139, 157, 119, 0.1) 0%, rgba(232, 180, 184, 0.1) 100%);
       padding: 3rem 0;
@@ -282,7 +278,6 @@
   </style>
 </head>
 <body>
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
       <a class="navbar-brand" href="/">TravelBuddy</a>
@@ -307,7 +302,6 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
   <section class="hero-section">
     <div class="container hero-content">
       <h1>Your Groups</h1>
@@ -316,7 +310,6 @@
     </div>
   </section>
 
-  <!-- Groups List -->
   <section class="groups-section container">
     <% if (groups && groups.length > 0) { %>
       <% groups.forEach(group => { %>
@@ -355,7 +348,6 @@
     <% } %>
   </section>
 
-  <!-- Quote Section -->
   <div class="quote-section">
     <div class="container">
       <blockquote class="travel-quote">
