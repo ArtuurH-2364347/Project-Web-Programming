@@ -4,104 +4,245 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TravelBuddy</title>
-
   <link href="css/bootstrap.css" rel="stylesheet">
-
   <style>
     body.home-page {
-      background-image: url('images/paris.jpg');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-attachment: fixed;
-      min-height: 100vh;
+      background-color: #fef9ef;
     }
 
-    body.home-page::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.4);
-      z-index: -1;
+    .navbar {
+      background-color: #2d5f5d;
+      padding: 1rem 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .hero-text {
+    .navbar-brand {
+      color: white !important;
+      font-weight: 700;
+      font-size: 1.5rem;
+      transition: color 0.3s;
+    }
+
+    .navbar-brand:hover {
+      color: #e8b4b8 !important;
+    }
+
+    .navbar-nav .nav-link {
+      color: rgba(255,255,255,0.85) !important;
+      margin: 0 0.5rem;
+      transition: color 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #e8b4b8 !important;
+    }
+
+    .navbar .btn {
+      padding: 0.4rem 1.2rem;
+      border-radius: 5px;
+      margin-left: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .navbar .btn-primary {
+      background-color: #e8b4b8;
+      border: none;
+      color: #2d5f5d;
+    }
+
+    .navbar .btn-primary:hover {
+      background-color: #d99fa4;
+      color: #2d5f5d;
+      transform: translateY(-2px);
+    }
+
+    .navbar .btn-danger {
+      background-color: #e8b4b8;
+      border: none;
+    }
+
+    .navbar .btn-danger:hover {
+      background-color: #d99fa4;
+      transform: translateY(-2px);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
+      padding: 5rem 0;
       color: white;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background-color: rgba(232, 180, 184, 0.15);
+      border-radius: 50%;
+    }
+
+    .hero-section::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -5%;
+      width: 400px;
+      height: 400px;
+      background-color: rgba(232, 180, 184, 0.1);
+      border-radius: 50%;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-section h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .hero-section p {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      opacity: 0.95;
+    }
+
+    .btn-hero {
+      background-color: #e8b4b8;
+      border: none;
+      padding: 0.8rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 5px;
+      color: #2d5f5d;
+      transition: all 0.3s;
+    }
+
+    .btn-hero:hover {
+      background-color: #d99fa4;
+      color: #2d5f5d;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    /* Features */
+    .features-section {
+      padding: 4rem 0;
+    }
+
+    .feature-card {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      transition: all 0.3s;
+      background: white;
+      height: 100%;
+    }
+
+    .feature-card:hover {
+      border-color: #8b9d77;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateY(-5px);
+    }
+
+    .feature-card .card-img-top {
+      height: 180px;
+      object-fit: cover;
+      border-radius: 6px 6px 0 0;
+    }
+
+    .feature-card .card-title {
+      font-weight: 600;
+      color: #2d5f5d;
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-card .card-text {
+      color: #5a5a5a;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card .btn-primary {
+      background-color: #8b9d77;
+      border: none;
+      border-radius: 5px;
+      transition: all 0.3s;
+    }
+
+    .feature-card .btn-primary:hover {
+      background-color: #748361;
+      color: white;
+    }
+
+    footer {
+      background-color: #2d5f5d;
+      color: #fef9ef;
+      padding: 1.5rem 0;
+      text-align: center;
+      margin-top: 3rem;
+      border-top: 3px solid #c17767;
     }
 
     @media (max-width: 767px) {
-      .hero-text h1 {
+      .hero-section h1 {
         font-size: 2rem;
       }
 
-      .hero-text p {
+      .hero-section p {
         font-size: 1rem;
       }
 
-      .navbar-brand {
-        font-size: 1.25rem;
-      }
-
-      .nav-item .btn {
+      .navbar .btn {
         margin-top: 0.5rem;
         width: 100%;
       }
 
-      .card {
-        margin-bottom: 1rem;
-      }
-
-      section.text-center {
-        padding: 2rem 1rem !important;
+      .hero-section::before,
+      .hero-section::after {
+        display: none;
       }
     }
-
-    @media (min-width: 768px) and (max-width: 991px) {
-      .hero-text h1 {
-        font-size: 2.5rem;
-      }
+        .quote-section {
+      background: linear-gradient(135deg, rgba(139, 157, 119, 0.1) 0%, rgba(232, 180, 184, 0.1) 100%);
+      padding: 3rem 0;
+      margin-top: 3rem;
     }
 
-    .navbar .btn {
-      padding: 0.375rem 1rem;
-      border-radius: 0.25rem;
+    .travel-quote {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 1rem;
     }
 
-    .navbar .btn-danger:hover {
-      background-color: #c82333;
-      color: white;
+    .quote-text {
+      font-size: 1.5rem;
+      font-style: italic;
+      color: #2d5f5d;
+      margin-bottom: 1rem;
+      line-height: 1.6;
     }
 
-    .navbar .btn-primary:hover {
-      background-color: #0056b3;
-      color: white;
-    }
-
-    .card-img-top {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-      max-height: 200px;
-    }
-
-    .navbar-nav {
-      align-items: stretch;
-    }
-
-    @media (min-width: 992px) {
-      .navbar-nav {
-        align-items: center;
-      }
+    .quote-footer {
+      font-size: 1rem;
+      color: #fef9ef;
+      font-style: normal;
     }
   </style>
 </head>
-<body class="home-page d-flex flex-column min-vh-100">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+<body class="home-page">
+  <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <a class="navbar-brand" href="/">TravelBuddy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
 
@@ -110,20 +251,17 @@
           <li class="nav-item">
             <a class="nav-link" href="/">Home</a>
           </li>
-
+          
           <% if (user) { %>
             <li class="nav-item">
               <a class="nav-link" href="/profile">Your Profile</a>
             </li>
-
             <li class="nav-item">
               <a class="nav-link" href="/groups">Groups</a>
             </li>
-
             <li class="nav-item">
               <a class="nav-link" href="/schedule">Today's Schedule</a>
             </li>
-
             <li class="nav-item">
               <a class="nav-link btn btn-danger" href="/logout">Logout</a>
             </li>
@@ -131,7 +269,6 @@
             <li class="nav-item">
               <a class="nav-link" href="/register">Register</a>
             </li>
-
             <li class="nav-item">
               <a class="nav-link btn btn-primary" href="/login">Login</a>
             </li>
@@ -141,45 +278,44 @@
     </div>
   </nav>
 
-
-  <section class="text-center py-5">
-    <div class="container hero-text">
-      <h1 class="display-4 fw-bold">Discover Your Next Adventure</h1>
-      <p class="lead mb-4">Connect with travelers and explore the world together</p>
-      <a href="/login" class="btn btn-success btn-lg">Get Started</a>
+  <section class="hero-section">
+    <div class="container hero-content">
+      <h1>Discover Your Next Adventure</h1>
+      <p>Connect with travelers and explore the world together</p>
+      <a href="/login" class="btn btn-hero">Get Started</a>
     </div>
   </section>
 
-  <section class="py-5">
+  <section class="features-section">
     <div class="container">
       <div class="row g-4">
-        <div class="col-md-4 col-sm-6">
-          <div class="card h-100">
+        <div class="col-md-4">
+          <div class="feature-card card">
             <img src="images/placeholder.png" class="card-img-top" alt="Planning">
-            <div class="card-body d-flex flex-column">
+            <div class="card-body">
               <h5 class="card-title">Planning</h5>
-              <p class="card-text">Plan trips with friends!</p>
-              <a href="#" class="btn btn-primary mt-auto">Find friends</a>
+              <p class="card-text">Plan trips with friends and coordinate your adventures.</p>
+              <a href="#" class="btn btn-primary">Find Friends</a>
             </div>
           </div>
         </div>
-        <div class="col-md-4 col-sm-6">
-          <div class="card h-100">
+        <div class="col-md-4">
+          <div class="feature-card card">
             <img src="images/placeholder.png" class="card-img-top" alt="schedule">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">Daily schedule</h5>
-              <p class="card-text">Your daily schedule updates automatically!</p>
-              <a href="#" class="btn btn-primary mt-auto">Today's schedule</a>
+            <div class="card-body">
+              <h5 class="card-title">Daily Schedule</h5>
+              <p class="card-text">Your daily schedule updates automatically with group plans.</p>
+              <a href="#" class="btn btn-primary">Today's Schedule</a>
             </div>
           </div>
         </div>
-        <div class="col-md-4 col-sm-6">
-          <div class="card h-100">
+        <div class="col-md-4">
+          <div class="feature-card card">
             <img src="images/placeholder.png" class="card-img-top" alt="budget">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">Budget tracking</h5>
-              <p class="card-text">Easily track your budget so you never overspend.</p>
-              <a href="#" class="btn btn-primary mt-auto">Current overview</a>
+            <div class="card-body">
+              <h5 class="card-title">Budget Tracking</h5>
+              <p class="card-text">Track your spending and never go over budget.</p>
+              <a href="#" class="btn btn-primary">View Budget</a>
             </div>
           </div>
         </div>
@@ -187,9 +323,18 @@
     </div>
   </section>
 
-  <footer class="bg-light py-4 mt-auto">
-    <div class="container text-center">
-      <p class="mb-0">© 2025 TravelBuddy.</p>
+    <div class="quote-section">
+    <div class="container">
+      <blockquote class="travel-quote">
+        <p class="quote-text">"Travel makes one modest. You see what a tiny place you occupy in the world."</p>
+        <footer class="quote-footer">— Gustave Flaubert</footer>
+      </blockquote>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p class="mb-0">© 2025 TravelBuddy</p>
     </div>
   </footer>
 

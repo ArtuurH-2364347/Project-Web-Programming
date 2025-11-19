@@ -234,9 +234,34 @@ app.post("/remove-friend/:id", (req, res) => {
 app.get("/groups", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
+  // Fetch the groups the user is in
   const groups = getUserGroups(req.session.user.id);
-  res.render("groups", { user: req.session.user, groups, message: null });
+
+  // Enrich each group's members with full info including profile_picture
+  const enrichedGroups = groups.map(group => {
+    const membersWithPics = group.members.map(member => {
+      // Fetch full member info from the users table
+      const fullMember = db.prepare(
+        "SELECT id, name, profile_picture FROM users WHERE id = ?"
+      ).get(member.id);
+
+      // Fallback to placeholder if profile_picture is missing
+      if (!fullMember.profile_picture) {
+        fullMember.profile_picture = "/uploads/Placeholder_pfp.png";
+      }
+
+      return fullMember;
+    });
+
+    return {
+      ...group,
+      members: membersWithPics,
+    };
+  });
+
+  res.render("groups", { user: req.session.user, groups: enrichedGroups, message: null });
 });
+
 
 // Show create-group form
 app.get("/groups/new", (req, res) => {

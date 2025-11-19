@@ -3,17 +3,17 @@
 ## Checklist:
 0. overkoepelend.
 
-    - [ ] renderd mooi op mobile
+    - [x] renderd mooi op mobile
     - [x] edit-profile.ejs
     - [x] groups.ejs
     - [x] index.ejs
     - [x] login.ejs
-    - [ ] new-group.ejs
-    - [ ] new-trip.ejs
+    - [x] new-group.ejs
+    - [x] new-trip.ejs
     - [x] profile.ejs
     - [x] register.ejs
-    - [ ] trip-schedule.ejs
-    - [ ] view-group.ejs
+    - [x] trip-schedule.ejs
+    - [x] view-group.ejs
 
 1. Individueel.
 
@@ -46,19 +46,17 @@
     - [x] Indien groep, stops voorstellen en stemming laten gebeuren
     - [x] Reis voorstellen op kaart
     - [ ] tickets uploaden
-    - [ ] reis-planning downloaden als text file
 
 4. Tijdens de reis.
 
     - [ ] overzicht persoonlijke dagplanning (los van groepen) 
     - [ ] tickets/vouchers per activiteit bekijken
-    - [ ] Dit moet allemaal offline kunnen?
 
 5. Na de reis.
 
-    - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
+    - ...
 
-6. Diverse extras.
+6. Diverse
 
     - [ ] mooiere error pages (email in gebruik, user not found, ...)
     - [ ] admin accounts-systeem die accounts kan verwijderen/editen etc
@@ -66,16 +64,22 @@
     - [ ] lettertjes in de groepen zijn profielfotos
     - [ ] default profiel foto fixen (renderd momenteel niet)
 
-7. Final bugchecks!!!!.
+7. Extra functionaliteit
+
+    - [ ] Reis downloaden als pdf file
+    - [ ] profiel-pagina personalisatie
+    - [ ] Reis uploaden als template met review
+    - [ ] templates instant kunnen toepassen
+
+8. Final bugchecks!!!!.
 
     - [ ] checken voor text format issues
 
 ## Gebruikte APIs met huidige planning:
 
 1. Browser APIs:
-    - [File API](https://www.example.com)
-    - [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API)
-    - [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) voor offline gebruik?
+    - fetch verplicht
+
 
 2. Externe APIs:
     - [x] [Leaflet met OSM*](https://leafletjs.com/)

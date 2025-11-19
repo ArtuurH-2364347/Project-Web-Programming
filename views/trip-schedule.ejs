@@ -5,62 +5,127 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><%= trip.name %> – Schedule</title>
   <link rel="stylesheet" href="/css/bootstrap.css" />
-  <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     body {
-      background-image: url('/images/travel-background.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
+      background-color: #fef9ef;
     }
+
+    /* Navbar - matching home page */
+    .navbar {
+      background-color: #2d5f5d;
+      padding: 1rem 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+      color: white !important;
+      font-weight: 700;
+      font-size: 1.5rem;
+      transition: color 0.3s;
+    }
+
+    .navbar-brand:hover {
+      color: #e8b4b8 !important;
+    }
+
+    .navbar-nav .nav-link {
+      color: rgba(255,255,255,0.85) !important;
+      margin: 0 0.5rem;
+      transition: color 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #e8b4b8 !important;
+    }
+
+    .navbar .btn {
+      padding: 0.4rem 1.2rem;
+      border-radius: 5px;
+      margin-left: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .navbar .btn-danger {
+      background-color: #e8b4b8;
+      border: none;
+    }
+
+    .navbar .btn-danger:hover {
+      background-color: #d99fa4;
+      transform: translateY(-2px);
+    }
+
     .overlay {
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: white;
       border-radius: 1rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       padding: 2rem;
       margin-top: 2rem;
+      border: 2px solid #e0e0e0;
     }
+
     .trip-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
       color: white;
       padding: 2rem;
       border-radius: 1rem;
       margin-bottom: 2rem;
     }
+
+    .btn-light {
+      background-color: #e8b4b8;
+      border: none;
+      color: #2d5f5d;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-light:hover {
+      background-color: #d99fa4;
+      color: #2d5f5d;
+      transform: translateY(-2px);
+    }
+
     .day-section {
       margin-bottom: 2rem;
     }
+
     .day-header {
-      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+      background: linear-gradient(135deg, #8b9d77 0%, #2d5f5d 100%);
       color: white;
       padding: 1rem 1.5rem;
       border-radius: 0.75rem;
       margin-bottom: 1rem;
     }
+
     .activity-card {
       background: white;
-      border-left: 4px solid #667eea;
+      border-left: 4px solid #8b9d77;
       border-radius: 0.5rem;
       padding: 1rem;
       margin-bottom: 0.75rem;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       transition: all 0.2s;
     }
+
     .activity-card:hover {
       box-shadow: 0 4px 8px rgba(0,0,0,0.15);
       transform: translateX(4px);
     }
+
     .activity-time {
-      color: #667eea;
+      color: #2d5f5d;
       font-weight: bold;
       font-size: 0.9rem;
     }
+
     .activity-location {
       color: #6c757d;
       font-size: 0.85rem;
     }
+
     .suggestion-card {
       background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
       border-left: 4px solid #ffc107;
@@ -69,63 +134,108 @@
       margin-bottom: 0.75rem;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+
     .vote-section {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       margin-top: 0.75rem;
     }
+
     .vote-btn {
       padding: 0.25rem 0.75rem;
       font-size: 0.875rem;
     }
+
+    .btn-success {
+      background-color: #8b9d77;
+      border: none;
+    }
+
+    .btn-success:hover {
+      background-color: #748361;
+    }
+
     .vote-count {
       font-size: 0.85rem;
       color: #6c757d;
     }
+
     .progress-thin {
       height: 8px;
       margin-top: 0.5rem;
     }
+
+    .progress-bar.bg-success {
+      background-color: #8b9d77 !important;
+    }
+
     .add-activity-form {
       background-color: #f8f9fa;
       border-radius: 0.75rem;
       padding: 1.5rem;
       margin-top: 2rem;
+      border: 2px solid #e0e0e0;
     }
+
+    .add-activity-form h5 {
+      color: #2d5f5d;
+    }
+
+    .btn-primary {
+      background-color: #8b9d77;
+      border: none;
+      padding: 0.6rem 2rem;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      background-color: #748361;
+      transform: translateY(-2px);
+    }
+
     .location-input-wrapper {
       position: relative;
     }
+
     #location-suggestions {
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       border-radius: 0.375rem;
       margin-top: 0.25rem;
       max-width: 100%;
     }
+
     #location-suggestions .list-group-item {
       cursor: pointer;
       border: 1px solid #dee2e6;
       padding: 0.75rem;
     }
+
     #location-suggestions .list-group-item:hover {
       background-color: #f8f9fa;
     }
+
     .location-name {
       font-weight: 600;
       color: #212529;
     }
+
     .location-details {
       font-size: 0.85rem;
       color: #6c757d;
     }
-    footer {
-      background-color: rgba(255, 255, 255, 0.8);
-    }
-        .map-container {
+
+    .map-container {
       background-color: #f8f9fa;
       border-radius: 0.75rem;
       padding: 1.5rem;
       margin-bottom: 2rem;
+      border: 2px solid #e0e0e0;
+    }
+
+    .map-container h4 {
+      color: #2d5f5d;
     }
     
     #trip-map {
@@ -133,12 +243,35 @@
       border-radius: 0.5rem;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+
+    footer {
+      background-color: #2d5f5d;
+      color: #fef9ef;
+      padding: 1.5rem 0;
+      text-align: center;
+      margin-top: 3rem;
+      border-top: 3px solid #c17767;
+    }
+
+    @media (max-width: 767px) {
+      .overlay {
+        padding: 1rem;
+      }
+
+      .trip-header {
+        padding: 1.5rem;
+      }
+
+      #trip-map {
+        height: 300px;
+      }
+    }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
+      <a class="navbar-brand" href="/">TravelBuddy</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -188,7 +321,7 @@
       <!-- Pending Suggestions -->
       <% if (suggestions && suggestions.length > 0) { %>
         <div class="mb-4">
-          <h4 class="fw-bold mb-3">Pending Activity Suggestions</h4>
+          <h4 class="fw-bold mb-3" style="color: #2d5f5d;">Pending Activity Suggestions</h4>
           <p class="text-muted small">Needs <%= votesNeeded %> "Yes" votes out of <%= totalMembers %> members to be approved</p>
           
           <% suggestions.forEach(suggestion => { %>
@@ -253,7 +386,7 @@
       <% } %>
 
       <!-- Timeline -->
-      <h4 class="fw-bold mb-3">Confirmed Schedule</h4>
+      <h4 class="fw-bold mb-3" style="color: #2d5f5d;">Confirmed Schedule</h4>
       <div class="timeline">
         <% 
           const startDate = new Date(trip.start_date);
@@ -332,7 +465,7 @@
               <input type="time" id="endTime" name="endTime" class="form-control" required />
             </div>
           </div>
-          <!--locatie input, geeft coordinaten mee via photon api om te gebruiken met leaflet api-->
+
           <div class="mb-3 location-input-wrapper">
             <label for="location" class="form-label">Location</label>
             <input type="text" id="location" name="location" class="form-control" placeholder="Start typing a location..." autocomplete="off" />
@@ -347,13 +480,13 @@
           </div>
 
           <button type="submit" class="btn btn-primary">Suggest Activity</button>
-          <div class="mt-3 p-3 bg-light border-start border-primary border-4 rounded">
+          <div class="mt-3 p-3 bg-light border-start border-4 rounded" style="border-color: #8b9d77 !important;">
             <small class="text-muted">
               <strong>Tip:</strong> Fields marked with a * are mandatory!<br>
               <strong>Tip:</strong> Activities must have both start and end times to prevent scheduling conflicts. 
               Make sure your times don't overlap with existing activities on the same day! It is advised to keep track of
               traveling times aswell. <br>
-              <strong>Warning:</strong> Not using the suggested locations when filling  in the location field will result in that
+              <strong>Warning:</strong> Not using the suggested locations when filling in the location field will result in that
               activity not appearing on the map. We recommend using the suggested locations for consistency.
             </small>
           </div>
@@ -362,8 +495,10 @@
     </div>
   </main>
 
-  <footer class="py-4 mt-5 text-center">
-    <p class="mb-0">2025 TravelBuddy</p>
+  <footer>
+    <div class="container">
+      <p class="mb-0">© 2025 TravelBuddy</p>
+    </div>
   </footer>
 
   <script src="/js/bootstrap.bundle.min.js"></script>
@@ -407,7 +542,7 @@
     
     features.forEach(feature => {
       const props = feature.properties;
-      const coords = feature.geometry.coordinates; // [longitude, latitude]
+      const coords = feature.geometry.coordinates;
       const item = document.createElement('div');
       item.className = 'list-group-item';
       
@@ -426,7 +561,6 @@
       item.addEventListener('click', () => {
         const fullLocation = locationName + (locationDetails.length > 0 ? ', ' + locationDetails.join(', ') : '');
         locationInput.value = fullLocation;
-        // Save coordinatn [longitude, latitude] van Photon
         longitudeInput.value = coords[0];
         latitudeInput.value = coords[1];
         suggestionsDiv.style.display = 'none';
@@ -448,32 +582,25 @@
     suggestionsDiv.style.display = 'none';
   });
 </script>
-<!-- Leaflet JS -->
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
   <script>
-    // Initialize map
     const activities = <%- JSON.stringify(activities) %>;
-    
-    // Filter activities that have coordinates
     const locatedActivities = activities.filter(a => a.latitude && a.longitude);
     
     if (locatedActivities.length > 0) {
-      // Create map centered on first activity
       const map = L.map('trip-map').setView([locatedActivities[0].latitude, locatedActivities[0].longitude], 12);
       
-      // Add OpenStreetMap tiles
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
         maxZoom: 19
       }).addTo(map);
       
-      // Add markers for each activity
       const bounds = [];
       locatedActivities.forEach(activity => {
         const marker = L.marker([activity.latitude, activity.longitude]).addTo(map);
         
-        // Create popup content
         const popupContent = `
           <strong>${activity.title}</strong><br>
           ${activity.location ? activity.location + '<br>' : ''}
@@ -485,12 +612,10 @@
         bounds.push([activity.latitude, activity.longitude]);
       });
       
-      // Fit map to show all markers
       if (bounds.length > 1) {
         map.fitBounds(bounds, { padding: [50, 50] });
       }
     } else {
-      // No activities with locations
       document.getElementById('trip-map').innerHTML = '<div class="text-center p-5 text-muted">No activities with locations yet. Add activities with locations to see them on the map!</div>';
     }
   </script>

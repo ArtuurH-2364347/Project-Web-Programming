@@ -5,38 +5,129 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><%= group.name %> – TravelBuddy</title>
   <link rel="stylesheet" href="/css/bootstrap.css" />
-  <link rel="stylesheet" href="/css/style.css" />
   <style>
     body {
-      background-image: url('/images/travel-background.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
+      background-color: #fef9ef;
     }
+
+    /* Navbar - matching home page */
+    .navbar {
+      background-color: #2d5f5d;
+      padding: 1rem 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+      color: white !important;
+      font-weight: 700;
+      font-size: 1.5rem;
+      transition: color 0.3s;
+    }
+
+    .navbar-brand:hover {
+      color: #e8b4b8 !important;
+    }
+
+    .navbar-nav .nav-link {
+      color: rgba(255,255,255,0.85) !important;
+      margin: 0 0.5rem;
+      transition: color 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #e8b4b8 !important;
+    }
+
+    .navbar .btn {
+      padding: 0.4rem 1.2rem;
+      border-radius: 5px;
+      margin-left: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .navbar .btn-danger {
+      background-color: #e8b4b8;
+      border: none;
+    }
+
+    .navbar .btn-danger:hover {
+      background-color: #d99fa4;
+      transform: translateY(-2px);
+    }
+
     .overlay {
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: white;
       border-radius: 1rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       padding: 2rem;
       margin-top: 2rem;
+      border: 2px solid #e0e0e0;
     }
+
+    .group-header {
+      background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn-light {
+      background-color: #e8b4b8;
+      border: none;
+      color: #2d5f5d;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-light:hover {
+      background-color: #d99fa4;
+      color: #2d5f5d;
+      transform: translateY(-2px);
+    }
+
+    .btn-success {
+      background-color: #8b9d77;
+      border: none;
+      padding: 0.6rem 2rem;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-success:hover {
+      background-color: #748361;
+      transform: translateY(-2px);
+    }
+
+    .btn-primary.btn-sm {
+      background-color: #8b9d77;
+      border: none;
+    }
+
+    .btn-primary.btn-sm:hover {
+      background-color: #748361;
+    }
+
     .member-card {
-      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      background: white;
       border-radius: 0.75rem;
       padding: 1rem;
       margin-bottom: 0.75rem;
-      border: 1px solid #dee2e6;
+      border: 2px solid #e0e0e0;
       transition: all 0.2s;
     }
+
     .member-card:hover {
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-color: #8b9d77;
     }
+
     .member-avatar {
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
       color: white;
       display: flex;
       align-items: center;
@@ -46,8 +137,9 @@
       border: 3px solid white;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+
     .admin-badge {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      background: linear-gradient(135deg, #8b9d77 0%, #2d5f5d 100%);
       color: white;
       padding: 0.25rem 0.75rem;
       border-radius: 1rem;
@@ -56,6 +148,7 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+
     .member-badge {
       background-color: #6c757d;
       color: white;
@@ -65,39 +158,60 @@
       font-weight: bold;
       text-transform: uppercase;
     }
-    .group-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 2rem;
-      border-radius: 1rem;
-      margin-bottom: 2rem;
-    }
+
     .admin-controls {
       display: flex;
       gap: 0.5rem;
     }
+
     .trip-card {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      background: white;
       border-radius: 0.75rem;
       padding: 1.25rem;
-      border: 1px solid #dee2e6;
+      border: 2px solid #e0e0e0;
       transition: all 0.2s;
       margin-bottom: 1rem;
     }
+
     .trip-card:hover {
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       transform: translateY(-2px);
+      border-color: #8b9d77;
     }
+
+    .trip-card h5 {
+      color: #2d5f5d;
+    }
+
+    h4 {
+      color: #2d5f5d;
+    }
+
     footer {
-      background-color: rgba(255, 255, 255, 0.8);
+      background-color: #2d5f5d;
+      color: #fef9ef;
+      padding: 1.5rem 0;
+      text-align: center;
+      margin-top: 3rem;
+      border-top: 3px solid #c17767;
+    }
+
+    @media (max-width: 767px) {
+      .overlay {
+        padding: 1rem;
+      }
+
+      .group-header {
+        padding: 1.5rem;
+      }
     }
   </style>
 </head>
 <body>
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
+      <a class="navbar-brand" href="/">TravelBuddy</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -182,10 +296,10 @@
             </div>
           <% }) %>
         <% } else { %>
-          <div style="background-color: #f8f9fa; border-radius: 0.75rem; padding: 1.5rem; text-align: center;">
+          <div style="background-color: #f8f9fa; border-radius: 0.75rem; padding: 1.5rem; text-align: center; border: 2px solid #e0e0e0;">
             <p class="text-muted mb-0">No trips planned yet. 
               <% if (isAdmin) { %>
-                <a href="/groups/<%= group.id %>/trips/new" class="fw-bold">Create your first trip!</a>
+                <a href="/groups/<%= group.id %>/trips/new" class="fw-bold" style="color: #2d5f5d;">Create your first trip!</a>
               <% } %>
             </p>
           </div>
@@ -199,7 +313,7 @@
             Members (<%= members.length %>)
           </h4>
           <% if (isAdmin) { %>
-            <span class="badge bg-success">You're an Admin</span>
+            <span class="badge" style="background-color: #8b9d77;">You're an Admin</span>
           <% } %>
         </div>
 
@@ -257,7 +371,7 @@
               <div class="member-card">
                 <div class="d-flex align-items-center justify-content-between">
                   <div class="d-flex align-items-center gap-3">
-                    <div class="member-avatar" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);">
+                    <div class="member-avatar" style="background: linear-gradient(135deg, #8b9d77 0%, #2d5f5d 100%);">
                       <%= member.name.charAt(0).toUpperCase() %>
                     </div>
                     <div>
@@ -298,11 +412,11 @@
 
       <!-- Admin Actions Section -->
       <% if (isAdmin) { %>
-        <div class="mt-4 p-3 bg-light rounded">
-          <h5 class="mb-3">Admin Actions</h5>
+        <div class="mt-4 p-3 rounded" style="background-color: #f8f9fa; border: 2px solid #e0e0e0;">
+          <h5 class="mb-3" style="color: #2d5f5d;">Admin Actions</h5>
           <p class="text-muted mb-3">As an admin, you can manage group members and settings.</p>
           <div class="d-flex gap-2">
-            <button class="btn btn-primary" disabled>Add Members (Coming Soon)</button>
+            <button class="btn btn-primary" style="background-color: #8b9d77; border: none;" disabled>Add Members (Coming Soon)</button>
             <button class="btn btn-outline-secondary" disabled>Edit Group Details (Coming Soon)</button>
           </div>
         </div>
@@ -310,8 +424,10 @@
     </div>
   </main>
 
-  <footer class="py-4 mt-5 text-center">
-    <p class="mb-0">2025 TravelBuddy</p>
+  <footer>
+    <div class="container">
+      <p class="mb-0">© 2025 TravelBuddy</p>
+    </div>
   </footer>
 
   <script src="/js/bootstrap.bundle.min.js"></script>
