@@ -272,39 +272,79 @@
 
       <!-- Trips Section -->
       <div class="mb-4">
-        <h4 class="fw-bold mb-3">Planned Trips</h4>
-        
-        <% if (trips && trips.length > 0) { %>
-          <% trips.forEach(trip => { %>
-            <div class="trip-card">
-              <div class="d-flex justify-content-between align-items-start">
-                <div class="flex-grow-1">
-                  <h5 class="fw-bold mb-2"><%= trip.name %></h5>
-                  <% if (trip.destination) { %>
-                    <p class="text-muted mb-2">📍 <%= trip.destination %></p>
-                  <% } %>
-                  <p class="mb-0">
-                    <small style="color: #6c757d;">
-                      📅 <%= new Date(trip.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %> 
-                      - 
-                      <%= new Date(trip.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
-                    </small>
-                  </p>
-                </div>
-                <a href="/trips/<%= trip.id %>" class="btn btn-primary btn-sm ms-3">View Schedule</a>
+      <h4 class="fw-bold mb-3">Planned Trips</h4>
+      
+      <% if (trips && trips.length > 0) { %>
+        <% trips.forEach(trip => { %>
+          <div class="trip-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <h5 class="fw-bold mb-2"><%= trip.name %></h5>
+                <% if (trip.destination) { %>
+                  <p class="text-muted mb-2">📍 <%= trip.destination %></p>
+                <% } %>
+                <p class="mb-0">
+                  <small style="color: #6c757d;">
+                    📅 <%= new Date(trip.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %> 
+                    - 
+                    <%= new Date(trip.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                  </small>
+                </p>
+              </div>
+              <div class="d-flex gap-2 ms-3">
+                <a href="/trips/<%= trip.id %>" class="btn btn-primary btn-sm">View Schedule</a>
+                
+                <% if (isAdmin) { %>
+                  <button 
+                    class="btn btn-outline-danger btn-sm" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#deleteTripModal<%= trip.id %>"
+                  >
+                    Delete
+                  </button>
+                <% } %>
               </div>
             </div>
-          <% }) %>
-        <% } else { %>
-          <div style="background-color: #f8f9fa; border-radius: 0.75rem; padding: 1.5rem; text-align: center; border: 2px solid #e0e0e0;">
-            <p class="text-muted mb-0">No trips planned yet. 
-              <% if (isAdmin) { %>
-                <a href="/groups/<%= group.id %>/trips/new" class="fw-bold" style="color: #2d5f5d;">Create your first trip!</a>
-              <% } %>
-            </p>
           </div>
-        <% } %>
-      </div>
+
+          <!-- Delete Trip Confirmation Modal -->
+          <% if (isAdmin) { %>
+            <div class="modal fade" id="deleteTripModal<%= trip.id %>" tabindex="-1" aria-labelledby="deleteTripModalLabel<%= trip.id %>" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteTripModalLabel<%= trip.id %>">
+                      <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Trip
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="mb-3">Are you sure you want to delete the trip <strong>"<%= trip.name %>"</strong>?</p>
+                    <div class="alert alert-warning" role="alert">
+                      <strong>Warning:</strong> This action cannot be undone. All activities and suggestions associated with this trip will be permanently deleted.
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="/trips/<%= trip.id %>/delete" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-danger">Delete Trip</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        <% }) %>
+      <% } else { %>
+        <div style="background-color: #f8f9fa; border-radius: 0.75rem; padding: 1.5rem; text-align: center; border: 2px solid #e0e0e0;">
+          <p class="text-muted mb-0">No trips planned yet. 
+            <% if (isAdmin) { %>
+              <a href="/groups/<%= group.id %>/trips/new" class="fw-bold" style="color: #2d5f5d;">Create your first trip!</a>
+            <% } %>
+          </p>
+        </div>
+      <% } %>
+    </div>
 
       <!-- Members Section -->
       <div class="mb-4">

@@ -33,7 +33,7 @@
     - [x] Vrienden toevoegen
     - [x] Vrienden verwijderen
     - [x] reisgroep aanmaken
-    - [ ] reisgroep verwijderen
+    - [x] reisgroep verwijderen
     - [x] rechten binnen groep beheren (via rollen? beheerder, lid, etc)
     - [ ] Mensen toevoegen/verwijderen aan een reeds bestaande groep
 
@@ -43,9 +43,9 @@
 3. De reis plannen
 
     - [x] Reis aanmaken
-    - [ ] Reis verwijderen
+    - [x] Reis verwijderen
     - [x] Stops toevoegen
-    - [ ] Stops verwijderen
+    - [x] Stops verwijderen
     - [x] checking of stops niet overlappen
     - [x] Indien groep, stops voorstellen en stemming laten gebeuren
     - [x] Reis voorstellen op kaart

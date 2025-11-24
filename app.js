@@ -11,7 +11,7 @@ import db, {
   getGroupById, getGroupMembers, isGroupMember, updateMemberRole, removeGroupMember,
   createTrip, getGroupTrips, getTripById, getTripActivities, createActivity, deleteActivity, getUserTrips,
   createActivitySuggestion, getTripSuggestions, getSuggestionVotes, getUserVote, castVote, approveSuggestion, 
-  deleteSuggestion, checkActivityOverlap
+  deleteSuggestion, checkActivityOverlap, deleteGroup, deleteTrip
 } from "./db.js";
 
 const app = express();
@@ -245,6 +245,9 @@ app.get("/groups", (req, res) => {
       if (!fullMember.profile_picture) {
         fullMember.profile_picture = "/uploads/Placeholder_pfp.png";
       }
+
+      // Keep the role from the original member
+      fullMember.role = member.role;
 
       return fullMember;
     });
@@ -636,7 +639,6 @@ app.post("/activities/:id/delete", (req, res) => {
 
   const activityId = parseInt(req.params.id);
   
-  // Get activity to find trip_id for redirect
   const activity = db.prepare("SELECT * FROM activities WHERE id = ?").get(activityId);
   if (!activity) {
     return res.status(404).send("Activity not found");
@@ -645,13 +647,56 @@ app.post("/activities/:id/delete", (req, res) => {
   const trip = getTripById(activity.trip_id);
   const membership = isGroupMember(req.session.user.id, trip.group_id);
   
-  // Only admins or the creator can delete
   if (!membership || (membership.role !== 'admin' && activity.created_by !== req.session.user.id)) {
     return res.status(403).send("You don't have permission to delete this activity");
   }
 
   deleteActivity(activityId);
   res.redirect(`/trips/${activity.trip_id}`);
+});
+
+// Delete group (admins only)
+app.post("/groups/:id/delete", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const groupId = parseInt(req.params.id);
+  const group = getGroupById(groupId);
+  
+  if (!group) {
+    return res.status(404).send("Group not found");
+  }
+
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership || membership.role !== 'admin') {
+    return res.status(403).send("Only admins can delete groups");
+  }
+
+  deleteGroup(groupId);
+  
+  res.redirect("/groups");
+});
+
+// Delete trip (admins only)
+app.post("/trips/:id/delete", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const tripId = parseInt(req.params.id);
+  const trip = getTripById(tripId);
+  
+  if (!trip) {
+    return res.status(404).send("Trip not found");
+  }
+
+  const membership = isGroupMember(req.session.user.id, trip.group_id);
+  if (!membership || membership.role !== 'admin') {
+    return res.status(403).send("Only admins can delete trips");
+  }
+
+  const groupId = trip.group_id;
+  
+  deleteTrip(tripId);
+  
+  res.redirect(`/groups/${groupId}`);
 });
 
 // Logout route

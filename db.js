@@ -305,7 +305,7 @@ export function getUserGroups(userId) {
 
   groups.forEach(group => {
     const members = db.prepare(`
-      SELECT u.id, u.name, u.email
+      SELECT u.id, u.name, u.email, u.profile_picture, gm.role
       FROM users u
       JOIN group_members gm ON gm.user_id = u.id
       WHERE gm.group_id = ?
@@ -529,6 +529,53 @@ function timeToMinutes(timeString) {
   if (!timeString) return 0;
   const [hours, minutes] = timeString.split(':').map(Number);
   return hours * 60 + minutes;
+}
+
+export function deleteGroup(groupId) {
+  
+  db.prepare(`
+    DELETE FROM activity_votes 
+    WHERE suggestion_id IN (
+      SELECT s.id FROM activity_suggestions s
+      JOIN trips t ON t.id = s.trip_id
+      WHERE t.group_id = ?
+    )
+  `).run(groupId);
+  
+  db.prepare(`
+    DELETE FROM activity_suggestions 
+    WHERE trip_id IN (
+      SELECT id FROM trips WHERE group_id = ?
+    )
+  `).run(groupId);
+  
+  db.prepare(`
+    DELETE FROM activities 
+    WHERE trip_id IN (
+      SELECT id FROM trips WHERE group_id = ?
+    )
+  `).run(groupId);
+  
+  db.prepare("DELETE FROM trips WHERE group_id = ?").run(groupId);
+  db.prepare("DELETE FROM group_members WHERE group_id = ?").run(groupId);
+  db.prepare("DELETE FROM groups WHERE id = ?").run(groupId);
+  
+  return { success: true, message: "Group deleted successfully" };
+}
+
+
+export function deleteTrip(tripId) {
+  db.prepare(`
+    DELETE FROM activity_votes 
+    WHERE suggestion_id IN (
+      SELECT id FROM activity_suggestions WHERE trip_id = ?
+    )
+  `).run(tripId);
+  db.prepare("DELETE FROM activity_suggestions WHERE trip_id = ?").run(tripId);
+  db.prepare("DELETE FROM activities WHERE trip_id = ?").run(tripId);
+  db.prepare("DELETE FROM trips WHERE id = ?").run(tripId);
+  
+  return { success: true, message: "Trip deleted successfully" };
 }
 
 export default db;

@@ -11,7 +11,6 @@
       background-color: #fef9ef;
     }
 
-    /* Navbar - matching home page */
     .navbar {
       background-color: #2d5f5d;
       padding: 1rem 0;
@@ -373,10 +372,40 @@
                     </form>
                     
                     <% if (isAdmin || suggestion.suggested_by === user.id) { %>
-                      <form action="/suggestions/<%= suggestion.id %>/delete" method="POST" class="d-inline mt-2" onsubmit="return confirm('Delete this suggestion?')">
-                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                      </form>
+                      <button 
+                        class="btn btn-outline-danger btn-sm mt-2" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#deleteSuggestionModal<%= suggestion.id %>"
+                      >
+                        Delete
+                      </button>
                     <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Delete Suggestion Modal -->
+            <div class="modal fade" id="deleteSuggestionModal<%= suggestion.id %>" tabindex="-1" aria-labelledby="deleteSuggestionModalLabel<%= suggestion.id %>" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteSuggestionModalLabel<%= suggestion.id %>">
+                      Delete Suggestion
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="mb-3">Are you sure you want to delete <strong>"<%= suggestion.title %>"</strong>?</p>
+                    <div class="alert alert-warning" role="alert">
+                      <strong>Warning:</strong> This action cannot be undone. All votes associated with this suggestion will be permanently deleted.
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="/suggestions/<%= suggestion.id %>/delete" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-danger">Delete Suggestion</button>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -426,10 +455,40 @@
                   </div>
                   
                   <% if (isAdmin || activity.created_by === user.id) { %>
-                    <form action="/activities/<%= activity.id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete this activity?')">
-                      <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                    </form>
+                    <button 
+                      class="btn btn-outline-danger btn-sm" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#deleteActivityModal<%= activity.id %>"
+                    >
+                      Delete
+                    </button>
                   <% } %>
+                </div>
+              </div>
+              
+              <!-- Delete Activity Modal -->
+              <div class="modal fade" id="deleteActivityModal<%= activity.id %>" tabindex="-1" aria-labelledby="deleteActivityModalLabel<%= activity.id %>" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                      <h5 class="modal-title" id="deleteActivityModalLabel<%= activity.id %>">
+                        Delete Activity
+                      </h5>
+                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p class="mb-3">Are you sure you want to delete <strong>"<%= activity.title %>"</strong>?</p>
+                      <div class="alert alert-warning" role="alert">
+                        <strong>Warning:</strong> This action cannot be undone. This activity will be permanently removed from the schedule.
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <form action="/activities/<%= activity.id %>/delete" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Delete Activity</button>
+                      </form>
+                    </div>
+                  </div>
                 </div>
               </div>
             <% }) %>

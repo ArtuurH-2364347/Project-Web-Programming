@@ -336,7 +336,51 @@
                 <span class="member-count-badge"><%= group.memberCount %> member<%= group.memberCount !== 1 ? 's' : '' %></span>
               </div>
             </div>
-            <a href="/groups/<%= group.id %>" class="btn btn-outline-primary btn-sm mt-3 mt-md-0">View Group</a>
+            <div class="d-flex gap-2 mt-3 mt-md-0">
+              <a href="/groups/<%= group.id %>" class="btn btn-outline-primary btn-sm">View Group</a>
+              
+              <% 
+                // Check if user is admin of this group
+                const userMembership = group.members.find(m => m.id === user.id);
+                const isGroupAdmin = userMembership && userMembership.role === 'admin';
+              %>
+              
+              <% if (isGroupAdmin) { %>
+                <button 
+                  class="btn btn-outline-danger btn-sm" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#deleteModal<%= group.id %>"
+                >
+                  Delete
+                </button>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal<%= group.id %>" tabindex="-1" aria-labelledby="deleteModalLabel<%= group.id %>" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel<%= group.id %>">
+                  <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Group
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p class="mb-3">Are you sure you want to delete <strong>"<%= group.name %>"</strong>?</p>
+                <div class="alert alert-warning" role="alert">
+                  <strong>Warning:</strong> This action cannot be undone. All trips, activities, and suggestions associated with this group will be permanently deleted.
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="/groups/<%= group.id %>/delete" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-danger">Delete Group</button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       <% }) %>
@@ -346,7 +390,6 @@
         <a href="/groups/new" class="btn btn-hero">Create Your First Group</a>
       </div>
     <% } %>
-  </section>
 
   <div class="quote-section">
     <div class="container">
