@@ -5,210 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><%= group.name %> – TravelBuddy</title>
   <link rel="stylesheet" href="/css/bootstrap.css" />
-  <style>
-    body {
-      background-color: #fef9ef;
-    }
-
-    /* Navbar - matching home page */
-    .navbar {
-      background-color: #2d5f5d;
-      padding: 1rem 0;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .navbar-brand {
-      color: white !important;
-      font-weight: 700;
-      font-size: 1.5rem;
-      transition: color 0.3s;
-    }
-
-    .navbar-brand:hover {
-      color: #e8b4b8 !important;
-    }
-
-    .navbar-nav .nav-link {
-      color: rgba(255,255,255,0.85) !important;
-      margin: 0 0.5rem;
-      transition: color 0.3s;
-    }
-
-    .navbar-nav .nav-link:hover {
-      color: #e8b4b8 !important;
-    }
-
-    .navbar .btn {
-      padding: 0.4rem 1.2rem;
-      border-radius: 5px;
-      margin-left: 0.5rem;
-      font-weight: 500;
-      transition: all 0.3s;
-    }
-
-    .navbar .btn-danger {
-      background-color: #e8b4b8;
-      border: none;
-    }
-
-    .navbar .btn-danger:hover {
-      background-color: #d99fa4;
-      transform: translateY(-2px);
-    }
-
-    .overlay {
-      background-color: white;
-      border-radius: 1rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      padding: 2rem;
-      margin-top: 2rem;
-      border: 2px solid #e0e0e0;
-    }
-
-    .group-header {
-      background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
-      color: white;
-      padding: 2rem;
-      border-radius: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .btn-light {
-      background-color: #e8b4b8;
-      border: none;
-      color: #2d5f5d;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .btn-light:hover {
-      background-color: #d99fa4;
-      color: #2d5f5d;
-      transform: translateY(-2px);
-    }
-
-    .btn-success {
-      background-color: #8b9d77;
-      border: none;
-      padding: 0.6rem 2rem;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .btn-success:hover {
-      background-color: #748361;
-      transform: translateY(-2px);
-    }
-
-    .btn-primary.btn-sm {
-      background-color: #8b9d77;
-      border: none;
-    }
-
-    .btn-primary.btn-sm:hover {
-      background-color: #748361;
-    }
-
-    .member-card {
-      background: white;
-      border-radius: 0.75rem;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      border: 2px solid #e0e0e0;
-      transition: all 0.2s;
-    }
-
-    .member-card:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-color: #8b9d77;
-    }
-
-    .member-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      font-weight: bold;
-      border: 3px solid white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .admin-badge {
-      background: linear-gradient(135deg, #8b9d77 0%, #2d5f5d 100%);
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 1rem;
-      font-size: 0.75rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .member-badge {
-      background-color: #6c757d;
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 1rem;
-      font-size: 0.75rem;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-
-    .admin-controls {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .trip-card {
-      background: white;
-      border-radius: 0.75rem;
-      padding: 1.25rem;
-      border: 2px solid #e0e0e0;
-      transition: all 0.2s;
-      margin-bottom: 1rem;
-    }
-
-    .trip-card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      transform: translateY(-2px);
-      border-color: #8b9d77;
-    }
-
-    .trip-card h5 {
-      color: #2d5f5d;
-    }
-
-    h4 {
-      color: #2d5f5d;
-    }
-
-    footer {
-      background-color: #2d5f5d;
-      color: #fef9ef;
-      padding: 1.5rem 0;
-      text-align: center;
-      margin-top: 3rem;
-      border-top: 3px solid #c17767;
-    }
-
-    @media (max-width: 767px) {
-      .overlay {
-        padding: 1rem;
-      }
-
-      .group-header {
-        padding: 1.5rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="/css/view-group.css" />
 </head>
 <body>
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
       <a class="navbar-brand" href="/">TravelBuddy</a>
@@ -237,10 +36,8 @@
     </div>
   </nav>
 
-  <!-- Group Content -->
   <main class="container">
     <div class="overlay">
-      <!-- Group Header -->
       <div class="group-header">
         <div class="d-flex justify-content-between align-items-start">
           <div>
@@ -269,8 +66,6 @@
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
       <% } %>
-
-      <!-- Trips Section -->
       <div class="mb-4">
       <h4 class="fw-bold mb-3">Planned Trips</h4>
       
@@ -306,8 +101,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Delete Trip Confirmation Modal -->
           <% if (isAdmin) { %>
             <div class="modal fade" id="deleteTripModal<%= trip.id %>" tabindex="-1" aria-labelledby="deleteTripModalLabel<%= trip.id %>" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered">
@@ -345,8 +138,6 @@
         </div>
       <% } %>
     </div>
-
-      <!-- Members Section -->
       <div class="mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4 class="fw-bold mb-0">
@@ -362,8 +153,6 @@
             const admins = members.filter(m => m.role === 'admin');
             const regularMembers = members.filter(m => m.role === 'member');
           %>
-
-          <!-- Admins -->
           <% if (admins.length > 0) { %>
             <h6 class="text-muted mb-2">Administrators</h6>
             <% admins.forEach(member => { %>
@@ -413,8 +202,6 @@
               </div>
             <% }) %>
           <% } %>
-
-          <!-- Regular Members -->
           <% if (regularMembers.length > 0) { %>
             <h6 class="text-muted mb-2 mt-4">Members</h6>
             <% regularMembers.forEach(member => { %>
@@ -467,8 +254,6 @@
           <p class="text-muted">No members in this group yet.</p>
         <% } %>
       </div>
-
-      <!-- Admin Actions Section -->
       <% if (isAdmin) { %>
         <div class="mt-4 p-3 rounded" style="background-color: #f8f9fa; border: 2px solid #e0e0e0;">
           <h5 class="mb-3" style="color: #2d5f5d;">Admin Actions</h5>

@@ -1,0 +1,280 @@
+    body {
+      background-color: #fef9ef;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar {
+      background-color: #2d5f5d;
+      padding: 1rem 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+      color: white !important;
+      font-weight: 700;
+      font-size: 1.5rem;
+      transition: color 0.3s;
+    }
+
+    .navbar-brand:hover {
+      color: #e8b4b8 !important;
+    }
+
+    .navbar-nav .nav-link {
+      color: rgba(255,255,255,0.85) !important;
+      margin: 0 0.5rem;
+      transition: color 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #e8b4b8 !important;
+    }
+
+    .navbar .btn {
+      padding: 0.4rem 1.2rem;
+      border-radius: 5px;
+      margin-left: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .navbar .btn-primary {
+      background-color: #e8b4b8;
+      border: none;
+      color: #2d5f5d;
+    }
+
+    .navbar .btn-primary:hover {
+      background-color: #d99fa4;
+      color: #2d5f5d;
+      transform: translateY(-2px);
+    }
+
+    .navbar .btn-danger {
+      background-color: #e8b4b8;
+      border: none;
+    }
+
+    .navbar .btn-danger:hover {
+      background-color: #d99fa4;
+      transform: translateY(-2px);
+    }
+
+    main.container {
+      padding-top: 2.25rem;
+      padding-bottom: 2rem;
+      flex: 1 0 auto;
+    }
+
+    .overlay {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 2rem;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s;
+    }
+
+    .overlay:hover {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .profile-header img {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 3px solid rgba(232,180,184,0.5);
+    }
+
+    .profile-header h2 {
+      margin-bottom: 0;
+      color: #2d5f5d;
+      font-weight: 700;
+    }
+
+    .friends-list {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1rem;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s;
+    }
+
+    .friends-list:hover {
+      border-color: #8b9d77;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .list-group-item {
+      border: none;
+      padding: 0.85rem 0.5rem;
+      transition: background-color 0.3s;
+    }
+
+    .list-group-item:hover {
+      background-color: #fef9ef;
+    }
+
+    .btn-edit {
+      background-color: #8b9d77;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      padding: 0.5rem 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .btn-edit:hover {
+      background-color: #748361;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background-color: #8b9d77;
+      border: none;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      background-color: #748361;
+      transform: translateY(-2px);
+    }
+
+    .btn-success {
+      background-color: #8b9d77;
+      border: none;
+      transition: all 0.3s;
+    }
+
+    .btn-success:hover {
+      background-color: #748361;
+      transform: translateY(-2px);
+    }
+
+    .btn-outline-danger {
+      border-color: #c17767;
+      color: #c17767;
+      transition: all 0.3s;
+    }
+
+    .btn-outline-danger:hover {
+      background-color: #c17767;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background-color: #c17767;
+      border: none;
+      transition: all 0.3s;
+    }
+
+    .btn-danger:hover {
+      background-color: #a86556;
+      transform: translateY(-2px);
+    }
+
+    .quote-section {
+      background: linear-gradient(135deg, rgba(139, 157, 119, 0.1) 0%, rgba(232, 180, 184, 0.1) 100%);
+      padding: 3rem 0;
+    }
+
+    .travel-quote {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .quote-text {
+      font-size: 1.5rem;
+      font-style: italic;
+      color: #2d5f5d;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .quote-footer {
+      font-size: 1rem;
+      color: #fef9ef;
+      font-style: normal;
+    }
+
+    footer {
+      background-color: #2d5f5d;
+      color: #fef9ef;
+      padding: 1.5rem 0;
+      text-align: center;
+      margin-top: 0;
+      border-top: 3px solid #c17767;
+    }
+
+    @media (max-width: 767px) {
+      .overlay {
+        padding: 1rem;
+        margin: 0.5rem;
+      }
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+      }
+      .profile-header img {
+        width: 88px;
+        height: 88px;
+      }
+      .profile-header h2 {
+        font-size: 1.25rem;
+      }
+      .friends-list {
+        padding: 0.75rem;
+      }
+      .list-group-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      .list-group-item form {
+        width: 100%;
+        margin-top: 0.25rem;
+      }
+      .list-group-item .btn {
+        width: 100%;
+      }
+      .add-friend-form {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .add-friend-form .form-control {
+        width: 100%;
+      }
+      .add-friend-form .btn {
+        width: 100%;
+      }
+      .navbar .btn {
+        margin-top: 0.5rem;
+        width: 100%;
+      }
+    }
+
+    @media (min-width: 768px) and (max-width: 991px) {
+      .overlay {
+        padding: 1.5rem;
+      }
+      .profile-header img {
+        width: 96px;
+        height: 96px;
+      }
+    }

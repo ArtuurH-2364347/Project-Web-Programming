@@ -5,180 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Profile – TravelBuddy</title>
   <link rel="stylesheet" href="/css/bootstrap.css">
-  
-  <style>
-    body {
-      background-color: #fef9ef;
-    }
-
-    /* Navbar - matching home page */
-    .navbar {
-      background-color: #2d5f5d;
-      padding: 1rem 0;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .navbar-brand {
-      color: white !important;
-      font-weight: 700;
-      font-size: 1.5rem;
-      transition: color 0.3s;
-    }
-
-    .navbar-brand:hover {
-      color: #e8b4b8 !important;
-    }
-
-    .navbar-nav .nav-link {
-      color: rgba(255,255,255,0.85) !important;
-      margin: 0 0.5rem;
-      transition: color 0.3s;
-    }
-
-    .navbar-nav .nav-link:hover {
-      color: #e8b4b8 !important;
-    }
-
-    .navbar .btn {
-      padding: 0.4rem 1.2rem;
-      border-radius: 5px;
-      margin-left: 0.5rem;
-      font-weight: 500;
-      transition: all 0.3s;
-    }
-
-    .navbar .btn-primary {
-      background-color: #e8b4b8;
-      border: none;
-      color: #2d5f5d;
-    }
-
-    .navbar .btn-primary:hover {
-      background-color: #d99fa4;
-      color: #2d5f5d;
-      transform: translateY(-2px);
-    }
-
-    .navbar .btn-danger {
-      background-color: #e8b4b8;
-      border: none;
-    }
-
-    .navbar .btn-danger:hover {
-      background-color: #d99fa4;
-      transform: translateY(-2px);
-    }
-
-    .overlay {
-      background-color: white;
-      border-radius: 1rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      padding: 2rem;
-      margin-top: 3rem;
-      margin-bottom: 3rem;
-      border: 2px solid #e0e0e0;
-    }
-
-    .overlay h1 {
-      color: #2d5f5d;
-      margin-bottom: 2rem;
-    }
-
-    .form-label {
-      color: #2d5f5d;
-      font-weight: 600;
-    }
-
-    .form-control:focus {
-      border-color: #8b9d77;
-      box-shadow: 0 0 0 0.2rem rgba(139, 157, 119, 0.25);
-    }
-
-    .profile-picture-preview {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #8b9d77;
-    }
-
-    .btn-primary {
-      background-color: #8b9d77;
-      border: none;
-      padding: 0.6rem 2rem;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .btn-primary:hover {
-      background-color: #748361;
-      transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-      background-color: #6c757d;
-      border: none;
-      padding: 0.6rem 2rem;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .btn-secondary:hover {
-      background-color: #5a6268;
-      transform: translateY(-2px);
-    }
-
-    footer {
-      background-color: #2d5f5d;
-      color: #fef9ef;
-      padding: 1.5rem 0;
-      text-align: center;
-      margin-top: 3rem;
-      border-top: 3px solid #c17767;
-    }
-
-    @media (max-width: 767px) {
-      .overlay {
-        padding: 1.5rem;
-        margin: 1rem;
-        border-radius: 0.75rem;
-      }
-
-      .overlay h1 {
-        font-size: 1.75rem;
-      }
-
-      .navbar .btn {
-        margin-top: 0.5rem;
-        width: 100%;
-      }
-
-      .btn-group-mobile {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      .btn-group-mobile .btn {
-        width: 100%;
-      }
-
-      .profile-picture-preview {
-        width: 80px;
-        height: 80px;
-      }
-    }
-
-    @media (min-width: 768px) {
-      .btn-group-mobile {
-        display: flex;
-        gap: 0.5rem;
-      }
-    }
-  </style>
+  <link href="css/edit-profile.css" rel="stylesheet">
 </head>
 <body>
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
       <a class="navbar-brand" href="/">TravelBuddy</a>
@@ -205,8 +34,6 @@
       </div>
     </div>
   </nav>
-
-  <!-- Edit Profile Content -->
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8 col-md-10">
@@ -244,8 +71,6 @@
       </div>
     </div>
   </main>
-
-  <!-- Footer -->
   <footer>
     <div class="container">
       <p class="mb-0">© 2025 TravelBuddy</p>
