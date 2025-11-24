@@ -65,7 +65,7 @@
     - [ ] mooiere error pages (email in gebruik, user not found, ...)
     - [ ] admin accounts-systeem die accounts kan verwijderen/editen etc
     - [ ] functionaliteit om meer vrienden te zoeken
-    - [ ] lettertjes in de groepen zijn profielfotos
+    - [x] lettertjes in de groepen zijn profielfotos
     - [ ] default profiel foto fixen (renderd momenteel niet)
 
 7. Extra functionaliteit

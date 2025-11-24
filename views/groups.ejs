@@ -232,7 +232,7 @@
 
     .quote-footer {
       font-size: 1rem;
-      color: #2d5f5d;
+      color: #fef9ef;
       font-style: normal;
     }
 
@@ -340,7 +340,6 @@
               <a href="/groups/<%= group.id %>" class="btn btn-outline-primary btn-sm">View Group</a>
               
               <% 
-                // Check if user is admin of this group
                 const userMembership = group.members.find(m => m.id === user.id);
                 const isGroupAdmin = userMembership && userMembership.role === 'admin';
               %>
@@ -357,14 +356,12 @@
             </div>
           </div>
         </div>
-
-        <!-- Delete Confirmation Modal -->
         <div class="modal fade" id="deleteModal<%= group.id %>" tabindex="-1" aria-labelledby="deleteModalLabel<%= group.id %>" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="deleteModalLabel<%= group.id %>">
-                  <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Group
+                  Delete Group
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
@@ -390,15 +387,16 @@
         <a href="/groups/new" class="btn btn-hero">Create Your First Group</a>
       </div>
     <% } %>
+  </section>
 
-  <div class="quote-section">
+  <section class="quote-section">
     <div class="container">
       <blockquote class="travel-quote">
         <p class="quote-text">"Life is either a daring adventure or nothing at all."</p>
         <footer class="quote-footer">— Helen Keller</footer>
       </blockquote>
     </div>
-  </div>
+  </section>
 
   <footer>
     <div class="container">
