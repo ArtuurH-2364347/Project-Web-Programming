@@ -453,6 +453,20 @@ app.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/login"));
 });
 
+// Tour page route
+app.get("/tour", (req, res) => {
+  res.render("reispagina", {
+    user: req.session.user,
+    tourTitle: "Today's Adventure",
+    images: ["/images/placeholder.png", "/images/placeholder.png"],
+    stops: [
+      { name: "Eiffel Tower", description: "Morning visit and photoshoot." },
+      { name: "Louvre Museum", description: "Art tour in the afternoon." },
+      { name: "Seine River Cruise", description: "Evening boat ride." }
+    ]
+  });
+});
+
 
 // Middleware for unknown routes
 // Must be last in pipeline
