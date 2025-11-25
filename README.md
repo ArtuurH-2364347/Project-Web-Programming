@@ -67,6 +67,7 @@
     - [ ] functionaliteit om meer vrienden te zoeken
     - [x] lettertjes in de groepen zijn profielfotos
     - [ ] default profiel foto fixen (renderd momenteel niet)
+    - [ ] scripts in EJS files verplaatsen naar aparte JS files
 
 7. Extra functionaliteit
 

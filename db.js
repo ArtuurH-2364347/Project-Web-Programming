@@ -483,8 +483,6 @@ export function approveSuggestion(suggestionId) {
     suggestion.end_time,
     suggestion.suggested_by
   );
-
-  // Delete the suggestion and votes
   deleteSuggestion(suggestionId);
   return true;
 }
