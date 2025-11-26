@@ -1,6 +1,7 @@
 import express from "express";
 import session from "express-session";
 import bcrypt from "bcrypt";
+import PDFDocument from "pdfkit";
 import db, { InitializeDatabase, getUserByEmail, createUser, getFriends,   sendFriendRequest,
   getPendingRequests, acceptFriendRequest, rejectFriendRequest, removeFriend, createGroup, getUserGroups
 , getGroupById, getGroupMembers, isGroupMember, updateMemberRole, removeGroupMember, createTrip, createActivity
@@ -364,6 +365,79 @@ app.get("/trips/:id", (req, res) => {
     message: null
   });
 });
+
+// Download trip as PDF
+app.get("/trips/:id/pdf", (req, res, next) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  try {
+    const tripId = parseInt(req.params.id);
+    const trip = getTripById(tripId);
+
+    if (!trip) return res.status(404).send("Trip not found");
+
+    const membership = isGroupMember(req.session.user.id, trip.group_id);
+    if (!membership) return res.status(403).send("You are not a member of this group");
+
+    const activities = getTripActivities(tripId);
+
+    // SAFE VALUES
+    const destination = trip.destination || "Unknown destination";
+    const startDate = trip.start_date ? new Date(trip.start_date).toLocaleDateString() : "Unknown";
+    const endDate = trip.end_date ? new Date(trip.end_date).toLocaleDateString() : "Unknown";
+
+    const doc = new PDFDocument({
+      margin: 40,
+      size: "A4"
+    });
+
+    res.setHeader(
+      "Content-disposition",
+      `attachment; filename="${trip.name || "trip"}.pdf"`
+    );
+    res.setHeader("Content-type", "application/pdf");
+
+    doc.pipe(res);
+
+    // Title
+    doc.fontSize(22).text(trip.name || "Trip", { underline: true });
+    doc.moveDown();
+
+    // Info
+    doc.fontSize(14).text(`Destination: ${destination}`);
+    doc.text(`Dates: ${startDate} - ${endDate}`);
+    doc.moveDown(2);
+
+    // Group activities by date
+    const grouped = {};
+    activities.forEach(a => {
+      const date = a.date || "Unknown date";
+      if (!grouped[date]) grouped[date] = [];
+      grouped[date].push(a);
+    });
+
+    Object.keys(grouped).forEach(date => {
+      doc.fontSize(16).text(date, { underline: true });
+      doc.moveDown(0.5);
+
+      grouped[date].forEach(a => {
+        doc.fontSize(13).text(`• ${a.title || "Untitled activity"}`);
+        if (a.time) doc.text(`   Time: ${a.time}`);
+        if (a.location) doc.text(`   Location: ${a.location}`);
+        if (a.description) doc.text(`   Notes: ${a.description}`);
+        doc.moveDown();
+      });
+
+      doc.moveDown(1);
+    });
+
+    doc.end();
+
+  } catch (err) {
+    next(err);  // ensures error logs show in terminal
+  }
+});
+
 
 // Show form to create new trip
 app.get("/groups/:id/trips/new", (req, res) => {
