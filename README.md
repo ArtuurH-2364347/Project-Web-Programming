@@ -8,8 +8,6 @@
 
 2. sociaal.
 
-    - [ ] details van groep kunnen wijzigen
-
 3. De reis plannen
 
     - [ ] tickets uploaden
