@@ -11,7 +11,7 @@ import db, {
   getGroupById, getGroupMembers, isGroupMember, updateMemberRole, removeGroupMember,
   createTrip, getGroupTrips, getTripById, getTripActivities, createActivity, deleteActivity, getUserTrips,
   createActivitySuggestion, getTripSuggestions, getSuggestionVotes, getUserVote, castVote, approveSuggestion, 
-  deleteSuggestion, checkActivityOverlap, deleteGroup, deleteTrip
+  deleteSuggestion, checkActivityOverlap, deleteGroup, deleteTrip, addGroupMember
 } from "./db.js";
 
 const app = express();
@@ -747,6 +747,35 @@ app.post("/trips/:id/delete", (req, res) => {
   
   res.redirect(`/groups/${groupId}`);
 });
+
+// Add member to group
+app.post("/groups/:id/add-member", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const groupId = parseInt(req.params.id);
+  const memberEmail = req.body.memberEmail;
+  
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership || membership.role !== 'admin') {
+    return res.status(403).send("Only admins can add members");
+  }
+
+  const newMember = getUserByEmail(memberEmail);
+  if (!newMember) {
+    return res.redirect(`/groups/${groupId}?error=User not found`);
+  }
+
+  const existingMembership = isGroupMember(newMember.id, groupId);
+  if (existingMembership) {
+    return res.redirect(`/groups/${groupId}?error=User is already a member`);
+  }
+  addGroupMember(groupId, newMember.id, 'member');
+  
+  res.redirect(`/groups/${groupId}?success=Member added successfully`);
+});
+
 
 // logout
 app.get("/logout", (req, res) => {

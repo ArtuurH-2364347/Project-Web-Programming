@@ -576,4 +576,13 @@ export function deleteTrip(tripId) {
   return { success: true, message: "Trip deleted successfully" };
 }
 
+export function addGroupMember(groupId, userId, role = 'member') {
+  const stmt = db.prepare(`
+    INSERT INTO group_members (user_id, group_id, role)
+    VALUES (?, ?, ?)
+  `);
+  stmt.run(userId, groupId, role);
+  return { success: true, message: "Member added successfully" };
+}
+
 export default db;

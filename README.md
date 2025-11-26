@@ -1,54 +1,17 @@
 # Readme Project Web Programming
 
-## Checklist:
-0. overkoepelend.
-
-    - [x] renderd mooi op mobile
-    - [x] edit-profile.ejs
-    - [x] groups.ejs
-    - [x] index.ejs
-    - [x] login.ejs
-    - [x] new-group.ejs
-    - [x] new-trip.ejs
-    - [x] profile.ejs
-    - [x] register.ejs
-    - [x] trip-schedule.ejs
-    - [x] view-group.ejs
+## To-Do list:
 
 1. Individueel.
-
-    - [x] Account aanmaken 
-    - [x] inloggen
-    - [x] Profiel aanmaken/aanpassen
-    - [x] Wachtwoordenhashing
-
     extra:
     - [ ] registreren logt ook automatisch in
-    - [x] oogje om naar wachtwoord te kijken terwijl je het invult
-    - [x] profielfotos
-    - [x] wachtwoord 2 keer ingeven bij registreren en vergelijken
 
 2. sociaal.
 
-    - [x] Vrienden toevoegen
-    - [x] Vrienden verwijderen
-    - [x] reisgroep aanmaken
-    - [x] reisgroep verwijderen
-    - [x] rechten binnen groep beheren (via rollen? beheerder, lid, etc)
-    - [ ] Mensen toevoegen/verwijderen aan een reeds bestaande groep
-
-    extra:
-    - [x] vrienden systeem ombouwen naar request-systeem
+    - [ ] details van groep kunnen wijzigen
 
 3. De reis plannen
 
-    - [x] Reis aanmaken
-    - [x] Reis verwijderen
-    - [x] Stops toevoegen
-    - [x] Stops verwijderen
-    - [x] checking of stops niet overlappen
-    - [x] Indien groep, stops voorstellen en stemming laten gebeuren
-    - [x] Reis voorstellen op kaart
     - [ ] tickets uploaden
 
 4. Tijdens de reis.
@@ -65,9 +28,7 @@
     - [ ] mooiere error pages (email in gebruik, user not found, ...)
     - [ ] admin accounts-systeem die accounts kan verwijderen/editen etc
     - [ ] functionaliteit om meer vrienden te zoeken
-    - [x] lettertjes in de groepen zijn profielfotos
     - [ ] default profiel foto fixen (renderd momenteel niet)
-    - [ ] scripts in EJS files verplaatsen naar aparte JS files
 
 7. Extra functionaliteit
 

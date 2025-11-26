@@ -257,9 +257,28 @@
       <% if (isAdmin) { %>
         <div class="mt-4 p-3 rounded" style="background-color: #f8f9fa; border: 2px solid #e0e0e0;">
           <h5 class="mb-3" style="color: #2d5f5d;">Admin Actions</h5>
-          <p class="text-muted mb-3">As an admin, you can manage group members and settings.</p>
-          <div class="d-flex gap-2">
-            <button class="btn btn-primary" style="background-color: #8b9d77; border: none;" disabled>Add Members (Coming Soon)</button>
+          <div class="mb-3">
+            <h6>Add Member to Group</h6>
+            <form action="/groups/<%= group.id %>/add-member" method="POST" class="row g-2">
+              <div class="col-md-8">
+                <input 
+                  type="email" 
+                  name="memberEmail" 
+                  class="form-control" 
+                  placeholder="Enter member's email address"
+                  required
+                />
+              </div>
+              <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100" style="background-color: #8b9d77; border: none;">
+                  Add Member
+                </button>
+              </div>
+            </form>
+            <small class="text-muted">Only registered users can be added to the group.</small>
+          </div>
+
+          <div class="d-flex gap-2 mt-3">
             <button class="btn btn-outline-secondary" disabled>Edit Group Details (Coming Soon)</button>
           </div>
         </div>
@@ -274,5 +293,6 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/view-group.js"></script>
 </body>
 </html>
