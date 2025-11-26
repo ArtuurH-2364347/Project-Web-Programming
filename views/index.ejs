@@ -41,21 +41,12 @@
 
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
+
           <li class="nav-item">
             <a class="nav-link" href="/">Home</a>
           </li>
-<<<<<<< HEAD
 
           <% if (user) { %>
-=======
-          <li class="nav-item">
-            <a class="nav-link" href="/profile">Your Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/tour">Today's Schedule</a>
-          </li>
-          <% if (!user) { %>
->>>>>>> aadbbd97e79488cce4ad99ec9e9f00bb59e57faf
             <li class="nav-item">
               <a class="nav-link" href="/profile">Your Profile</a>
             </li>
@@ -71,6 +62,7 @@
             <li class="nav-item">
               <a class="nav-link btn btn-danger" href="/logout">Logout</a>
             </li>
+
           <% } else { %>
             <li class="nav-item">
               <a class="nav-link" href="/register">Register</a>
@@ -80,6 +72,7 @@
               <a class="nav-link btn btn-primary" href="/login">Login</a>
             </li>
           <% } %>
+
         </ul>
       </div>
     </div>
