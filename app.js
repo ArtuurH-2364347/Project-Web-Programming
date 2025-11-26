@@ -11,7 +11,7 @@ import db, {
   getGroupById, getGroupMembers, isGroupMember, updateMemberRole, removeGroupMember,
   createTrip, getGroupTrips, getTripById, getTripActivities, createActivity, deleteActivity, getUserTrips,
   createActivitySuggestion, getTripSuggestions, getSuggestionVotes, getUserVote, castVote, approveSuggestion, 
-  deleteSuggestion, checkActivityOverlap, deleteGroup, deleteTrip, addGroupMember
+  deleteSuggestion, checkActivityOverlap, deleteGroup, deleteTrip, addGroupMember, updateGroup
 } from "./db.js";
 
 const app = express();
@@ -776,6 +776,49 @@ app.post("/groups/:id/add-member", (req, res) => {
   res.redirect(`/groups/${groupId}?success=Member added successfully`);
 });
 
+// Edit groep page
+app.get("/groups/:id/edit", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const groupId = parseInt(req.params.id);
+  const group = getGroupById(groupId);
+  
+  if (!group) {
+    return res.status(404).send("Group not found");
+  }
+
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership || membership.role !== 'admin') {
+    return res.status(403).send("Only admins can edit group details");
+  }
+
+  res.render("edit-group", {
+    user: req.session.user,
+    group: group
+  });
+});
+
+// Update groep
+app.post("/groups/:id/edit", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const groupId = parseInt(req.params.id);
+  const name = req.body.name;
+  const description = req.body.description;
+
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership || membership.role !== 'admin') {
+    return res.status(403).send("Only admins can edit group details");
+  }
+
+  updateGroup(groupId, name, description);
+  
+  res.redirect(`/groups/${groupId}?success=Group details updated successfully`);
+});
 
 // logout
 app.get("/logout", (req, res) => {

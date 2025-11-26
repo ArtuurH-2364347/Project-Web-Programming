@@ -585,4 +585,14 @@ export function addGroupMember(groupId, userId, role = 'member') {
   return { success: true, message: "Member added successfully" };
 }
 
+export function updateGroup(groupId, name, description) {
+  const stmt = db.prepare(`
+    UPDATE groups 
+    SET name = ?, description = ? 
+    WHERE id = ?
+  `);
+  stmt.run(name, description, groupId);
+  return { success: true, message: "Group updated successfully" };
+}
+
 export default db;
