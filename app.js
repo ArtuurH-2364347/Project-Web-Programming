@@ -187,10 +187,14 @@ app.post("/edit-profile", upload.single('profilePicture'), (req, res) => {
   const name = req.body.name;
   const bio = req.body.bio;
   const userId = req.session.user.id;
+  const removeProfilePicture = req.body.removeProfilePicture === 'on';
 
   // handle profile picture
   let profilePicture = req.session.user.profile_picture;
-  if (req.file) {
+  
+  if (removeProfilePicture) {
+    profilePicture = null;
+  } else if (req.file) {
     profilePicture = '/uploads/profiles/' + req.file.filename;
   }
 

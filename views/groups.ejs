@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Your Groups – TravelBuddy</title>
   <link rel="stylesheet" href="/css/bootstrap.css" />
-    <link rel="stylesheet" href="/css/groups.css" />
+  <link rel="stylesheet" href="/css/groups.css" />
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark">
@@ -53,7 +53,7 @@
                   const remainingCount = group.memberCount - displayMembers.length; %>
                 <% displayMembers.forEach(member => { %>
                   <div class="member-avatar" title="<%= member.name %>">
-                    <img src="<%= member.profile_picture %>" alt="<%= member.name %>" />
+                    <img src="<%= member.profile_picture && member.profile_picture !== '/uploads/Placeholder_pfp.png' ? member.profile_picture : '/images/Placeholder_pfp.png' %>" alt="<%= member.name %>" />
                   </div>
                 <% }) %>
 
