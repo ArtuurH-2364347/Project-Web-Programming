@@ -57,83 +57,99 @@ export function InitializeDatabase() {
     owner_id INTEGER,
     FOREIGN KEY(owner_id) REFERENCES users(id)
   )
-`).run();
+  `).run();
 
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS group_members (
-    user_id INTEGER,
-    group_id INTEGER,
-    role TEXT CHECK(role IN ('admin','member')) DEFAULT 'member',
-    PRIMARY KEY(user_id, group_id),
-    FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(group_id) REFERENCES groups(id)
-  )
-`).run();
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS group_members (
+      user_id INTEGER,
+      group_id INTEGER,
+      role TEXT CHECK(role IN ('admin','member')) DEFAULT 'member',
+      PRIMARY KEY(user_id, group_id),
+      FOREIGN KEY(user_id) REFERENCES users(id),
+      FOREIGN KEY(group_id) REFERENCES groups(id)
+    )
+  `).run();
 
-// Trips table
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS trips (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    group_id INTEGER NOT NULL,
-    name TEXT NOT NULL,
-    destination TEXT,
-    start_date TEXT NOT NULL,
-    end_date TEXT NOT NULL,
-    FOREIGN KEY(group_id) REFERENCES groups(id)
-  )
-`).run();
+  // Trips table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS trips (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      group_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      destination TEXT,
+      start_date TEXT NOT NULL,
+      end_date TEXT NOT NULL,
+      FOREIGN KEY(group_id) REFERENCES groups(id)
+    )
+  `).run();
 
-// Activities table
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS activities (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    trip_id INTEGER NOT NULL,
-    title TEXT NOT NULL,
-    description TEXT,
-    location TEXT,
-    latitude REAL,
-    longitude REAL,
-    date TEXT NOT NULL,
-    start_time TEXT NOT NULL,
-    end_time TEXT NOT NULL,
-    created_by INTEGER,
-    FOREIGN KEY(trip_id) REFERENCES trips(id),
-    FOREIGN KEY(created_by) REFERENCES users(id)
-  )
-`).run();
+  // Activities table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS activities (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      trip_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT,
+      location TEXT,
+      latitude REAL,
+      longitude REAL,
+      date TEXT NOT NULL,
+      start_time TEXT NOT NULL,
+      end_time TEXT NOT NULL,
+      created_by INTEGER,
+      FOREIGN KEY(trip_id) REFERENCES trips(id),
+      FOREIGN KEY(created_by) REFERENCES users(id)
+    )
+  `).run();
 
-// Suggestions table
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS activity_suggestions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    trip_id INTEGER NOT NULL,
-    title TEXT NOT NULL,
-    description TEXT,
-    location TEXT,
-    latitude REAL,
-    longitude REAL,
-    date TEXT NOT NULL,
-    start_time TEXT NOT NULL,
-    end_time TEXT NOT NULL,
-    suggested_by INTEGER NOT NULL,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(trip_id) REFERENCES trips(id),
-    FOREIGN KEY(suggested_by) REFERENCES users(id)
-  )
-`).run();
+  // Suggestions table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS activity_suggestions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      trip_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT,
+      location TEXT,
+      latitude REAL,
+      longitude REAL,
+      date TEXT NOT NULL,
+      start_time TEXT NOT NULL,
+      end_time TEXT NOT NULL,
+      suggested_by INTEGER NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(trip_id) REFERENCES trips(id),
+      FOREIGN KEY(suggested_by) REFERENCES users(id)
+    )
+  `).run();
 
-// Votes table
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS activity_votes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    suggestion_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
-    vote TEXT CHECK(vote IN ('yes','no')) NOT NULL,
-    FOREIGN KEY(suggestion_id) REFERENCES activity_suggestions(id),
-    FOREIGN KEY(user_id) REFERENCES users(id),
-    UNIQUE(suggestion_id, user_id)
-  )
-`).run();
+  // Votes table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS activity_votes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      suggestion_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      vote TEXT CHECK(vote IN ('yes','no')) NOT NULL,
+      FOREIGN KEY(suggestion_id) REFERENCES activity_suggestions(id),
+      FOREIGN KEY(user_id) REFERENCES users(id),
+      UNIQUE(suggestion_id, user_id)
+    )
+  `).run();
+
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS activity_attachments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      activity_id INTEGER NOT NULL,
+      filename TEXT NOT NULL,
+      original_filename TEXT NOT NULL,
+      file_path TEXT NOT NULL,
+      file_type TEXT NOT NULL,
+      file_size INTEGER NOT NULL,
+      uploaded_by INTEGER NOT NULL,
+      uploaded_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(activity_id) REFERENCES activities(id),
+      FOREIGN KEY(uploaded_by) REFERENCES users(id)
+    )
+  `).run();
 
 
   // voorbeeldaccounts toevoegen
@@ -593,6 +609,33 @@ export function updateGroup(groupId, name, description) {
   `);
   stmt.run(name, description, groupId);
   return { success: true, message: "Group updated successfully" };
+}
+
+export function createAttachment(activityId, filename, originalFilename, filePath, fileType, fileSize, uploadedBy) {
+  const stmt = db.prepare(`
+    INSERT INTO activity_attachments (activity_id, filename, original_filename, file_path, file_type, file_size, uploaded_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  const result = stmt.run(activityId, filename, originalFilename, filePath, fileType, fileSize, uploadedBy);
+  return result.lastInsertRowid;
+}
+
+export function getActivityAttachments(activityId) {
+  return db.prepare(`
+    SELECT a.*, u.name as uploader_name
+    FROM activity_attachments a
+    LEFT JOIN users u ON u.id = a.uploaded_by
+    WHERE a.activity_id = ?
+    ORDER BY a.uploaded_at DESC
+  `).all(activityId);
+}
+
+export function getAttachmentById(attachmentId) {
+  return db.prepare("SELECT * FROM activity_attachments WHERE id = ?").get(attachmentId);
+}
+
+export function deleteAttachment(attachmentId) {
+  db.prepare("DELETE FROM activity_attachments WHERE id = ?").run(attachmentId);
 }
 
 export default db;
