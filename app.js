@@ -987,13 +987,17 @@ app.get("/logout", (req, res) => {
 
 // 404 handler
 app.use((request, response, next) => {
-  response.status(404).send("Sorry can't find that!");
+  response.status(404).render("404", { 
+    user: request.session.user || null 
+  });
 });
 
 // error handler
 app.use((error, request, response, next) => {
   console.error(error.stack);
-  response.status(500).send("Something broke!");
+  response.status(500).render("500", { 
+    user: request.session.user || null 
+  });
 });
 
 // start server

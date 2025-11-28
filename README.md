@@ -48,7 +48,7 @@
 
 6. Diverse extras.
 
-    - [ ] mooiere error pages (email in gebruik, user not found, ...)
+    - [x] mooiere error pages (email in gebruik, user not found, ...)
     - [ ] admin accounts-systeem die accounts kan verwijderen/editen etc
     - [ ] functionaliteit om meer vrienden te zoeken
     - [ ] reis-planning downloaden als text file

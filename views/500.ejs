@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Server Error – TravelBuddy</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <style>
+    body {
+      background-color: #fef9ef;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar {
+      background-color: #2d5f5d;
+      padding: 1rem 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+      color: white !important;
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+
+    .error-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+    
+    .error-content {
+      background: white;
+      border-radius: 1rem;
+      padding: 3rem;
+      max-width: 600px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 2px solid #e0e0e0;
+    }
+    
+    .error-code {
+      font-size: 8rem;
+      font-weight: bold;
+      color: #c17767;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+    
+    .error-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2d5f5d;
+      margin-bottom: 1rem;
+    }
+    
+    .error-message {
+      color: #5a5a5a;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    .btn-home {
+      background-color: #e8b4b8;
+      border: none;
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 5px;
+      color: #2d5f5d;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s;
+      margin: 0.5rem;
+    }
+    
+    .btn-home:hover {
+      background-color: #d99fa4;
+      color: #2d5f5d;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .btn-secondary {
+      background-color: #8b9d77;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background-color: #748361;
+      color: white;
+    }
+    
+    footer {
+      background-color: #2d5f5d;
+      color: #fef9ef;
+      padding: 1.5rem 0;
+      text-align: center;
+      margin-top: auto;
+      border-top: 3px solid #c17767;
+    }
+
+    @media (max-width: 767px) {
+      .error-code {
+        font-size: 5rem;
+      }
+      
+      .error-title {
+        font-size: 1.5rem;
+      }
+      
+      .error-content {
+        padding: 2rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">TravelBuddy</a>
+    </div>
+  </nav>
+
+  <div class="error-container">
+    <div class="error-content">
+      <div class="error-code">500</div>
+      <h1 class="error-title">Something Went Wrong</h1>
+      <p class="error-message">
+        We're sorry! Our server encountered an unexpected error. Our team has been notified and we're working on fixing it.
+      </p>
+      <div>
+        <a href="/" class="btn-home">Back to Home</a>
+        <a href="javascript:history.back()" class="btn-home btn-secondary">← Go Back</a>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <div class="container">
+      <p class="mb-0">© 2025 TravelBuddy</p>
+    </div>
+  </footer>
+</body>
+</html>
