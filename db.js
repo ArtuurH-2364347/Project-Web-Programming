@@ -638,4 +638,44 @@ export function deleteAttachment(attachmentId) {
   db.prepare("DELETE FROM activity_attachments WHERE id = ?").run(attachmentId);
 }
 
+export function searchUsers(searchQuery, currentUserId) {
+  const users = db.prepare(`
+    SELECT 
+      u.id, 
+      u.name, 
+      u.email, 
+      u.bio, 
+      u.profile_picture,
+      CASE
+        WHEN EXISTS (
+          SELECT 1 FROM friends 
+          WHERE user_id = ? AND friend_id = u.id
+        ) THEN 'friends'
+        WHEN EXISTS (
+          SELECT 1 FROM friend_requests 
+          WHERE sender_id = ? AND receiver_id = u.id AND status = 'pending'
+        ) THEN 'request_sent'
+        WHEN EXISTS (
+          SELECT 1 FROM friend_requests 
+          WHERE sender_id = u.id AND receiver_id = ? AND status = 'pending'
+        ) THEN 'request_received'
+        ELSE 'none'
+      END as relationship_status
+    FROM users u
+    WHERE u.id != ?
+    AND (u.name LIKE ? OR u.email LIKE ?)
+    ORDER BY u.name ASC
+    LIMIT 20
+  `).all(
+    currentUserId, 
+    currentUserId, 
+    currentUserId, 
+    currentUserId, 
+    `%${searchQuery}%`, 
+    `%${searchQuery}%`
+  );
+  
+  return users;
+}
+
 export default db;

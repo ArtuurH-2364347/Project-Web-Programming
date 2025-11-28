@@ -9,8 +9,8 @@ import db, {
   InitializeDatabase, getUserByEmail, createUser, getFriends, 
   sendFriendRequest, getPendingRequests, acceptFriendRequest, 
   rejectFriendRequest, removeFriend, createGroup, getUserGroups,
-  getGroupById, getGroupMembers, isGroupMember, updateMemberRole, removeGroupMember,
-  addGroupMember, updateGroup,
+  getGroupById, getGroupMembers, isGroupMember, updateMemberRole,
+  removeGroupMember,addGroupMember, updateGroup, searchUsers,
   createTrip, getGroupTrips, getTripById, getTripActivities, createActivity, deleteActivity, getUserTrips,
   createActivitySuggestion, getTripSuggestions, getSuggestionVotes, getUserVote, castVote, approveSuggestion, 
   deleteSuggestion, checkActivityOverlap, deleteGroup, deleteTrip,
@@ -250,6 +250,18 @@ app.post("/add-friend", (req, res) => {
 
   const friendEmail = req.body.friendEmail;
   const result = sendFriendRequest(req.session.user.id, friendEmail);
+  const referer = req.get('Referer') || '';
+  const fromFriendsPage = referer.includes('/friends');
+  
+  if (fromFriendsPage) {
+    const searchQuery = req.query.search || '';
+    if (result.success) {
+      return res.redirect(`/friends?success=${encodeURIComponent(result.message)}${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`);
+    } else {
+      return res.redirect(`/friends?error=${encodeURIComponent(result.message)}${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`);
+    }
+  }
+  
   const friends = getFriends(req.session.user.id);
   const requests = getPendingRequests(req.session.user.id) || [];
   
@@ -293,6 +305,13 @@ app.post("/remove-friend/:id", (req, res) => {
 
   const friendId = parseInt(req.params.id);
   removeFriend(req.session.user.id, friendId);
+  const referer = req.get('Referer') || '';
+  const fromFriendsPage = referer.includes('/friends');
+  
+  if (fromFriendsPage) {
+    const searchQuery = req.query.search || '';
+    return res.redirect(`/friends?success=${encodeURIComponent('Friend removed successfully')}${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`);
+  }
 
   res.redirect("/profile");
 });
@@ -963,13 +982,10 @@ app.post("/attachments/:id/delete", (req, res) => {
   const activity = db.prepare("SELECT * FROM activities WHERE id = ?").get(attachment.activity_id);
   const trip = getTripById(activity.trip_id);
   const membership = isGroupMember(req.session.user.id, trip.group_id);
-  
-  // Only the uploader or an admin can delete
+
   if (!membership || (membership.role !== 'admin' && attachment.uploaded_by !== req.session.user.id)) {
     return res.status(403).send("You don't have permission to delete this attachment");
   }
-
-  // Delete file from filesystem
   const fs = require('fs');
   const filePath = path.join(__dirname, 'public', attachment.file_path);
   if (fs.existsSync(filePath)) {
@@ -978,6 +994,40 @@ app.post("/attachments/:id/delete", (req, res) => {
 
   deleteAttachment(attachmentId);
   res.redirect(`/trips/${trip.id}?success=Attachment deleted successfully`);
+});
+
+// friends page
+app.get("/friends", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const friends = getFriends(req.session.user.id);
+  const requests = getPendingRequests(req.session.user.id);
+  const searchQuery = req.query.search || '';
+  let searchResults = [];
+  
+  if (searchQuery) {
+    searchResults = searchUsers(searchQuery, req.session.user.id);
+  }
+
+  res.render("friends", {
+    user: req.session.user,
+    friends: friends,
+    requests: requests,
+    searchResults: searchResults,
+    searchQuery: searchQuery,
+    message: null
+  });
+});
+
+app.post("/friends/search", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const searchQuery = req.body.search || '';
+  res.redirect(`/friends?search=${encodeURIComponent(searchQuery)}`);
 });
 
 // logout
