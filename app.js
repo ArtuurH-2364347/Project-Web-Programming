@@ -165,16 +165,16 @@ app.post("/register", async (req, res) => {
   // checken of email al in gebruik is
   const existingUser = getUserByEmail(email);
   if (existingUser) {
-    return res.status(400).send("<h3>Email already in use. <a href='/register'>Try again</a></h3>");
+    return res.redirect("/register?error=" + encodeURIComponent("Email already in use. Please try a different email address."));
   }
 
   try {
     // user aanmaken
     createUser(name, email, password, bio || "");
-    res.redirect("/login");
+    res.redirect("/login?success=" + encodeURIComponent("Account created successfully! Please log in."));
   } catch (error) {
     console.error(error);
-    res.status(500).send("<h3>Registration failed. Please try again later.</h3>");
+    res.redirect("/register?error=" + encodeURIComponent("Registration failed. Please try again later."));
   }
 });
 

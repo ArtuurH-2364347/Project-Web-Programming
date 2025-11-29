@@ -163,13 +163,19 @@ export function InitializeDatabase() {
         name: "Peter",
         email: "peter@example.com",
         password: "password123",
-        bio: "Explorer of hidden gems."
+        bio: "This can be anything!"
       },
       {
         name: "Jori",
         email: "jori@example.com",
         password: "password123",
-        bio: "Adventure seeker and food lover."
+        bio: "This can be anything!"
+      },
+      {
+        name: "Artuur",
+        email: "artuur.heidbuchel@protonmail.com",
+        password: "wachtwoord",
+        bio: "Ik heb ook een bio!"
       }
     ];
 
