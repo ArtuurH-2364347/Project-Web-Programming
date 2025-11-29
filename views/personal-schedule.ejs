@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Schedule – TravelBuddy</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="/css/global.css" />
+  <link rel="stylesheet" href="/css/personal-schedule.css" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <%- include('partials/navbar') %>
+    </div>
+  </nav>
+
+  <section class="hero-section">
+    <div class="container hero-content">
+      <h1>My Schedule</h1>
+      <p>Your upcoming activities and trips</p>
+    </div>
+  </section>
+
+  <main class="container">
+    <div class="overlay">
+      
+      <div class="schedule-summary">
+        <div><strong><%= activities.length %></strong> total</div>
+        <div><strong><%= upcomingActivities.length %></strong> upcoming</div>
+        <div><strong><%= pastActivities.length %></strong> completed</div>
+      </div>
+
+      <ul class="nav nav-tabs" id="scheduleTabs">
+        <li class="nav-item">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#all">All</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#upcoming">Upcoming</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#past">Past</button>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="all">
+          <% if (activities.length > 0) { %>
+            <% Object.keys(activitiesByDate).sort().forEach(date => { %>
+              <div class="date-group">
+                <h3 class="date-label">
+                  <%= new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) %>
+                  <% if (date === today) { %><span class="today-tag">Today</span><% } %>
+                </h3>
+                
+                <% activitiesByDate[date].forEach(activity => { %>
+                  <div class="activity-item <%= activity.date < today ? 'completed' : '' %>">
+                    <div class="time-block">
+                      <%= activity.start_time %><br><%= activity.end_time %>
+                    </div>
+                    <div class="activity-details">
+                      <h4><%= activity.title %></h4>
+                      <div class="tags">
+                        <span><%= activity.trip_name %></span>
+                        <span><%= activity.group_name %></span>
+                        <% if (activity.location) { %><span><%= activity.location %></span><% } %>
+                      </div>
+                      <% if (activity.description) { %>
+                        <p><%= activity.description %></p>
+                      <% } %>
+                      
+                      <% if (activity.attachments && activity.attachments.length > 0) { %>
+                        <div class="files">
+                          <% activity.attachments.forEach(attachment => { %>
+                            <% if (attachment.file_type.startsWith('image/')) { %>
+                              <a href="/attachments/<%= attachment.id %>/view" target="_blank" class="file-thumb">
+                                <img src="/attachments/<%= attachment.id %>/view" alt="<%= attachment.original_filename %>" />
+                              </a>
+                            <% } else { %>
+                              <a href="/attachments/<%= attachment.id %>/download" class="file-link">
+                                <%= attachment.original_filename %>
+                              </a>
+                            <% } %>
+                          <% }) %>
+                        </div>
+                      <% } %>
+                      
+                      <a href="/trips/<%= activity.trip_id %>" class="view-trip">View full trip →</a>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="no-activities">
+              <p>No activities yet. <a href="/groups">Join a group</a> to start planning trips.</p>
+            </div>
+          <% } %>
+        </div>
+
+        <div class="tab-pane fade" id="upcoming">
+          <% if (upcomingActivities.length > 0) { %>
+            <% 
+              const upcomingByDate = {};
+              upcomingActivities.forEach(activity => {
+                if (!upcomingByDate[activity.date]) {
+                  upcomingByDate[activity.date] = [];
+                }
+                upcomingByDate[activity.date].push(activity);
+              });
+            %>
+            <% Object.keys(upcomingByDate).sort().forEach(date => { %>
+              <div class="date-group">
+                <h3 class="date-label">
+                  <%= new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) %>
+                  <% if (date === today) { %><span class="today-tag">Today</span><% } %>
+                </h3>
+                
+                <% upcomingByDate[date].forEach(activity => { %>
+                  <div class="activity-item">
+                    <div class="time-block">
+                      <%= activity.start_time %><br><%= activity.end_time %>
+                    </div>
+                    <div class="activity-details">
+                      <h4><%= activity.title %></h4>
+                      <div class="tags">
+                        <span><%= activity.trip_name %></span>
+                        <span><%= activity.group_name %></span>
+                        <% if (activity.location) { %><span><%= activity.location %></span><% } %>
+                      </div>
+                      <% if (activity.description) { %>
+                        <p><%= activity.description %></p>
+                      <% } %>
+                      
+                      <% if (activity.attachments && activity.attachments.length > 0) { %>
+                        <div class="files">
+                          <% activity.attachments.forEach(attachment => { %>
+                            <% if (attachment.file_type.startsWith('image/')) { %>
+                              <a href="/attachments/<%= attachment.id %>/view" target="_blank" class="file-thumb">
+                                <img src="/attachments/<%= attachment.id %>/view" alt="<%= attachment.original_filename %>" />
+                              </a>
+                            <% } else { %>
+                              <a href="/attachments/<%= attachment.id %>/download" class="file-link">
+                                <%= attachment.original_filename %>
+                              </a>
+                            <% } %>
+                          <% }) %>
+                        </div>
+                      <% } %>
+                      
+                      <a href="/trips/<%= activity.trip_id %>" class="view-trip">View full trip →</a>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="no-activities">
+              <p>No upcoming activities.</p>
+            </div>
+          <% } %>
+        </div>
+
+        <div class="tab-pane fade" id="past">
+          <% if (pastActivities.length > 0) { %>
+            <% 
+              const pastByDate = {};
+              pastActivities.forEach(activity => {
+                if (!pastByDate[activity.date]) {
+                  pastByDate[activity.date] = [];
+                }
+                pastByDate[activity.date].push(activity);
+              });
+            %>
+            <% Object.keys(pastByDate).sort().reverse().forEach(date => { %>
+              <div class="date-group">
+                <h3 class="date-label">
+                  <%= new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) %>
+                </h3>
+                
+                <% pastByDate[date].forEach(activity => { %>
+                  <div class="activity-item completed">
+                    <div class="time-block">
+                      <%= activity.start_time %><br><%= activity.end_time %>
+                    </div>
+                    <div class="activity-details">
+                      <h4><%= activity.title %></h4>
+                      <div class="tags">
+                        <span><%= activity.trip_name %></span>
+                        <span><%= activity.group_name %></span>
+                        <% if (activity.location) { %><span><%= activity.location %></span><% } %>
+                      </div>
+                      <% if (activity.description) { %>
+                        <p><%= activity.description %></p>
+                      <% } %>
+                      
+                      <% if (activity.attachments && activity.attachments.length > 0) { %>
+                        <div class="files">
+                          <% activity.attachments.forEach(attachment => { %>
+                            <% if (attachment.file_type.startsWith('image/')) { %>
+                              <a href="/attachments/<%= attachment.id %>/view" target="_blank" class="file-thumb">
+                                <img src="/attachments/<%= attachment.id %>/view" alt="<%= attachment.original_filename %>" />
+                              </a>
+                            <% } else { %>
+                              <a href="/attachments/<%= attachment.id %>/download" class="file-link">
+                                <%= attachment.original_filename %>
+                              </a>
+                            <% } %>
+                          <% }) %>
+                        </div>
+                      <% } %>
+                      
+                      <a href="/trips/<%= activity.trip_id %>" class="view-trip">View full trip →</a>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="no-activities">
+              <p>No past activities.</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="quote-section">
+    <div class="container">
+      <blockquote class="travel-quote">
+        <p class="quote-text">"Adventure is worthwhile in itself."</p>
+        <footer class="quote-footer">— Amelia Earhart</footer>
+      </blockquote>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+/* Personal Schedule page */
+
+.hero-section {
+  background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
+  padding: 4rem 0 3rem;
+  color: white;
+  text-align: center;
+}
+
+.hero-content h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.hero-content p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.overlay {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: -2rem;
+  position: relative;
+}
+
+.schedule-summary {
+  display: flex;
+  gap: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 1.5rem;
+}
+
+.schedule-summary div {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.schedule-summary strong {
+  color: #2d5f5d;
+  font-size: 1.5rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 2rem;
+}
+
+.nav-tabs .nav-link {
+  color: #666;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #2d5f5d;
+}
+
+.nav-tabs .nav-link.active {
+  color: #2d5f5d;
+  border-color: #8b9d77;
+  background: transparent;
+}
+
+.date-group {
+  margin-bottom: 2.5rem;
+}
+
+.date-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d5f5d;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.today-tag {
+  background: #8b9d77;
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
+.activity-item {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  background: #fafafa;
+  border-left: 3px solid #8b9d77;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.activity-item.completed {
+  opacity: 0.65;
+  border-left-color: #ccc;
+}
+
+.time-block {
+  min-width: 70px;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.activity-details {
+  flex: 1;
+}
+
+.activity-details h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d5f5d;
+  margin-bottom: 0.5rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tags span {
+  background: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  color: #666;
+  border: 1px solid #e0e0e0;
+}
+
+.activity-details p {
+  color: #666;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.file-thumb {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: block;
+  border: 1px solid #e0e0e0;
+}
+
+.file-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.file-link {
+  background: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #2d5f5d;
+  text-decoration: none;
+  border: 1px solid #e0e0e0;
+  display: inline-block;
+}
+
+.file-link:hover {
+  border-color: #8b9d77;
+  background: #fafafa;
+}
+
+.view-trip {
+  color: #8b9d77;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.view-trip:hover {
+  color: #2d5f5d;
+  text-decoration: underline;
+}
+
+.no-activities {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #999;
+}
+
+.no-activities a {
+  color: #8b9d77;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.no-activities a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .schedule-summary {
+    gap: 1rem;
+  }
+
+  .schedule-summary strong {
+    font-size: 1.25rem;
+  }
+
+  .activity-item {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .time-block {
+    text-align: left;
+  }
+
+  .overlay {
+    padding: 1.5rem;
+  }
+}
