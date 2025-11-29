@@ -45,14 +45,6 @@
       <a href="/edit-profile" class="btn btn-edit mb-4">Edit Profile</a>
 
       <div class="mb-4">
-        <h4>Add a Friend</h4>
-        <form action="/add-friend" method="POST" class="d-flex gap-2 add-friend-form">
-          <input type="email" name="friendEmail" class="form-control" placeholder="Enter your friend's email" required />
-          <button type="submit" class="btn btn-primary">Add Friend</button>
-        </form>
-      </div>
-
-      <div class="mb-4">
         <h4>Friends</h4>
         <div class="friends-list">
           <% if (friends && friends.length > 0) { %>

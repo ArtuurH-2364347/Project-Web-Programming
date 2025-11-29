@@ -1,9 +1,9 @@
-// Locatie autocomplete
 const locationInput = document.getElementById('location');
 const latitudeInput = document.getElementById('latitude');
 const longitudeInput = document.getElementById('longitude');
 const suggestionsDiv = document.getElementById('location-suggestions');
 let debounceTimer;
+let map;
 
 locationInput.addEventListener('input', function(e) {
   const query = e.target.value.trim();
@@ -83,7 +83,8 @@ function initializeMap(activities) {
   const locatedActivities = activities.filter(a => a.latitude && a.longitude);
   
   if (locatedActivities.length > 0) {
-    const map = L.map('trip-map').setView([locatedActivities[0].latitude, locatedActivities[0].longitude], 12);
+    //Globale variabele
+    map = L.map('trip-map').setView([locatedActivities[0].latitude, locatedActivities[0].longitude], 12);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',

@@ -45,6 +45,12 @@
 
       <div class="map-container">
         <h4 class="fw-bold mb-3">Activity Locations</h4>
+          <div class="mb-3">
+            <button id="showMyLocationBtn" class="btn btn-primary">
+              <i class="bi bi-geo-alt-fill"></i> Show My Location
+            </button>
+            <span id="locationStatus" class="ms-2 small text-muted"></span>
+          </div>
         <div id="trip-map"></div>
       </div>
       <% if (suggestions && suggestions.length > 0) { %>
@@ -347,6 +353,8 @@
       initializeMap(window.tripActivities);
     });
   </script>
+  <script src="/js/geolocation-map.js"></script>
+  <script src="/js/activity-notifications.js"></script>
 
 </body>
 </html>

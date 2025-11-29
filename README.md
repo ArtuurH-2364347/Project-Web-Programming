@@ -39,7 +39,7 @@
 
 4. Tijdens de reis.
 
-    - [ ] overzicht persoonlijke dagplanning (los van groepen) 
+    - [x] overzicht persoonlijke dagplanning (los van groepen) 
     - [x] tickets/vouchers per activiteit bekijken
     - [ ] Dit moet allemaal offline kunnen?
 
@@ -57,6 +57,10 @@
 ## Gebruikte APIs met huidige planning:
 
 1. Browser APIs:
+    - Notification API
+    - geolocation API
+    - LocalStorage API
+    - Fetch API
 
 2. Externe APIs:
     - [Leaflet](https://leafletjs.com/) Leaflet is zelf geen API, maar maakt gebruikt van de OSM API
