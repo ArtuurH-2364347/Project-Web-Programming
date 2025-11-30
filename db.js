@@ -24,6 +24,8 @@ export function InitializeDatabase() {
     )
   `).run();
 
+  addBannerImageColumn()
+  
   // Symmetrische friends table
   db.prepare(`
   CREATE TABLE IF NOT EXISTS friends (
@@ -185,6 +187,20 @@ export function InitializeDatabase() {
     }
 
     console.log("Example users created.");
+  }
+}
+
+export function addBannerImageColumn() {
+  try {
+    db.prepare(`
+      ALTER TABLE users ADD COLUMN banner_image TEXT
+    `).run();
+    console.log("Banner image column added successfully.");
+  } catch (error) {
+    // Column might already exist
+    if (!error.message.includes('duplicate column name')) {
+      console.error("Error adding banner_image column:", error);
+    }
   }
 }
 

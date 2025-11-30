@@ -5,14 +5,18 @@ import db, { getFriends, getPendingRequests } from '../db.js';
 
 const router = express.Router();
 
-// Profile picture upload setup
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'public/uploads/profiles/');
+    if (file.fieldname === 'profilePicture') {
+      cb(null, 'public/uploads/profiles/');
+    } else if (file.fieldname === 'bannerImage') {
+      cb(null, 'public/uploads/banners/');
+    }
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname));
+    const prefix = file.fieldname === 'profilePicture' ? 'profile-' : 'banner-';
+    cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
   }
 });
 
@@ -63,28 +67,43 @@ router.get("/edit-profile", (req, res) => {
 });
 
 // Handle editing profile
-router.post("/edit-profile", upload.single('profilePicture'), (req, res) => {
+router.post("/edit-profile", upload.fields([
+  { name: 'profilePicture', maxCount: 1 },
+  { name: 'bannerImage', maxCount: 1 }
+]), (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login");
   }
 
-  const { name, bio, removeProfilePicture } = req.body;
+  const { name, bio, removeProfilePicture, removeBannerImage } = req.body;
   const userId = req.session.user.id;
 
   let profilePicture = req.session.user.profile_picture;
-  
+  let bannerImage = req.session.user.banner_image;
+
+  // Handle profile picture
   if (removeProfilePicture === 'on') {
     profilePicture = null;
-  } else if (req.file) {
-    profilePicture = '/uploads/profiles/' + req.file.filename;
+  } else if (req.files && req.files['profilePicture']) {
+    profilePicture = '/uploads/profiles/' + req.files['profilePicture'][0].filename;
   }
 
-  const stmt = db.prepare("UPDATE users SET name = ?, bio = ?, profile_picture = ? WHERE id = ?");
-  stmt.run(name, bio, profilePicture, userId);
+  // Handle banner image
+  if (removeBannerImage === 'on') {
+    bannerImage = null;
+  } else if (req.files && req.files['bannerImage']) {
+    bannerImage = '/uploads/banners/' + req.files['bannerImage'][0].filename;
+  }
 
+  // Update database with both fields
+  const stmt = db.prepare("UPDATE users SET name = ?, bio = ?, profile_picture = ?, banner_image = ? WHERE id = ?");
+  stmt.run(name, bio, profilePicture, bannerImage, userId);
+
+  // Update session
   req.session.user.name = name;
   req.session.user.bio = bio;
   req.session.user.profile_picture = profilePicture;
+  req.session.user.banner_image = bannerImage;
 
   res.redirect("/profile");
 });

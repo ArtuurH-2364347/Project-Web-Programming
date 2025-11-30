@@ -1,15 +1,38 @@
 /* Profile page specific styles */
-
 body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-main.container {
-  padding-top: 2.25rem;
-  padding-bottom: 2rem;
+/* Full page background styling */
+.profile-background {
+  min-height: calc(100vh - 200px);
+  background-color: #fef9ef;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+  padding: 2.25rem 0 2rem 0;
   flex: 1 0 auto;
+}
+
+/* Add overlay for better text readability - only when there's a custom background image */
+.profile-background[style*="background-image"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(254, 249, 239, 0.3);
+  backdrop-filter: blur(2px);
+}
+
+main.container {
+  position: relative;
+  z-index: 1;
 }
 
 .overlay {
@@ -131,6 +154,10 @@ main.container {
 }
 
 @media (max-width: 767px) {
+  .profile-background {
+    padding: 1.5rem 0;
+  }
+
   .overlay {
     padding: 1rem;
     margin: 0.5rem;
