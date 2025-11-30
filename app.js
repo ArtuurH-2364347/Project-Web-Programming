@@ -51,7 +51,7 @@ app.get("/", (request, response) => {
   response.render("index", { user: request.session.user });
 });
 
-// Mount route modules (order matters!)
+// Mount route modules
 app.use(authRoutes);
 app.use(profileRoutes);
 app.use(friendRoutes);
@@ -61,7 +61,7 @@ app.use(tripRoutes);
 app.use(activityRoutes);
 app.use(attachmentRoutes);
 
-console.log('All routes mounted successfully');
+// console.log('All routes mounted.');
 
 // 404 handler
 app.use((request, response, next) => {

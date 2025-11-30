@@ -197,7 +197,6 @@ export function addBannerImageColumn() {
     `).run();
     console.log("Banner image column added successfully.");
   } catch (error) {
-    // Column might already exist
     if (!error.message.includes('duplicate column name')) {
       console.error("Error adding banner_image column:", error);
     }
