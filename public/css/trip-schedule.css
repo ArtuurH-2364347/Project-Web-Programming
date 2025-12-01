@@ -1,5 +1,38 @@
-/* Trip Schedule page specific styles */
+.btn-pdf {
+  background-color: #8b9d77;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  padding: 0.5rem 1.5rem;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
 
+.btn-pdf:hover {
+  background-color: #748361;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-pdf i {
+  font-size: 1.1em;
+}
+
+@media (max-width: 767px) {
+  .trip-header .d-flex.gap-2 {
+    width: 100%;
+  }
+  
+  .btn-pdf,
+  .trip-header .btn-light {
+    width: 100%;
+    justify-content: center;
+  }
+}
 .overlay {
   background-color: white;
   border-radius: 1rem;
