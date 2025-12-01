@@ -51,7 +51,7 @@
     - [x] mooiere error pages (email in gebruik, user not found, ...)
     - [ ] admin accounts-systeem die accounts kan verwijderen/editen etc
     - [ ] functionaliteit om meer vrienden te zoeken
-    - [ ] reis-planning downloaden als text file
+    - [X] reis-planning downloaden als text file
     - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
 
 ## Gebruikte APIs met huidige planning:
