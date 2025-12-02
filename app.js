@@ -10,6 +10,35 @@ import db, { InitializeDatabase, getUserByEmail, createUser, getFriends,   sendF
 const app = express();
 const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
 
+function requireAdmin(req, res, next) {
+  if (!req.session.user || req.session.user.role !== "admin") {
+    return res.status(403).send("You are not an admin.");
+  }
+  next();
+}
+
+app.get("/admin/users", requireAdmin, (req, res) => {
+  const users = getAllUsers();
+  res.render("adminUsers", { users });
+});
+app.post("/admin/promote/:id", requireAdmin, (req, res) => {
+  promoteUserToAdmin(req.params.id);
+  res.redirect("/admin/users");
+});
+
+app.post("/admin/demote/:id", requireAdmin, (req, res) => {
+  demoteUserToUser(req.params.id);
+  res.redirect("/admin/users");
+});
+
+app.post("/admin/delete/:id", requireAdmin, (req, res) => {
+  if (req.params.id == req.session.user.id) {
+    return res.send("Admins cannot delete themselves.");
+  }
+  deleteUserHard(req.params.id);
+  res.redirect("/admin/users");
+});
+
 // set the view engine to ejs
 // Use EJS templates
 app.set("view engine", "ejs");
@@ -64,9 +93,17 @@ app.post("/login", async (req, res) => {
     return res.status(401).send("<h3>Incorrect password. <a href='/login.html'>Try again</a></h3>");
   }
 
-  req.session.user = user;
+  req.session.user = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    bio: user.bio,
+    role: user.role
+  };
+
   res.redirect("/profile");
 });
+
 
 // Serve registratie pagina
 app.get("/register", (req, res) => {

@@ -2,6 +2,10 @@ import Database from "better-sqlite3";
 import bcrypt from "bcrypt";
 
 const db = new Database("database.db", { verbose: console.log });
+// Voeg admin kolom toe als die nog niet bestaat
+try {
+  db.prepare("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'").run();
+} catch {}
 
 export function InitializeDatabase() {
   db.pragma("journal_mode = WAL;");
@@ -14,12 +18,13 @@ export function InitializeDatabase() {
   // tabel maken als die nog niet bestaat
   // gebruikers table
   db.prepare(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      passwordHash TEXT NOT NULL,
-      bio TEXT
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    passwordHash TEXT NOT NULL,
+    bio TEXT,
+    role TEXT DEFAULT 'user'
     )
   `).run();
 
@@ -104,25 +109,30 @@ db.prepare(`
   if (count === 0) {
     console.log("Seeding example users...");
 
-    const insertUser = db.prepare("INSERT INTO users (name, email, passwordHash, bio) VALUES (?, ?, ?, ?)");
+    const insertUser = db.prepare(
+      "INSERT INTO users (name, email, passwordHash, bio, role) VALUES (?, ?, ?, ?, ?)"
+    );
+
     const exampleUsers = [
       {
         name: "Peter",
         email: "peter@example.com",
         password: "password123",
-        bio: "Explorer of hidden gems."
+        bio: "Explorer of hidden gems.",
+        role: "admin"
       },
       {
         name: "Jori",
         email: "jori@example.com",
         password: "password123",
-        bio: "Adventure seeker and food lover."
+        bio: "Adventure seeker and food lover.",
+        role: "user"
       }
     ];
 
     for (const user of exampleUsers) {
       const passwordHash = bcrypt.hashSync(user.password, 10);
-      insertUser.run(user.name, user.email, passwordHash, user.bio);
+      insertUser.run(user.name, user.email, passwordHash, user.bio, user.role);
     }
 
     console.log("Example users created.");
@@ -246,6 +256,38 @@ export function removeFriend(userId, friendId) {
   db.prepare("DELETE FROM friends WHERE user_id = ? AND friend_id = ?").run(userId, friendId);
   db.prepare("DELETE FROM friends WHERE user_id = ? AND friend_id = ?").run(friendId, userId);
   return { success: true, message: "Friend removed successfully." };
+}
+
+export function getAllUsers() {
+  return db.prepare("SELECT id, name, email, role FROM users ORDER BY id ASC").all();
+}
+
+export function promoteUserToAdmin(userId) {
+  db.prepare("UPDATE users SET role = 'admin' WHERE id = ?").run(userId);
+  return { success: true, message: "User promoted to admin." };
+}
+
+export function demoteUserToUser(userId) {
+  db.prepare("UPDATE users SET role = 'user' WHERE id = ?").run(userId);
+  return { success: true, message: "Admin demoted to user." };
+}
+
+export function deleteUserHard(userId) {
+  // verwijder uit alle gerelateerde tabellen
+  db.prepare("DELETE FROM friends WHERE user_id = ? OR friend_id = ?").run(userId, userId);
+  db.prepare("DELETE FROM friend_requests WHERE sender_id = ? OR receiver_id = ?").run(userId, userId);
+  db.prepare("DELETE FROM group_members WHERE user_id = ?").run(userId);
+  
+  // Verwijder activiteiten die hij heeft aangemaakt
+  db.prepare("DELETE FROM activities WHERE created_by = ?").run(userId);
+
+  // Verwijder groepen waarvan hij eigenaar is (optioneel, maakt het eenvoudig)
+  db.prepare("DELETE FROM groups WHERE owner_id = ?").run(userId);
+
+  // tenslotte user zelf
+  db.prepare("DELETE FROM users WHERE id = ?").run(userId);
+
+  return { success: true, message: "User permanently deleted." };
 }
 
 export function createGroup(name, description, ownerId) {

@@ -167,6 +167,15 @@
         </div>
       </div>
 
+      <!-- ADMIN PANEL BUTTON (ADMIN ONLY) -->
+      <% if (user.role === "admin") { %>
+        <div class="mt-4">
+          <a href="/admin/users" class="btn btn-warning w-100 fw-bold">
+            Admin Panel
+          </a>
+        </div>
+      <% } %>
+
     </div>
   </main>
 

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin User Management – TravelBuddy</title>
+
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .container {
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="mb-4">Admin – User Management</h1>
+
+    <a href="/profile" class="btn btn-secondary mb-3">Back to Profile</a>
+
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(u => { %>
+          <tr>
+            <td><%= u.id %></td>
+            <td><%= u.name %></td>
+            <td><%= u.email %></td>
+            <td><%= u.role %></td>
+            <td class="d-flex gap-2">
+
+              <% if (u.role === "user") { %>
+                <form action="/admin/promote/<%= u.id %>" method="POST">
+                  <button class="btn btn-success btn-sm">Promote</button>
+                </form>
+              <% } %>
+
+              <% if (u.role === "admin" && u.id !== user.id) { %>
+                <form action="/admin/demote/<%= u.id %>" method="POST">
+                  <button class="btn btn-warning btn-sm">Demote</button>
+                </form>
+              <% } %>
+
+              <% if (u.id !== user.id) { %>
+                <form action="/admin/delete/<%= u.id %>" method="POST">
+                  <button class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              <% } %>
+
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
