@@ -41,7 +41,7 @@
 
     - [x] overzicht persoonlijke dagplanning (los van groepen) 
     - [x] tickets/vouchers per activiteit bekijken
-    - [ ] Dit moet allemaal offline kunnen?
+    - [x] Dit moet allemaal offline kunnen?
 
 5. Na de reis.
 
@@ -49,7 +49,7 @@
 6. Diverse extras.
 
     - [x] mooiere error pages (email in gebruik, user not found, ...)
-    - [ ] admin accounts-systeem die accounts kan verwijderen/editen etc
+    - [x] admin accounts-systeem die accounts kan verwijderen/editen etc
     - [ ] functionaliteit om meer vrienden te zoeken
     - [X] reis-planning downloaden als text file
     - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
