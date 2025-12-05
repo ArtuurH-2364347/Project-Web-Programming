@@ -1,0 +1,291 @@
+import express from 'express';
+import PDFDocument from 'pdfkit';
+import db, {
+  getGroupById,
+  isGroupMember,
+  createTrip,
+  getTripById,
+  getTripActivities,
+  getGroupMembers,
+  getTripSuggestions,
+  getSuggestionVotes,
+  getUserVote,
+  deleteTrip,
+  getActivityAttachments
+} from '../db.js';
+
+const router = express.Router();
+
+// New trip page
+router.get("/groups/:id/trips/new", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const groupId = parseInt(req.params.id);
+  const group = getGroupById(groupId);
+  
+  if (!group) {
+    return res.status(404).send("Group not found");
+  }
+
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership) {
+    return res.status(403).send("You are not a member of this group");
+  }
+
+  res.render("new-trip", {
+    user: req.session.user,
+    group: group
+  });
+});
+
+// Create trip
+router.post("/groups/:id/trips", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const groupId = parseInt(req.params.id);
+  const { name, destination, startDate, endDate } = req.body;
+
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership || membership.role !== 'admin') {
+    return res.status(403).send("Only admins can create trips");
+  }
+
+  const tripId = createTrip(groupId, name, destination, startDate, endDate);
+  res.redirect(`/trips/${tripId}`);
+});
+
+// View specific trip
+router.get("/trips/:id", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const tripId = parseInt(req.params.id);
+  const trip = getTripById(tripId);
+  
+  if (!trip) {
+    return res.status(404).send("Trip not found");
+  }
+
+  const membership = isGroupMember(req.session.user.id, trip.group_id);
+  if (!membership) {
+    return res.status(403).send("You are not a member of this group");
+  }
+
+  const activities = getTripActivities(tripId);
+  const group = getGroupById(trip.group_id);
+  const isAdmin = membership.role === 'admin';
+  const suggestions = getTripSuggestions(tripId);
+  const groupMembers = getGroupMembers(trip.group_id);
+  const totalMembers = groupMembers.length;
+  const votesNeeded = Math.ceil(totalMembers / 2);
+
+  activities.forEach(activity => {
+    activity.attachments = getActivityAttachments(activity.id);
+  });
+
+  suggestions.forEach(suggestion => {
+    const votes = getSuggestionVotes(suggestion.id);
+    suggestion.yesVotes = votes.filter(v => v.vote === 'yes').length;
+    suggestion.noVotes = votes.filter(v => v.vote === 'no').length;
+    suggestion.totalVotes = votes.length;
+    suggestion.votesNeeded = votesNeeded;
+    
+    const userVote = getUserVote(suggestion.id, req.session.user.id);
+    suggestion.userVote = userVote ? userVote.vote : null;
+  });
+
+  const activitiesByDate = {};
+  activities.forEach(activity => {
+    if (!activitiesByDate[activity.date]) {
+      activitiesByDate[activity.date] = [];
+    }
+    activitiesByDate[activity.date].push(activity);
+  });
+
+  res.render("trip-schedule", {
+    user: req.session.user,
+    trip: trip,
+    group: group,
+    activities: activities,
+    activitiesByDate: activitiesByDate,
+    isAdmin: isAdmin,
+    suggestions: suggestions,
+    totalMembers: totalMembers,
+    votesNeeded: votesNeeded,
+    message: null
+  });
+});
+
+// Delete trip
+router.post("/trips/:id/delete", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const tripId = parseInt(req.params.id);
+  const trip = getTripById(tripId);
+  
+  if (!trip) {
+    return res.status(404).send("Trip not found");
+  }
+
+  const membership = isGroupMember(req.session.user.id, trip.group_id);
+  if (!membership || membership.role !== 'admin') {
+    return res.status(403).send("Only admins can delete trips");
+  }
+
+  const groupId = trip.group_id;
+  deleteTrip(tripId);
+  res.redirect(`/groups/${groupId}`);
+});
+
+export default router;
+
+// Download trip as PDF
+// @author Luca
+router.get("/trips/:id/pdf", (req, res, next) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  try {
+    const tripId = parseInt(req.params.id);
+    const trip = getTripById(tripId);
+
+    if (!trip) return res.status(404).send("Trip not found");
+
+    const membership = isGroupMember(req.session.user.id, trip.group_id);
+    if (!membership) return res.status(403).send("You are not a member of this group");
+
+    const activities = getTripActivities(tripId) || [];
+    const group = getGroupById(trip.group_id) || { name: "Group" };
+
+    // safe defaults
+    const tripName = trip.name || "Trip";
+    const destination = trip.destination || "Unknown destination";
+    const startDate = trip.start_date ? new Date(trip.start_date).toLocaleDateString() : "Unknown";
+    const endDate = trip.end_date ? new Date(trip.end_date).toLocaleDateString() : "Unknown";
+
+    // create document
+    const doc = new PDFDocument({
+      size: "A4",
+      margin: 50
+    });
+
+    // response headers
+    const safeFileName = tripName.replace(/[^a-z0-9_\-\. ]/gi, "_");
+    res.setHeader("Content-disposition", `attachment; filename="${safeFileName}.pdf"`);
+    res.setHeader("Content-type", "application/pdf");
+
+    // pipe PDF to response
+    doc.pipe(res);
+
+    // HEADER
+    // Add a simple colored header rectangle (thin) and title
+    doc.fontSize(20).fillColor("#333").text(tripName, { align: "left" });
+    doc.moveDown(0.2);
+    doc.fontSize(10).fillColor("#666").text(`${group.name} · ${destination}`, { align: "left" });
+    doc.moveDown(0.5);
+
+    // horizontal line
+    const startX = doc.page.margins.left;
+    const endX = doc.page.width - doc.page.margins.right;
+    const y = doc.y;
+    doc.moveTo(startX, y).lineTo(endX, y).strokeColor("#cccccc").lineWidth(1).stroke();
+    doc.moveDown();
+
+    // Trip dates and generated by info
+    doc.fontSize(10).fillColor("#000");
+    doc.text(`Dates: ${startDate} — ${endDate}`);
+    doc.text(`Generated by: ${req.session.user ? req.session.user.name : "Unknown user"}`);
+    doc.moveDown(1);
+
+    // Group activities by date (sorted)
+    const grouped = {};
+    activities.forEach(a => {
+      const dateKey = a.date || "Unknown date";
+      if (!grouped[dateKey]) grouped[dateKey] = [];
+      grouped[dateKey].push(a);
+    });
+
+    const sortedDates = Object.keys(grouped).sort((a, b) => new Date(a) - new Date(b));
+
+    // layout settings
+    const bulletIndent = 12;
+    const lineGap = 4;
+
+    if (sortedDates.length === 0) {
+      doc.fontSize(12).fillColor("#666").text("No activities planned for this trip.", { italics: true });
+    } else {
+      sortedDates.forEach(date => {
+        // print date header
+        const prettyDate = (date !== "Unknown date") ? new Date(date).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }) : date;
+        doc.moveDown(0.5);
+        doc.fontSize(14).fillColor("#000").text(prettyDate, { underline: true });
+        doc.moveDown(0.2);
+
+        grouped[date].forEach(a => {
+          // Activity title
+          doc.fontSize(12).fillColor("#222").text(`• ${a.title || "Untitled activity"}`, {
+            continued: false,
+            indent: 0,
+            paragraphGap: lineGap
+          });
+
+          // Time / Location / Notes — smaller, indented
+          const infoLines = [];
+          if (a.time) infoLines.push(`Time: ${a.time}`);
+          if (a.location) infoLines.push(`Location: ${a.location}`);
+          if (a.description) infoLines.push(`Notes: ${a.description}`);
+          if (a.creator_name) infoLines.push(`Added by: ${a.creator_name}`);
+
+          infoLines.forEach((line, idx) => {
+            doc.fontSize(10).fillColor("#444").text(`    ${line}`);
+          });
+
+          // If there is a location, add a clickable Google Maps link
+          if (a.location) {
+            try {
+              const query = encodeURIComponent(a.location);
+              const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
+              // print a blue underlined link
+              doc.moveDown(0.1);
+              doc.fillColor("blue").fontSize(10).text("View on Google Maps", {
+                link: mapsUrl,
+                underline: true,
+                continued: false,
+                indent: 0
+              });
+              // restore color
+              doc.fillColor("#444");
+            } catch (err) {
+              // if encoding/link fails, ignore silently and continue
+            }
+          }
+
+          doc.moveDown(0.4);
+        });
+
+        doc.moveDown(0.8);
+      });
+    }
+
+    // FOOTER (simple)
+    // Add page footer text on the current page (for multi-page youd normally listen to 'pageAdded')
+    const footerText = `TravelBuddy — ${new Date().toLocaleDateString()}`;
+    const footerY = doc.page.height - doc.page.margins.bottom + 10;
+    doc.fontSize(8).fillColor("#888").text(footerText, doc.page.margins.left, footerY, {
+      align: "left"
+    });
+
+    // finalize PDF
+    doc.end();
+
+  } catch (err) {
+    // make sure express logs it
+    next(err);
+  }
+});

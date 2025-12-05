@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found – TravelBuddy</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/404.css" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">TravelBuddy</a>
+    </div>
+  </nav>
+
+  <div class="error-container">
+    <div class="error-content">
+      <div class="error-code">404</div>
+      <h1 class="error-title">Page Not Found</h1>
+      <p class="error-message">
+        Oops! Looks like you've wandered off the beaten path. The page you're looking for doesn't exist or may have been moved.
+      </p>
+      <div>
+        <a href="/" class="btn-home">Back to Home</a>
+        <% if (user) { %>
+          <a href="/groups" class="btn-home btn-secondary">View Groups</a>
+        <% } else { %>
+          <a href="/login" class="btn-home btn-secondary">Login</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  
+  <%- include('partials/footer') %>
+
+</body>
+</html>

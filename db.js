@@ -18,6 +18,7 @@ export function InitializeDatabase() {
   // tabel maken als die nog niet bestaat
   // gebruikers table
   db.prepare(`
+<<<<<<< HEAD
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -25,9 +26,20 @@ export function InitializeDatabase() {
     passwordHash TEXT NOT NULL,
     bio TEXT,
     role TEXT DEFAULT 'user'
+=======
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      passwordHash TEXT NOT NULL,
+      bio TEXT,
+      profile_picture TEXT
+>>>>>>> 1c2d69a30f7a489fc14ae13f2a0a0d361eb84234
     )
   `).run();
 
+  addBannerImageColumn()
+  
   // Symmetrische friends table
   db.prepare(`
   CREATE TABLE IF NOT EXISTS friends (
@@ -61,47 +73,99 @@ export function InitializeDatabase() {
     owner_id INTEGER,
     FOREIGN KEY(owner_id) REFERENCES users(id)
   )
-`).run();
+  `).run();
 
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS group_members (
-    user_id INTEGER,
-    group_id INTEGER,
-    role TEXT CHECK(role IN ('admin','member')) DEFAULT 'member',
-    PRIMARY KEY(user_id, group_id),
-    FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(group_id) REFERENCES groups(id)
-  )
-`).run();
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS group_members (
+      user_id INTEGER,
+      group_id INTEGER,
+      role TEXT CHECK(role IN ('admin','member')) DEFAULT 'member',
+      PRIMARY KEY(user_id, group_id),
+      FOREIGN KEY(user_id) REFERENCES users(id),
+      FOREIGN KEY(group_id) REFERENCES groups(id)
+    )
+  `).run();
 
-// Trips table
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS trips (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    group_id INTEGER NOT NULL,
-    name TEXT NOT NULL,
-    destination TEXT,
-    start_date TEXT NOT NULL,
-    end_date TEXT NOT NULL,
-    FOREIGN KEY(group_id) REFERENCES groups(id)
-  )
-`).run();
+  // Trips table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS trips (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      group_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      destination TEXT,
+      start_date TEXT NOT NULL,
+      end_date TEXT NOT NULL,
+      FOREIGN KEY(group_id) REFERENCES groups(id)
+    )
+  `).run();
 
-// Activities table
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS activities (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    trip_id INTEGER NOT NULL,
-    title TEXT NOT NULL,
-    description TEXT,
-    location TEXT,
-    date TEXT NOT NULL,
-    time TEXT,
-    created_by INTEGER,
-    FOREIGN KEY(trip_id) REFERENCES trips(id),
-    FOREIGN KEY(created_by) REFERENCES users(id)
-  )
-`).run();
+  // Activities table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS activities (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      trip_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT,
+      location TEXT,
+      latitude REAL,
+      longitude REAL,
+      date TEXT NOT NULL,
+      start_time TEXT NOT NULL,
+      end_time TEXT NOT NULL,
+      created_by INTEGER,
+      FOREIGN KEY(trip_id) REFERENCES trips(id),
+      FOREIGN KEY(created_by) REFERENCES users(id)
+    )
+  `).run();
+
+  // Suggestions table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS activity_suggestions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      trip_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT,
+      location TEXT,
+      latitude REAL,
+      longitude REAL,
+      date TEXT NOT NULL,
+      start_time TEXT NOT NULL,
+      end_time TEXT NOT NULL,
+      suggested_by INTEGER NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(trip_id) REFERENCES trips(id),
+      FOREIGN KEY(suggested_by) REFERENCES users(id)
+    )
+  `).run();
+
+  // Votes table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS activity_votes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      suggestion_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      vote TEXT CHECK(vote IN ('yes','no')) NOT NULL,
+      FOREIGN KEY(suggestion_id) REFERENCES activity_suggestions(id),
+      FOREIGN KEY(user_id) REFERENCES users(id),
+      UNIQUE(suggestion_id, user_id)
+    )
+  `).run();
+
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS activity_attachments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      activity_id INTEGER NOT NULL,
+      filename TEXT NOT NULL,
+      original_filename TEXT NOT NULL,
+      file_path TEXT NOT NULL,
+      file_type TEXT NOT NULL,
+      file_size INTEGER NOT NULL,
+      uploaded_by INTEGER NOT NULL,
+      uploaded_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(activity_id) REFERENCES activities(id),
+      FOREIGN KEY(uploaded_by) REFERENCES users(id)
+    )
+  `).run();
 
 
   // voorbeeldaccounts toevoegen
@@ -118,15 +182,29 @@ db.prepare(`
         name: "Peter",
         email: "peter@example.com",
         password: "password123",
+<<<<<<< HEAD
         bio: "Explorer of hidden gems.",
         role: "admin"
+=======
+        bio: "This can be anything!"
+>>>>>>> 1c2d69a30f7a489fc14ae13f2a0a0d361eb84234
       },
       {
         name: "Jori",
         email: "jori@example.com",
         password: "password123",
+<<<<<<< HEAD
         bio: "Adventure seeker and food lover.",
         role: "user"
+=======
+        bio: "This can be anything!"
+      },
+      {
+        name: "Artuur",
+        email: "artuur.heidbuchel@protonmail.com",
+        password: "wachtwoord",
+        bio: "Ik heb ook een bio!"
+>>>>>>> 1c2d69a30f7a489fc14ae13f2a0a0d361eb84234
       }
     ];
 
@@ -136,6 +214,19 @@ db.prepare(`
     }
 
     console.log("Example users created.");
+  }
+}
+
+export function addBannerImageColumn() {
+  try {
+    db.prepare(`
+      ALTER TABLE users ADD COLUMN banner_image TEXT
+    `).run();
+    console.log("Banner image column added successfully.");
+  } catch (error) {
+    if (!error.message.includes('duplicate column name')) {
+      console.error("Error adding banner_image column:", error);
+    }
   }
 }
 
@@ -310,7 +401,7 @@ export function getUserGroups(userId) {
 
   groups.forEach(group => {
     const members = db.prepare(`
-      SELECT u.id, u.name, u.email
+      SELECT u.id, u.name, u.email, u.profile_picture, gm.role
       FROM users u
       JOIN group_members gm ON gm.user_id = u.id
       WHERE gm.group_id = ?
@@ -329,7 +420,7 @@ export function getGroupById(groupId) {
 
 export function getGroupMembers(groupId) {
   return db.prepare(`
-    SELECT u.id, u.name, u.email, gm.role
+    SELECT u.id, u.name, u.email, u.profile_picture, gm.role
     FROM users u
     JOIN group_members gm ON gm.user_id = u.id
     WHERE gm.group_id = ?
@@ -387,16 +478,16 @@ export function getTripActivities(tripId) {
     FROM activities a
     LEFT JOIN users u ON u.id = a.created_by
     WHERE a.trip_id = ?
-    ORDER BY a.date ASC, a.time ASC
+    ORDER BY a.date ASC, a.start_time ASC
   `).all(tripId);
 }
 
-export function createActivity(tripId, title, description, location, date, time, createdBy) {
+export function createActivity(tripId, title, description, location, latitude, longitude, date, startTime, endTime, createdBy) {
   const stmt = db.prepare(`
-    INSERT INTO activities (trip_id, title, description, location, date, time, created_by)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO activities (trip_id, title, description, location, latitude, longitude, date, start_time, end_time, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  const result = stmt.run(tripId, title, description, location, date, time, createdBy);
+  const result = stmt.run(tripId, title, description, location, latitude, longitude, date, startTime, endTime, createdBy);
   return result.lastInsertRowid;
 }
 
@@ -413,6 +504,258 @@ export function getUserTrips(userId) {
     WHERE gm.user_id = ?
     ORDER BY t.start_date DESC
   `).all(userId);
+}
+
+// Activity suggestion functions
+export function createActivitySuggestion(tripId, title, description, location, latitude, longitude, date, startTime, endTime, suggestedBy) {
+  const stmt = db.prepare(`
+    INSERT INTO activity_suggestions (trip_id, title, description, location, latitude, longitude, date, start_time, end_time, suggested_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  const result = stmt.run(tripId, title, description, location, latitude, longitude, date, startTime, endTime, suggestedBy);
+  return result.lastInsertRowid;
+}
+
+export function getTripSuggestions(tripId) {
+  return db.prepare(`
+    SELECT s.*, u.name as suggester_name
+    FROM activity_suggestions s
+    LEFT JOIN users u ON u.id = s.suggested_by
+    WHERE s.trip_id = ?
+    ORDER BY s.created_at DESC
+  `).all(tripId);
+}
+
+export function getSuggestionVotes(suggestionId) {
+  return db.prepare(`
+    SELECT v.*, u.name as voter_name
+    FROM activity_votes v
+    LEFT JOIN users u ON u.id = v.user_id
+    WHERE v.suggestion_id = ?
+  `).all(suggestionId);
+}
+
+export function getUserVote(suggestionId, userId) {
+  return db.prepare(`
+    SELECT vote FROM activity_votes
+    WHERE suggestion_id = ? AND user_id = ?
+  `).get(suggestionId, userId);
+}
+
+export function castVote(suggestionId, userId, vote) {
+  const stmt = db.prepare(`
+    INSERT INTO activity_votes (suggestion_id, user_id, vote)
+    VALUES (?, ?, ?)
+    ON CONFLICT(suggestion_id, user_id) 
+    DO UPDATE SET vote = excluded.vote
+  `);
+  stmt.run(suggestionId, userId, vote);
+}
+
+export function getSuggestionById(suggestionId) {
+  return db.prepare("SELECT * FROM activity_suggestions WHERE id = ?").get(suggestionId);
+}
+
+export function deleteSuggestion(suggestionId) {
+  // eerst stem deleten
+  db.prepare("DELETE FROM activity_votes WHERE suggestion_id = ?").run(suggestionId);
+  // dan suggestion deleten
+  db.prepare("DELETE FROM activity_suggestions WHERE id = ?").run(suggestionId);
+}
+
+export function approveSuggestion(suggestionId) {
+  const suggestion = getSuggestionById(suggestionId);
+  if (!suggestion) return false;
+
+  createActivity(
+    suggestion.trip_id,
+    suggestion.title,
+    suggestion.description,
+    suggestion.location,
+    suggestion.latitude,
+    suggestion.longitude,
+    suggestion.date,
+    suggestion.start_time,
+    suggestion.end_time,
+    suggestion.suggested_by
+  );
+  deleteSuggestion(suggestionId);
+  return true;
+}
+
+export function checkActivityOverlap(tripId, date, startTime, endTime, excludeActivityId = null) {
+  // Alle activiteiten met dezelfde datum nemen
+  let query = `
+    SELECT * FROM activities 
+    WHERE trip_id = ? AND date = ?
+  `;
+  let params = [tripId, date];
+  
+  if (excludeActivityId) {
+    query += ` AND id != ?`;
+    params.push(excludeActivityId);
+  }
+  
+  const activities = db.prepare(query).all(...params);
+  
+  // overlap checken
+  for (const activity of activities) {
+    // format omzetten
+    const newStart = timeToMinutes(startTime);
+    const newEnd = timeToMinutes(endTime);
+    const existingStart = timeToMinutes(activity.start_time);
+    const existingEnd = timeToMinutes(activity.end_time);
+    
+    // checken voor overlap
+    if (newStart < existingEnd && newEnd > existingStart) {
+      return {
+        hasOverlap: true,
+        conflictingActivity: activity
+      };
+    }
+  }
+  
+  return { hasOverlap: false };
+}
+
+// format omzet functie
+function timeToMinutes(timeString) {
+  if (!timeString) return 0;
+  const [hours, minutes] = timeString.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+export function deleteGroup(groupId) {
+  
+  db.prepare(`
+    DELETE FROM activity_votes 
+    WHERE suggestion_id IN (
+      SELECT s.id FROM activity_suggestions s
+      JOIN trips t ON t.id = s.trip_id
+      WHERE t.group_id = ?
+    )
+  `).run(groupId);
+  
+  db.prepare(`
+    DELETE FROM activity_suggestions 
+    WHERE trip_id IN (
+      SELECT id FROM trips WHERE group_id = ?
+    )
+  `).run(groupId);
+  
+  db.prepare(`
+    DELETE FROM activities 
+    WHERE trip_id IN (
+      SELECT id FROM trips WHERE group_id = ?
+    )
+  `).run(groupId);
+  
+  db.prepare("DELETE FROM trips WHERE group_id = ?").run(groupId);
+  db.prepare("DELETE FROM group_members WHERE group_id = ?").run(groupId);
+  db.prepare("DELETE FROM groups WHERE id = ?").run(groupId);
+  
+  return { success: true, message: "Group deleted successfully" };
+}
+
+
+export function deleteTrip(tripId) {
+  db.prepare(`
+    DELETE FROM activity_votes 
+    WHERE suggestion_id IN (
+      SELECT id FROM activity_suggestions WHERE trip_id = ?
+    )
+  `).run(tripId);
+  db.prepare("DELETE FROM activity_suggestions WHERE trip_id = ?").run(tripId);
+  db.prepare("DELETE FROM activities WHERE trip_id = ?").run(tripId);
+  db.prepare("DELETE FROM trips WHERE id = ?").run(tripId);
+  
+  return { success: true, message: "Trip deleted successfully" };
+}
+
+export function addGroupMember(groupId, userId, role = 'member') {
+  const stmt = db.prepare(`
+    INSERT INTO group_members (user_id, group_id, role)
+    VALUES (?, ?, ?)
+  `);
+  stmt.run(userId, groupId, role);
+  return { success: true, message: "Member added successfully" };
+}
+
+export function updateGroup(groupId, name, description) {
+  const stmt = db.prepare(`
+    UPDATE groups 
+    SET name = ?, description = ? 
+    WHERE id = ?
+  `);
+  stmt.run(name, description, groupId);
+  return { success: true, message: "Group updated successfully" };
+}
+
+export function createAttachment(activityId, filename, originalFilename, filePath, fileType, fileSize, uploadedBy) {
+  const stmt = db.prepare(`
+    INSERT INTO activity_attachments (activity_id, filename, original_filename, file_path, file_type, file_size, uploaded_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  const result = stmt.run(activityId, filename, originalFilename, filePath, fileType, fileSize, uploadedBy);
+  return result.lastInsertRowid;
+}
+
+export function getActivityAttachments(activityId) {
+  return db.prepare(`
+    SELECT a.*, u.name as uploader_name
+    FROM activity_attachments a
+    LEFT JOIN users u ON u.id = a.uploaded_by
+    WHERE a.activity_id = ?
+    ORDER BY a.uploaded_at DESC
+  `).all(activityId);
+}
+
+export function getAttachmentById(attachmentId) {
+  return db.prepare("SELECT * FROM activity_attachments WHERE id = ?").get(attachmentId);
+}
+
+export function deleteAttachment(attachmentId) {
+  db.prepare("DELETE FROM activity_attachments WHERE id = ?").run(attachmentId);
+}
+
+export function searchUsers(searchQuery, currentUserId) {
+  const users = db.prepare(`
+    SELECT 
+      u.id, 
+      u.name, 
+      u.email, 
+      u.bio, 
+      u.profile_picture,
+      CASE
+        WHEN EXISTS (
+          SELECT 1 FROM friends 
+          WHERE user_id = ? AND friend_id = u.id
+        ) THEN 'friends'
+        WHEN EXISTS (
+          SELECT 1 FROM friend_requests 
+          WHERE sender_id = ? AND receiver_id = u.id AND status = 'pending'
+        ) THEN 'request_sent'
+        WHEN EXISTS (
+          SELECT 1 FROM friend_requests 
+          WHERE sender_id = u.id AND receiver_id = ? AND status = 'pending'
+        ) THEN 'request_received'
+        ELSE 'none'
+      END as relationship_status
+    FROM users u
+    WHERE u.id != ?
+    AND (u.name LIKE ? OR u.email LIKE ?)
+    ORDER BY u.name ASC
+    LIMIT 20
+  `).all(
+    currentUserId, 
+    currentUserId, 
+    currentUserId, 
+    currentUserId, 
+    `%${searchQuery}%`, 
+    `%${searchQuery}%`
+  );
+  
+  return users;
 }
 
 export default db;

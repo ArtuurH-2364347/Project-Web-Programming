@@ -4,36 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TravelBuddy</title>
-
   <link href="css/bootstrap.css" rel="stylesheet">
-
-  <style>
-    body.home-page {
-      background-image: url('images/paris.jpg');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      min-height: 100vh;
-    }
-
-    body.home-page::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.4);
-      z-index: -1;
-    }
-
-    .hero-text {
-      color: white;
-      text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
-    }
-  </style>
+  <link rel="stylesheet" href="css/global.css">
+  <link href="css/index.css" rel="stylesheet">
 </head>
-<body class="home-page d-flex flex-column min-vh-100">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+<body class="home-page">
+  <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
+<<<<<<< HEAD
       <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -75,48 +53,56 @@
 
         </ul>
       </div>
+=======
+      <%- include('partials/navbar') %>
+>>>>>>> 1c2d69a30f7a489fc14ae13f2a0a0d361eb84234
     </div>
   </nav>
 
-
-  <section class="text-center py-5">
-    <div class="container hero-text">
-      <h1 class="display-4 fw-bold">Discover Your Next Adventure</h1>
-      <p class="lead mb-4">Connect with travelers and explore the world together</p>
-      <a href="/login" class="btn btn-success btn-lg">Get Started</a>
+  <section class="hero-section">
+    <div class="container hero-content">
+      <h1>Discover Your Next Adventure</h1>
+      <p>Connect with travelers and explore the world together</p>
+      <a href="/login" class="btn btn-hero">Get Started</a>
     </div>
   </section>
 
-  <section class="py-5">
+  <section class="features-section">
     <div class="container">
       <div class="row g-4">
         <div class="col-md-4">
-          <div class="card">
-            <img src="images/placeholder.png" class="card-img-top" alt="Planning">
+          <div class="feature-card card">
+            <img src="images/plannen.png" class="card-img-top" alt="Planning">
             <div class="card-body">
               <h5 class="card-title">Planning</h5>
-              <p class="card-text">Plan trips with friends!</p>
-              <a href="#" class="btn btn-primary">Find friends</a>
+              <p class="card-text">Plan trips with friends and coordinate your adventures.</p>
+              <a href="/groups" class="btn btn-primary">Plan a trip!</a>
             </div>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card">
+          <div class="feature-card card">
             <img src="images/placeholder.png" class="card-img-top" alt="schedule">
             <div class="card-body">
+<<<<<<< HEAD
               <h5 class="card-title">Daily schedule</h5>
               <p class="card-text">Your daily schedule updates automatically!</p>
               <a href="/tour" class="btn btn-primary">Today's schedule</a>
+=======
+              <h5 class="card-title">Daily Schedule</h5>
+              <p class="card-text">Your daily schedule updates automatically with group plans.</p>
+              <a href="/personal-schedule" class="btn btn-primary">Today's Schedule</a>
+>>>>>>> 1c2d69a30f7a489fc14ae13f2a0a0d361eb84234
             </div>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card">
-            <img src="images/placeholder.png" class="card-img-top" alt="budget">
+          <div class="feature-card card">
+            <img src="images/placeholder.png" class="card-img-top" alt="Friends">
             <div class="card-body">
-              <h5 class="card-title">Budget tracking</h5>
-              <p class="card-text">Easily track your budget so you never overspend.</p>
-              <a href="#" class="btn btn-primary">Current overview</a>
+              <h5 class="card-title">Travel Buddies</h5>
+              <p class="card-text">Find Friends and go on wonderful trips.</p>
+              <a href="/friends" class="btn btn-primary">Find Friends</a>
             </div>
           </div>
         </div>
@@ -124,12 +110,18 @@
     </div>
   </section>
 
-  <footer class="bg-light py-4 mt-auto">
-    <div class="container text-center">
-      <p>2025 TravelBuddy.</p>
+    <div class="quote-section">
+    <div class="container">
+      <blockquote class="travel-quote">
+        <p class="quote-text">"Travel makes one modest. You see what a tiny place you occupy in the world."</p>
+        <footer class="quote-footer">— Gustave Flaubert</footer>
+      </blockquote>
     </div>
-  </footer>
+  </div>
 
-  <script src="js/bootstrap.bundle.min.js"></script>
+  <%- include('partials/footer') %>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

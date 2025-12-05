@@ -3,7 +3,7 @@
 ## Checklist:
 0. overkoepelend.
 
-    - [ ] renderd mooi op mobile
+    - [x] renderd mooi op mobile
 
 1. Individueel.
 
@@ -15,7 +15,7 @@
     extra:
     - [ ] registreren logt ook automatisch in
     - [x] oogje om naar wachtwoord te kijken terwijl je het invult
-    - [ ] profielfotos
+    - [x] profielfotos
     - [x] wachtwoord 2 keer ingeven bij registreren en vergelijken
 
 2. sociaal.
@@ -32,42 +32,38 @@
 
     - [x] Reis aanmaken (individueel of met groep)
     - [x] Stops toevoegen
-    - [ ] checking of stops niet overlappen
-    - [ ] Indien groep, stops voorstellen en stemming laten gebeuren
-    - [ ] Reis voorstellen op kaart (google maps api integratie?)
-    - [ ] tickets uploaden
-    - [ ] reis-planning downloaden als text file
+    - [x] checking of stops niet overlappen
+    - [x] Indien groep, stops voorstellen en stemming laten gebeuren
+    - [x] Reis voorstellen op kaart (google maps api integratie?)
+    - [x] tickets uploaden
 
 4. Tijdens de reis.
 
-    - [ ] overzicht persoonlijke dagplanning (los van groepen) 
-    - [ ] tickets/vouchers per activiteit bekijken
-    - [ ] Dit moet allemaal offline kunnen?
+    - [x] overzicht persoonlijke dagplanning (los van groepen) 
+    - [x] tickets/vouchers per activiteit bekijken
+    - [x] Dit moet allemaal offline kunnen?
 
 5. Na de reis.
 
-    - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
 
 6. Diverse extras.
 
-    - [ ] mooiere error pages (email in gebruik, user not found, ...)
-    - [ ] budgetmanagement (uitgaves toevoegen per persoon, eventueel met categorien)
-    - [ ] Budgetanalyse (overzicht van wie wat heeft betaald)
-    - [ ] Terugbetalingsberekening (optie om te berekenen wat iedereen elkaar terug moet betalen)
-    - [ ] admin accounts-systeem die accounts kan verwijderen/editen etc
+    - [x] mooiere error pages (email in gebruik, user not found, ...)
+    - [x] admin accounts-systeem die accounts kan verwijderen/editen etc
     - [ ] functionaliteit om meer vrienden te zoeken
+    - [X] reis-planning downloaden als text file
+    - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
 
 ## Gebruikte APIs met huidige planning:
 
 1. Browser APIs:
-    - [File API](https://www.example.com)
-    - [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API)
-    - [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) voor offline gebruik?
+    - Notification API
+    - geolocation API
+    - LocalStorage API
+    - Fetch API
 
 2. Externe APIs:
-    - Google maps of alternatieve
-    - misschien een api voor het weer?
-    - api voor agende/schedule?
-    - [Photon api] (https://photon.komoot.io/)
+    - [Leaflet](https://leafletjs.com/) Leaflet is zelf geen API, maar maakt gebruikt van de OSM API
+    - [Photon api](https://photon.komoot.io/)
     
     

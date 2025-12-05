@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Server Error – TravelBuddy</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/500.css" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">TravelBuddy</a>
+    </div>
+  </nav>
+
+  <div class="error-container">
+    <div class="error-content">
+      <div class="error-code">500</div>
+      <h1 class="error-title">Something Went Wrong</h1>
+      <p class="error-message">
+        We're sorry! Our server encountered an unexpected error. Our team has been notified and we're working on fixing it.
+      </p>
+      <div>
+        <a href="/" class="btn-home">Back to Home</a>
+        <a href="javascript:history.back()" class="btn-home btn-secondary">← Go Back</a>
+      </div>
+    </div>
+  </div>
+  
+  <%- include('partials/footer') %>
+
+</body>
+</html>

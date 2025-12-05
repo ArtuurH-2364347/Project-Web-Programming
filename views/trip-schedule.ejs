@@ -5,122 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><%= trip.name %> – Schedule</title>
   <link rel="stylesheet" href="/css/bootstrap.css" />
-  <link rel="stylesheet" href="/css/style.css" />
-  <style>
-    body {
-      background-image: url('/images/travel-background.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-    }
-    .overlay {
-      background-color: rgba(255, 255, 255, 0.9);
-      border-radius: 1rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      padding: 2rem;
-      margin-top: 2rem;
-    }
-    .trip-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 2rem;
-      border-radius: 1rem;
-      margin-bottom: 2rem;
-    }
-    .day-section {
-      margin-bottom: 2rem;
-    }
-    .day-header {
-      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
-      color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 0.75rem;
-      margin-bottom: 1rem;
-    }
-    .activity-card {
-      background: white;
-      border-left: 4px solid #667eea;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: all 0.2s;
-    }
-    .activity-card:hover {
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-      transform: translateX(4px);
-    }
-    .activity-time {
-      color: #667eea;
-      font-weight: bold;
-      font-size: 0.9rem;
-    }
-    .activity-location {
-      color: #6c757d;
-      font-size: 0.85rem;
-    }
-    .add-activity-form {
-      background-color: #f8f9fa;
-      border-radius: 0.75rem;
-      padding: 1.5rem;
-      margin-top: 2rem;
-    }
-    footer {
-      background-color: rgba(255, 255, 255, 0.8);
-    }
-  </style>
+  <link rel="stylesheet" href="/css/global.css" />
+  <link rel="stylesheet" href="/css/trip-schedule.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="/">TravelBuddy</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/profile">Your Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/groups">Groups</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/schedule">Schedule</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link btn btn-danger ms-2" href="/logout">Logout</a>
-          </li>
-        </ul>
-      </div>
+      <%- include('partials/navbar') %>
     </div>
   </nav>
 
-  <!-- Trip Schedule Content -->
   <main class="container">
     <div class="overlay">
-      <!-- Trip Header -->
       <div class="trip-header">
-        <div class="d-flex justify-content-between align-items-start">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
           <div>
             <h2 class="fw-bold mb-2"><%= trip.name %></h2>
             <% if (trip.destination) { %>
-              <p class="mb-2 opacity-75">📍 <%= trip.destination %></p>
+              <p class="mb-2 opacity-75"><i class="bi bi-geo-alt-fill"></i> <%= trip.destination %></p>
             <% } %>
             <p class="mb-0 opacity-75">
-              📅 <%= new Date(trip.start_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
+              <i class="bi bi-calendar-event"></i> <%= new Date(trip.start_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
               - 
               <%= new Date(trip.end_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
             </p>
           </div>
+<<<<<<< HEAD
           <div>
             <a href="/groups/<%= group.id %>" class="btn btn-light">← Back to Group</a>
             <a href="/trips/<%= trip.id %>/pdf" class="btn btn-success">Download PDF</a>
+=======
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="/trips/<%= trip.id %>/pdf" class="btn btn-pdf">
+              <i class="bi bi-file-earmark-pdf"></i> Download PDF
+            </a>
+            <a href="/groups/<%= group.id %>" class="btn btn-light">
+              <i class="bi bi-arrow-left"></i> Back to Group
+            </a>
+>>>>>>> 1c2d69a30f7a489fc14ae13f2a0a0d361eb84234
           </div>
         </div>
       </div>
@@ -128,11 +52,116 @@
       <% if (message) { %>
         <div class="alert alert-info alert-dismissible fade show" role="alert">
           <%= message %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
       <% } %>
 
-      <!-- Timeline -->
+      <div class="map-container">
+        <h4 class="fw-bold mb-3">Activity Locations</h4>
+          <div class="mb-3">
+            <button id="showMyLocationBtn" class="btn btn-primary">
+              <i class="bi bi-geo-alt-fill"></i> Show My Location
+            </button>
+            <span id="locationStatus" class="ms-2 small text-muted"></span>
+          </div>
+        <div id="trip-map"></div>
+      </div>
+      <% if (suggestions && suggestions.length > 0) { %>
+        <div class="mb-4">
+          <h4 class="fw-bold mb-3" style="color: #2d5f5d;">Pending Activity Suggestions</h4>
+          <p class="text-muted small">Needs <%= votesNeeded %> "Yes" votes out of <%= totalMembers %> members to be approved</p>
+          
+          <% suggestions.forEach(suggestion => { %>
+            <div class="suggestion-card">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <% if (suggestion.start_time && suggestion.end_time) { %>
+                    <div class="activity-time mb-1"><i class="bi bi-clock"></i> <%= suggestion.start_time %> - <%= suggestion.end_time %></div>
+                  <% } %>
+                  <h6 class="mb-1"><%= suggestion.title %></h6>
+                  <small class="text-muted"><i class="bi bi-calendar3"></i> <%= new Date(suggestion.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></small>
+                  <% if (suggestion.location) { %>
+                    <div class="activity-location mb-1"><i class="bi bi-geo-alt"></i> <%= suggestion.location %></div>
+                  <% } %>
+                  <% if (suggestion.description) { %>
+                    <p class="text-muted mb-1 small"><%= suggestion.description %></p>
+                  <% } %>
+                  <small class="text-muted">Suggested by <%= suggestion.suggester_name || 'Unknown' %></small>
+              
+                  <div class="progress progress-thin">
+                    <% const progressPercent = Math.min((suggestion.yesVotes / votesNeeded * 100), 100); %>
+                    <div class="progress-bar bg-success" style="width: <%= progressPercent %>%"></div>
+                  </div>
+                  <div class="vote-count mt-1">
+                    <i class="bi bi-hand-thumbs-up-fill"></i> <%= suggestion.yesVotes %> / <%= votesNeeded %> votes needed
+                  </div>
+                </div>  
+                <div class="ms-3">
+                  <div class="vote-section flex-column">
+                    <% if (suggestion.userVote === 'yes') { %>
+                      <span class="badge bg-success mb-2">You voted Yes <i class="bi bi-check-lg"></i></span>
+                    <% } else if (suggestion.userVote === 'no') { %>
+                      <span class="badge bg-danger mb-2">You voted No <i class="bi bi-x-lg"></i></span>
+                    <% } %>
+                    
+                    <form action="/suggestions/<%= suggestion.id %>/vote" method="POST" class="d-inline">
+                      <input type="hidden" name="vote" value="yes" />
+                      <button type="submit" class="btn btn-success vote-btn <%= suggestion.userVote === 'yes' ? 'disabled' : '' %>">
+                        <i class="bi bi-hand-thumbs-up"></i> Yes
+                      </button>
+                    </form>
+                    
+                    <form action="/suggestions/<%= suggestion.id %>/vote" method="POST" class="d-inline">
+                      <input type="hidden" name="vote" value="no" />
+                      <button type="submit" class="btn btn-danger vote-btn <%= suggestion.userVote === 'no' ? 'disabled' : '' %>">
+                        <i class="bi bi-hand-thumbs-down"></i> No
+                      </button>
+                    </form>
+                    
+                    <% if (isAdmin || suggestion.suggested_by === user.id) { %>
+                      <button 
+                        class="btn btn-outline-danger btn-sm mt-2" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#deleteSuggestionModal<%= suggestion.id %>"
+                      >
+                        Delete
+                      </button>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <div class="modal fade" id="deleteSuggestionModal<%= suggestion.id %>" tabindex="-1" aria-labelledby="deleteSuggestionModalLabel<%= suggestion.id %>" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteSuggestionModalLabel<%= suggestion.id %>">
+                      Delete Suggestion
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="mb-3">Are you sure you want to delete <strong>"<%= suggestion.title %>"</strong>?</p>
+                    <div class="alert alert-warning" role="alert">
+                      <strong>Warning:</strong> This action cannot be undone. All votes associated with this suggestion will be permanently deleted.
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="/suggestions/<%= suggestion.id %>/delete" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-danger">Delete Suggestion</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+
+
+      <h4 class="fw-bold mb-3" style="color: #2d5f5d;">Confirmed Schedule</h4>
       <div class="timeline">
         <% 
           const startDate = new Date(trip.start_date);
@@ -158,38 +187,118 @@
               <div class="activity-card">
                 <div class="d-flex justify-content-between align-items-start">
                   <div class="flex-grow-1">
-                    <% if (activity.time) { %>
-                      <div class="activity-time mb-1">🕐 <%= activity.time %></div>
+                    <% if (activity.start_time && activity.end_time) { %>
+                      <div class="activity-time mb-1"><%= activity.start_time %> - <%= activity.end_time %></div>
                     <% } %>
                     <h6 class="mb-1"><%= activity.title %></h6>
                     <% if (activity.location) { %>
-                      <div class="activity-location mb-1">📍 <%= activity.location %></div>
+                      <div class="activity-location mb-1"><i class="bi bi-geo-alt"></i> <%= activity.location %></div>
                     <% } %>
                     <% if (activity.description) { %>
                       <p class="text-muted mb-1 small"><%= activity.description %></p>
                     <% } %>
                     <small class="text-muted">Added by <%= activity.creator_name || 'Unknown' %></small>
+                    <% if (activity.attachments && activity.attachments.length > 0) { %>
+                      <div class="mt-2 p-2 bg-light rounded">
+                        <small class="fw-bold d-block mb-1"><i class="bi bi-paperclip"></i> Attachments (<%= activity.attachments.length %>):</small>
+                        <% activity.attachments.forEach(attachment => { %>
+                          <div class="d-flex align-items-center justify-content-between mb-1 p-1 bg-white rounded">
+                            <div class="d-flex align-items-center">
+                              <% 
+                                let fileIcon = 'bi-file-earmark';
+                                if (attachment.file_type.includes('pdf')) fileIcon = 'bi-file-earmark-pdf';
+                                else if (attachment.file_type.includes('image')) fileIcon = 'bi-file-earmark-image';
+                              %>
+                              <i class="bi <%= fileIcon %> me-2"></i>
+                              <small class="text-truncate" style="max-width: 200px;" title="<%= attachment.original_filename %>">
+                                <%= attachment.original_filename %>
+                              </small>
+                              <small class="text-muted ms-2">
+                                (<%= (attachment.file_size / 1024).toFixed(1) %> KB)
+                              </small>
+                            </div>
+                            <div class="d-flex gap-1">
+                              <a href="/attachments/<%= attachment.id %>/view" class="btn btn-sm btn-outline-primary" target="_blank" title="View">
+                                <i class="bi bi-eye"></i>
+                              </a>
+                              <a href="/attachments/<%= attachment.id %>/download" class="btn btn-sm btn-outline-success" title="Download">
+                                <i class="bi bi-download"></i>
+                              </a>
+                              <% if (isAdmin || attachment.uploaded_by === user.id) { %>
+                                <form action="/attachments/<%= attachment.id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete this attachment?')">
+                                  <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                  </button>
+                                </form>
+                              <% } %>
+                            </div>
+                          </div>
+                        <% }) %>
+                        <small class="text-muted d-block mt-1">Uploaded by <%= activity.attachments[0].uploader_name %></small>
+                      </div>
+                    <% } %>
+
+                    <button class="btn btn-sm btn-outline-secondary mt-2" data-bs-toggle="collapse" data-bs-target="#uploadForm<%= activity.id %>">
+                      <i class="bi bi-paperclip"></i> Upload Ticket/Voucher
+                    </button>
+                    <div class="collapse mt-2" id="uploadForm<%= activity.id %>">
+                      <form action="/activities/<%= activity.id %>/attachments" method="POST" enctype="multipart/form-data" class="p-2 bg-light rounded">
+                        <div class="mb-2">
+                          <input type="file" name="attachment" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.txt" required />
+                          <small class="text-muted d-block mt-1">Max 10MB. Accepted: PDF, Images, Documents</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#uploadForm<%= activity.id %>">Cancel</button>
+                      </form>
+                    </div>
                   </div>
                   
                   <% if (isAdmin || activity.created_by === user.id) { %>
-                    <form action="/activities/<%= activity.id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete this activity?')">
-                      <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                    </form>
+                    <button 
+                      class="btn btn-outline-danger btn-sm" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#deleteActivityModal<%= activity.id %>"
+                    >
+                      Delete
+                    </button>
                   <% } %>
+                </div>
+              </div>
+              
+              <div class="modal fade" id="deleteActivityModal<%= activity.id %>" tabindex="-1" aria-labelledby="deleteActivityModalLabel<%= activity.id %>" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                      <h5 class="modal-title" id="deleteActivityModalLabel<%= activity.id %>">
+                        Delete Activity
+                      </h5>
+                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p class="mb-3">Are you sure you want to delete <strong>"<%= activity.title %>"</strong>?</p>
+                      <div class="alert alert-warning" role="alert">
+                        <strong>Warning:</strong> This action cannot be undone. This activity and all its attachments will be permanently removed from the schedule.
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <form action="/activities/<%= activity.id %>/delete" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Delete Activity</button>
+                      </form>
+                    </div>
+                  </div>
                 </div>
               </div>
             <% }) %>
           <% } else { %>
-            <p class="text-muted ms-3">No activities planned for this day yet.</p>
+            <p class="text-muted ms-3">No activities confirmed for this day yet.</p>
           <% } %>
         </div>
-
         <% } %>
       </div>
-
-      <!-- Add Activity Form -->
       <div class="add-activity-form">
-        <h5 class="mb-3">Add New Activity</h5>
+        <h5 class="mb-3">Suggest New Activity</h5>
+        <p class="text-muted small mb-3">Your suggestion will need <%= votesNeeded %> "Yes" votes from group members to be added to the schedule.</p>
         <form action="/trips/<%= trip.id %>/activities" method="POST">
           <div class="row">
             <div class="col-md-6 mb-3">
@@ -203,14 +312,21 @@
                      max="<%= trip.end_date %>" required />
             </div>
             <div class="col-md-3 mb-3">
-              <label for="time" class="form-label">Time</label>
-              <input type="time" id="time" name="time" class="form-control" />
+              <label for="startTime" class="form-label">Start Time *</label>
+              <input type="time" id="startTime" name="startTime" class="form-control" required />
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="endTime" class="form-label">End Time *</label>
+              <input type="time" id="endTime" name="endTime" class="form-control" required />
             </div>
           </div>
-          
-          <div class="mb-3">
+
+          <div class="mb-3 location-input-wrapper">
             <label for="location" class="form-label">Location</label>
-            <input type="text" id="location" name="location" class="form-control" placeholder="e.g., Champ de Mars, Paris" />
+            <input type="text" id="location" name="location" class="form-control" placeholder="Start typing a location..." autocomplete="off" />
+            <input type="hidden" id="latitude" name="latitude" />
+            <input type="hidden" id="longitude" name="longitude" />
+            <div id="location-suggestions" class="list-group position-absolute" style="z-index: 1000; max-height: 300px; overflow-y: auto; display: none;"></div>
           </div>
 
           <div class="mb-3">
@@ -218,16 +334,38 @@
             <textarea id="description" name="description" class="form-control" rows="2" placeholder="Additional details..."></textarea>
           </div>
 
-          <button type="submit" class="btn btn-primary">Add Activity</button>
+          <button type="submit" class="btn btn-primary">Suggest Activity</button>
+          <div class="mt-3 p-3 bg-light border-start border-4 rounded" style="border-color: #8b9d77 !important;">
+            <small class="text-muted">
+              <strong><i class="bi bi-lightbulb"></i> Tip:</strong> Fields marked with a * are mandatory!<br>
+              <strong><i class="bi bi-lightbulb"></i> Tip:</strong> Activities must have both start and end times to prevent scheduling conflicts. 
+              Make sure your times don't overlap with existing activities on the same day! It is advised to keep track of
+              traveling times aswell. <br>
+              <strong><i class="bi bi-exclamation-triangle"></i> Warning:</strong> Not using the suggested locations when filling in the location field will result in that
+              activity not appearing on the map. We recommend using the suggested locations for consistency.
+            </small>
+          </div>
         </form>
       </div>
     </div>
   </main>
 
-  <footer class="py-4 mt-5 text-center">
-    <p class="mb-0">2025 TravelBuddy</p>
-  </footer>
+  <%- include('partials/footer') %>
 
-  <script src="/js/bootstrap.bundle.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    window.tripActivities = <%- JSON.stringify(activities) %>;
+  </script>
+  <script src="/js/trip-schedule.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      initializeMap(window.tripActivities);
+    });
+  </script>
+  <script src="/js/geolocation-map.js"></script>
+  <script src="/js/activity-notifications.js"></script>
+
 </body>
 </html>

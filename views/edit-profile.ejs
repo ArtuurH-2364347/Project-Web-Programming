@@ -5,25 +5,163 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Profile – TravelBuddy</title>
   <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/edit-profile.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <style>
+    .banner-preview {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
-<body class="bg-light">
-  <div class="container py-5">
-    <h1 class="mb-4">Edit Your Profile</h1>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <%- include('partials/navbar') %>
+    </div>
+  </nav>
 
-    <form action="/edit-profile" method="POST" class="bg-white p-4 rounded shadow-sm">
-      <div class="mb-3">
-        <label for="name" class="form-label fw-bold">Name</label>
-        <input type="text" id="name" name="name" value="<%= name %>" class="form-control" required>
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10">
+        <div class="overlay">
+          <h1 class="mb-4">Edit Your Profile</h1>
+          <ul class="nav nav-tabs mb-4" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="personalize-tab" data-bs-toggle="tab" 
+                      data-bs-target="#personalize" type="button" role="tab">
+                <i class="bi bi-person-circle"></i> Personalize
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="settings-tab" data-bs-toggle="tab" 
+                      data-bs-target="#settings" type="button" role="tab">
+                <i class="bi bi-gear"></i> Settings
+              </button>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="personalize" role="tabpanel">
+              <form action="/edit-profile" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                  <label for="name" class="form-label">Name</label>
+                  <input type="text" id="name" name="name" class="form-control" 
+                         value="<%= user.name %>" required />
+                </div>
+
+                <div class="mb-3">
+                  <label for="bio" class="form-label">Bio</label>
+                  <textarea id="bio" name="bio" class="form-control" rows="3"><%= user.bio || '' %></textarea>
+                </div>
+                <div class="mb-4">
+                  <label for="bannerImage" class="form-label">Banner Image</label>
+                  <% if (user.banner_image) { %>
+                    <div class="mb-2">
+                      <img src="<%= user.banner_image %>" alt="Current banner" 
+                           class="banner-preview" />
+                    </div>
+                  <% } %>
+                  <input type="file" id="bannerImage" name="bannerImage" 
+                         class="form-control" accept="image/*" />
+                  <small class="text-muted d-block mt-1">Recommended: 1500x500px • Accepted: JPG, PNG, GIF (Max 5MB)</small>
+                  
+                  <% if (user.banner_image) { %>
+                    <div class="form-check mt-2">
+                      <input class="form-check-input" type="checkbox" 
+                             id="removeBannerImage" name="removeBannerImage">
+                      <label class="form-check-label" for="removeBannerImage">
+                        Remove current banner image
+                      </label>
+                    </div>
+                  <% } %>
+                </div>
+                <div class="mb-4">
+                  <label for="profilePicture" class="form-label">Profile Picture</label>
+                  <% if (user.profile_picture) { %>
+                    <div class="mb-2">
+                      <img src="<%= user.profile_picture %>" alt="Current profile picture" 
+                           class="profile-picture-preview" />
+                    </div>
+                  <% } %>
+                  <input type="file" id="profilePicture" name="profilePicture" 
+                         class="form-control" accept="image/*" />
+                  <small class="text-muted d-block mt-1">Accepted: JPG, PNG, GIF (Max 5MB)</small>
+                  
+                  <% if (user.profile_picture) { %>
+                    <div class="form-check mt-2">
+                      <input class="form-check-input" type="checkbox" 
+                             id="removeProfilePicture" name="removeProfilePicture">
+                      <label class="form-check-label" for="removeProfilePicture">
+                        Remove current profile picture
+                      </label>
+                    </div>
+                  <% } %>
+                </div>
+
+                <div class="btn-group-mobile">
+                  <button type="submit" class="btn btn-primary">Save Changes</button>
+                  <a href="/profile" class="btn btn-secondary">Cancel</a>
+                </div>
+              </form>
+            </div>
+            <div class="tab-pane fade" id="settings" role="tabpanel">
+              <h5 class="mb-3"><i class="bi bi-bell"></i> Notifications</h5>
+              
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" 
+                          id="notificationsToggle">
+                    <label class="form-check-label" for="notificationsToggle">
+                      <strong>Enable Activity Reminders</strong>
+                    </label>
+                  </div>
+                  <small class="text-muted d-block mt-2">
+                    Get notified 15 minutes before each activity starts
+                  </small>
+                </div>
+              </div>
+
+              <div id="notificationStatus" class="alert" style="display: none;">
+                <span id="statusMessage"></span>
+              </div>
+
+              <button id="testNotificationBtn" class="btn btn-outline-primary btn-sm mb-3">
+                <i class="bi bi-bell"></i> Send Test Notification
+              </button>
+              <span id="testStatus" class="ms-2 small"></span>
+
+              <hr class="my-4">
+
+              <h5 class="mb-3"><i class="bi bi-shield-check"></i> Privacy</h5>
+              <div class="card">
+                <div class="card-body">
+                  <p class="mb-2"><strong>Data Usage:</strong></p>
+                  <ul class="small text-muted">
+                    <li>Your location is only used for the trip map display</li>
+                    <li>Notification preferences are stored locally in your browser</li>
+                    <li>No data is shared with third parties</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="btn-group-mobile mt-3">
+                <a href="/profile" class="btn btn-secondary">Back to Profile</a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+  </main>
 
-      <div class="mb-3">
-        <label for="bio" class="form-label fw-bold">Biography</label>
-        <textarea id="bio" name="bio" class="form-control" rows="4"><%= bio %></textarea>
-      </div>
+  <%- include('partials/footer') %>
 
-      <button type="submit" class="btn btn-primary">Save Changes</button>
-      <a href="/profile" class="btn btn-secondary ms-2">Cancel</a>
-    </form>
-  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/notification-settings.js"></script>
 </body>
 </html>
