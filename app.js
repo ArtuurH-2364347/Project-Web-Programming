@@ -37,7 +37,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 // --------------------------------------------------
-// SESSION + GLOBAL MIDDLEWARE (CORRECT ORDER)
+// SESSION + GLOBAL MIDDLEWARE
 // --------------------------------------------------
 
 app.set("view engine", "ejs");
