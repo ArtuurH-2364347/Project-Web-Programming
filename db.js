@@ -28,7 +28,8 @@ export function InitializeDatabase() {
     )
   `).run();
 
-  addBannerImageColumn()
+  addBannerImageColumn();
+  addProfilePictureColumn();
   
   // Symmetrische friends table
   db.prepare(`
@@ -209,6 +210,19 @@ export function addBannerImageColumn() {
   } catch (error) {
     if (!error.message.includes('duplicate column name')) {
       console.error("Error adding banner_image column:", error);
+    }
+  }
+}
+
+export function addProfilePictureColumn() {
+  try {
+    db.prepare(`
+      ALTER TABLE users ADD COLUMN profile_picture TEXT
+    `).run();
+    console.log("Profile picture column added successfully.");
+  } catch (error) {
+    if (!error.message.includes("duplicate column name")) {
+      console.error("Error adding profile_picture column:", error);
     }
   }
 }

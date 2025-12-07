@@ -77,6 +77,17 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  next();
+});
+
+// Middleware om query messages door te geven aan alle views
+app.use((req, res, next) => {
+  res.locals.message = req.query.message || null;
+  next();
+});
+
 app.use(express.static("public"));
 
 // Debug logging middleware
@@ -206,7 +217,8 @@ app.get("/edit-profile", (req, res) => {
 
   res.render("edit-profile", {
     name: req.session.user.name,
-    bio: req.session.user.bio
+    bio: req.session.user.bio,
+    user: req.session.user
   });
 });
 
@@ -323,7 +335,8 @@ app.get("/groups/:id", (req, res) => {
     group,
     members,
     isAdmin,
-    trips
+    trips,
+    message: null
   });
 });
 
@@ -472,6 +485,29 @@ app.post("/activities/:id/delete", (req, res) => {
   res.redirect(`/trips/${activity.trip_id}`);
 });
 
+app.post("/trips/:id/delete", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const tripId = parseInt(req.params.id);
+  const trip = getTripById(tripId);
+
+  if (!trip) return res.status(404).send("Trip not found");
+
+  const membership = isGroupMember(req.session.user.id, trip.group_id);
+  if (!membership || membership.role !== "admin") {
+    return res.status(403).send("Not allowed");
+  }
+
+  // Verwijder alle activiteiten
+  const activities = getTripActivities(tripId);
+  activities.forEach(a => deleteActivity(a.id));
+
+  // Verwijder de trip
+  db.prepare("DELETE FROM trips WHERE id = ?").run(tripId);
+
+  res.redirect(`/groups/${trip.group_id}`);
+});
+
 // --------------------------------------------------
 // PDF DOWNLOAD
 // --------------------------------------------------
@@ -553,15 +589,6 @@ app.use((err, req, res, next) => {
 // --------------------------------------------------
 // START APP
 // --------------------------------------------------
-
-// Session setup
-app.use(
-  session({
-    secret: "some-secret-key",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
 
 // Homepage route
 app.get("/", (request, response) => {
