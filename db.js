@@ -18,7 +18,6 @@ export function InitializeDatabase() {
   // tabel maken als die nog niet bestaat
   // gebruikers table
   db.prepare(`
-<<<<<<< HEAD
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -26,15 +25,6 @@ export function InitializeDatabase() {
     passwordHash TEXT NOT NULL,
     bio TEXT,
     role TEXT DEFAULT 'user'
-=======
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      passwordHash TEXT NOT NULL,
-      bio TEXT,
-      profile_picture TEXT
->>>>>>> 1c2d69a30f7a489fc14ae13f2a0a0d361eb84234
     )
   `).run();
 
@@ -182,29 +172,22 @@ export function InitializeDatabase() {
         name: "Peter",
         email: "peter@example.com",
         password: "password123",
-<<<<<<< HEAD
-        bio: "Explorer of hidden gems.",
-        role: "admin"
-=======
-        bio: "This can be anything!"
->>>>>>> 1c2d69a30f7a489fc14ae13f2a0a0d361eb84234
+        role: "admin",
+        bio: "Explorer of hidden gems."
       },
       {
         name: "Jori",
         email: "jori@example.com",
         password: "password123",
-<<<<<<< HEAD
-        bio: "Adventure seeker and food lover.",
-        role: "user"
-=======
+        role: "user",
         bio: "This can be anything!"
       },
       {
         name: "Artuur",
         email: "artuur.heidbuchel@protonmail.com",
         password: "wachtwoord",
+        role: "admin",
         bio: "Ik heb ook een bio!"
->>>>>>> 1c2d69a30f7a489fc14ae13f2a0a0d361eb84234
       }
     ];
 

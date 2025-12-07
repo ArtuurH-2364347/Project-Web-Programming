@@ -32,11 +32,6 @@
               <%= new Date(trip.end_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %>
             </p>
           </div>
-<<<<<<< HEAD
-          <div>
-            <a href="/groups/<%= group.id %>" class="btn btn-light">← Back to Group</a>
-            <a href="/trips/<%= trip.id %>/pdf" class="btn btn-success">Download PDF</a>
-=======
           <div class="d-flex gap-2 flex-wrap">
             <a href="/trips/<%= trip.id %>/pdf" class="btn btn-pdf">
               <i class="bi bi-file-earmark-pdf"></i> Download PDF
@@ -44,7 +39,6 @@
             <a href="/groups/<%= group.id %>" class="btn btn-light">
               <i class="bi bi-arrow-left"></i> Back to Group
             </a>
->>>>>>> 1c2d69a30f7a489fc14ae13f2a0a0d361eb84234
           </div>
         </div>
       </div>

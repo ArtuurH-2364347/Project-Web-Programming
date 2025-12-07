@@ -46,7 +46,6 @@ app.set("views", "./views");
 app.use(express.urlencoded({ extended: true }));
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { InitializeDatabase } from "./db.js";
 
 // Import route modules
 import authRoutes from './routes/auth.js';
