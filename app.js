@@ -613,19 +613,6 @@ app.get("/tour", (req, res) => {
 });
 
 // --------------------------------------------------
-// ERROR HANDLERS
-// --------------------------------------------------
-
-app.use((req, res) => {
-  res.status(404).send("Sorry, can't find that!");
-});
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
-});
-
-// --------------------------------------------------
 // START APP
 // --------------------------------------------------
 
@@ -644,21 +631,17 @@ app.use(tripRoutes);
 app.use(activityRoutes);
 app.use(attachmentRoutes);
 
-// console.log('All routes mounted.');
+// --------------------------------------------------
+// ERROR HANDLERS
+// --------------------------------------------------
 
-// 404 handler
-app.use((request, response, next) => {
-  response.status(404).render("404", { 
-    user: request.session.user || null 
-  });
+app.use((req, res) => {
+  res.status(404).send("Sorry, can't find that!");
 });
 
-// Error handler
-app.use((error, request, response, next) => {
-  console.error(error.stack);
-  response.status(500).render("500", { 
-    user: request.session.user || null 
-  });
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
 });
 
 // Start server
