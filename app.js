@@ -596,23 +596,6 @@ app.get("/trips/:id/pdf", (req, res, next) => {
 });
 
 // --------------------------------------------------
-// STATIC TOUR PAGE
-// --------------------------------------------------
-
-app.get("/tour", (req, res) => {
-  res.render("reispagina", {
-    user: req.session.user,
-    tourTitle: "Today's Adventure",
-    images: ["/images/placeholder.png", "/images/placeholder.png"],
-    stops: [
-      { name: "Eiffel Tower", description: "Morning visit" },
-      { name: "Louvre Museum", description: "Art tour" },
-      { name: "Seine River Cruise", description: "Evening boat ride" }
-    ]
-  });
-});
-
-// --------------------------------------------------
 // START APP
 // --------------------------------------------------
 
