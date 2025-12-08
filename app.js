@@ -25,6 +25,7 @@ import db, {
   getGroupTrips,
   getTripById,
   getTripActivities,
+  getTripSuggestions,
   deleteActivity,
   getUserTrips,
   getAllUsers,
@@ -437,13 +438,25 @@ app.get("/trips/:id", (req, res) => {
     activitiesByDate[a.date].push(a);
   });
 
+  // Haal de suggesties op (maak deze functie in db.js als die nog niet bestaat)
+  const suggestions = getTripSuggestions ? getTripSuggestions(tripId) : []; 
+
+  // Aantal leden in de groep
+  const totalMembers = getGroupMembers(trip.group_id).length;
+
+  // Bereken votesNeeded (bijv. meerderheid)
+  const votesNeeded = Math.ceil(totalMembers / 2);
+
   res.render("trip-schedule", {
     user: req.session.user,
     trip,
     group,
     activities,
     activitiesByDate,
-    isAdmin: membership.role === "admin"
+    isAdmin: membership.role === "admin",
+    suggestions,
+    totalMembers,
+    votesNeeded
   });
 });
 
@@ -498,14 +511,40 @@ app.post("/trips/:id/delete", (req, res) => {
     return res.status(403).send("Not allowed");
   }
 
-  // Verwijder alle activiteiten
   const activities = getTripActivities(tripId);
   activities.forEach(a => deleteActivity(a.id));
 
-  // Verwijder de trip
   db.prepare("DELETE FROM trips WHERE id = ?").run(tripId);
 
-  res.redirect(`/groups/${trip.group_id}`);
+  return res.redirect(`/groups/${trip.group_id}`);
+});
+
+app.post("/groups/:id/delete", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const groupId = parseInt(req.params.id);
+
+  const membership = isGroupMember(req.session.user.id, groupId);
+  if (!membership || membership.role !== "admin") {
+    return res.status(403).send("Not allowed");
+  }
+
+  // Verwijder alle trips + activities van de groep
+  const trips = getGroupTrips(groupId);
+  trips.forEach(trip => {
+    const activities = getTripActivities(trip.id);
+    activities.forEach(a => deleteActivity(a.id));
+
+    db.prepare("DELETE FROM trips WHERE id = ?").run(trip.id);
+  });
+
+  // Verwijder alle members
+  db.prepare("DELETE FROM group_members WHERE group_id = ?").run(groupId);
+
+  // Verwijder de groep
+  db.prepare("DELETE FROM groups WHERE id = ?").run(groupId);
+
+  return res.redirect("/groups");
 });
 
 // --------------------------------------------------
