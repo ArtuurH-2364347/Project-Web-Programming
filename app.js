@@ -1,210 +1,95 @@
 import express from "express";
 import session from "express-session";
-import bcrypt from "bcrypt";
-import db, { InitializeDatabase, getUserByEmail, createUser, getFriends,   sendFriendRequest,
-  getPendingRequests, acceptFriendRequest, rejectFriendRequest, removeFriend } from "./db.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+import { InitializeDatabase } from "./db.js";
+
+// Route modules (ALLEEN deze!)
+import authRoutes from "./routes/auth.js";
+import profileRoutes from "./routes/profile.js";
+import friendRoutes from "./routes/friends.js";
+import groupRoutes from "./routes/groups.js";
+import tripRoutes from "./routes/trips.js";
+import activityRoutes from "./routes/activities.js";
+import attachmentRoutes from "./routes/attachments.js";
+import scheduleRoutes from "./routes/schedule.js";
+import adminRoutes from "./routes/admin.js";
+import pdfRoutes from "./routes/pdf.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = process.env.PORT || 8080; // Set by Docker Entrypoint or use 8080
+const port = process.env.PORT || 8080;
 
-// set the view engine to ejs
-// Use EJS templates
+// --------------------------------------
+// VIEW ENGINE + PUBLIC
+// --------------------------------------
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
-// Middleware for serving static files
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static("public"));
 
-// Middleware for parsing JSON bodies
-app.use(express.json());
-
-// Middleware for debug logging
-app.use((request, response, next) => {
-  console.log(
-    `Request URL: ${request.url} @ ${new Date().toLocaleString("nl-BE")}`
-  );
-  next();
-});
-
-// Your routes here ...
+// --------------------------------------
+// SESSION
+// --------------------------------------
 app.use(
   session({
     secret: "some-secret-key",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
   })
 );
 
-app.use(express.urlencoded({ extended: true }));
-
-app.get("/", (request, response) => {
-  response.render("index", { user: request.session.user });
+// --------------------------------------
+// GLOBAL LOCALS
+// --------------------------------------
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  res.locals.message = req.query.message || null;
+  next();
 });
 
-// Serve login page
-app.get("/login", (req, res) => {
-  if (req.session.user) return res.redirect("/profile");
-  res.render("login", { user: null });
+// --------------------------------------
+// HOMEPAGE
+// --------------------------------------
+app.get("/", (req, res) => {
+  res.render("index", { user: req.session.user });
 });
 
-// Handle login form
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  const user = getUserByEmail(email);
+// --------------------------------------
+// ROUTES
+// --------------------------------------
+app.use(authRoutes);
+app.use(profileRoutes);
+app.use(friendRoutes);
+app.use(scheduleRoutes);
+app.use(groupRoutes);
+app.use(tripRoutes);
+app.use(activityRoutes);
+app.use(attachmentRoutes);
+app.use(adminRoutes);
+app.use(pdfRoutes);
 
-  if (!user) {
-    return res.status(400).send("<h3>User not found. <a href='/login.html'>Try again</a></h3>");
-  }
-
-  const match = await bcrypt.compare(password, user.passwordHash);
-  if (!match) {
-    return res.status(401).send("<h3>Incorrect password. <a href='/login.html'>Try again</a></h3>");
-  }
-
-  req.session.user = user;
-  res.redirect("/profile");
+// --------------------------------------
+// ERROR HANDLING
+// --------------------------------------
+app.use((req, res) => {
+  res.status(404).render("404");
 });
 
-// Serve registratie pagina
-app.get("/register", (req, res) => {
-  if (req.session.user) return res.redirect("/profile");
-  res.render("register", { user: null });
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).render("500");
 });
 
-// Handle registratie form
-app.post("/register", async (req, res) => {
-  const { name, email, password, bio } = req.body;
-
-  const existingUser = getUserByEmail(email);
-  if (existingUser) {
-    return res
-      .status(400)
-      .send("<h3>Email already in use. <a href='/register'>Try again</a></h3>");
-  }
-
-  try {
-    createUser(name, email, password, bio || "");
-    res.redirect("/login");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("<h3>Registration failed. Please try again later.</h3>");
-  }
-});
-
-// Profile route
-app.get("/profile", (req, res) => {
-  if (!req.session.user) return res.redirect("/login");
-
-  const friends = getFriends(req.session.user.id);
-  const requests = getPendingRequests(req.session.user.id)
-
-  res.render("profile", {
-    user: req.session.user,
-    name: req.session.user.name,
-    email: req.session.user.email,
-    bio: req.session.user.bio,
-    friends,
-    requests,
-    message: null
-  });
-});
-
-// Edit profile page (GET)
-app.get("/edit-profile", (req, res) => {
-  if (!req.session.user) {
-    return res.redirect("/login.html");
-  }
-
-  res.render("edit-profile", {
-    name: req.session.user.name,
-    bio: req.session.user.bio
-  });
-});
-
-// Handle edit profile form (POST)
-app.post("/edit-profile", (req, res) => {
-  if (!req.session.user) {
-    return res.redirect("/login.html");
-  }
-
-  const { name, bio } = req.body;
-  const userId = req.session.user.id;
-
-  // Update database
-  const stmt = db.prepare("UPDATE users SET name = ?, bio = ? WHERE id = ?");
-  stmt.run(name, bio, userId);
-
-  // Update session data
-  req.session.user.name = name;
-  req.session.user.bio = bio;
-
-  res.redirect("/profile");
-});
-
-// Handle adding a friend
-app.post("/add-friend", (req, res) => {
-  if (!req.session.user) return res.redirect("/login.html");
-
-  const { friendEmail } = req.body;
-  const result = sendFriendRequest(req.session.user.id, friendEmail);
-  const friends = getFriends(req.session.user.id);
-  const requests = getPendingRequests(req.session.user.id) || [];
-  res.render("profile", {
-    name: req.session.user.name,
-    email: req.session.user.email,
-    bio: req.session.user.bio,
-    friends,
-    requests,
-    message: result.message
-  });
-});
-
-app.post("/accept-request/:id", (req, res) => {
-  if (!req.session.user) return res.redirect("/login.html");
-  const { id } = req.params;
-  const result = acceptFriendRequest(id);
-  res.redirect("/profile");
-});
-
-app.post("/reject-request/:id", (req, res) => {
-  if (!req.session.user) return res.redirect("/login.html");
-  const { id } = req.params;
-  const result = rejectFriendRequest(id);
-  res.redirect("/profile");
-});
-
-app.post("/remove-friend/:id", (req, res) => {
-  if (!req.session.user) return res.redirect("/login.html");
-
-  const friendId = parseInt(req.params.id);
-  const result = removeFriend(req.session.user.id, friendId);
-
-  console.log(`Removed friend relation between ${req.session.user.id} and ${friendId}`);
-
-  res.redirect("/profile");
-});
-
-
-// Logout route
-app.get("/logout", (req, res) => {
-  req.session.destroy(() => res.redirect("/login"));
-});
-
-
-// Middleware for unknown routes
-// Must be last in pipeline
-app.use((request, response, next) => {
-  response.status(404).send("Sorry can't find that!");
-});
-
-// Middleware for error handling
-app.use((error, request, response, next) => {
-  console.error(error.stack);
-  response.status(500).send("Something broke!");
-});
-
-// App starts here
+// --------------------------------------
+// START SERVER
+// --------------------------------------
 InitializeDatabase();
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 });

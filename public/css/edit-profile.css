@@ -1,0 +1,143 @@
+.overlay {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  padding: 2rem;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  border: 2px solid #e0e0e0;
+}
+
+.overlay h1 {
+  color: #2d5f5d;
+  margin-bottom: 2rem;
+}
+
+.form-label {
+  color: #2d5f5d;
+  font-weight: 600;
+}
+
+.form-control:focus {
+  border-color: #8b9d77;
+  box-shadow: 0 0 0 0.2rem rgba(139, 157, 119, 0.25);
+}
+
+.profile-picture-preview {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #8b9d77;
+}
+
+.btn-primary {
+  background-color: #8b9d77;
+  border: none;
+  padding: 0.6rem 2rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #748361;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border: none;
+  padding: 0.6rem 2rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 767px) {
+  .overlay {
+    padding: 1.5rem;
+    margin: 1rem;
+    border-radius: 0.75rem;
+  }
+
+  .overlay h1 {
+    font-size: 1.75rem;
+  }
+
+  .btn-group-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .btn-group-mobile .btn {
+    width: 100%;
+  }
+
+  .profile-picture-preview {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (min-width: 768px) {
+  .btn-group-mobile {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+.nav-tabs {
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.nav-tabs .nav-link {
+  color: #666;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #2d5f5d;
+  border-bottom-color: #e8b4b8;
+}
+
+.nav-tabs .nav-link.active {
+  color: #2d5f5d;
+  background: transparent;
+  border-bottom-color: #e8b4b8;
+  font-weight: 600;
+}
+
+.form-check-input:checked {
+  background-color: #e8b4b8;
+  border-color: #e8b4b8;
+}
+
+.form-check-input:focus {
+  border-color: #e8b4b8;
+  box-shadow: 0 0 0 0.2rem rgba(232, 180, 184, 0.25);
+}
+
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 0.5rem;
+  transition: all 0.3s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 576px) {
+  .nav-tabs .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}

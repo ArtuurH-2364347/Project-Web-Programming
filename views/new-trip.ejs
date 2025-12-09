@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plan New Trip – TravelBuddy</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="/css/new-trip.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <%- include('partials/navbar') %>
+    </div>
+  </nav>
+
+  <main class="container d-flex justify-content-center">
+    <div class="form-card w-100 col-11 col-sm-9 col-md-7 col-lg-6">
+      <h2 class="text-center mb-3" style="color:#2d5f5d; font-weight:700">Plan a New Trip</h2>
+      <p class="text-center text-muted mb-4">for <strong><%= group.name %></strong></p>
+
+      <form action="/groups/<%= group.id %>/trips" method="POST">
+        <div class="mb-3">
+          <label class="form-label">Trip Name *</label>
+          <input type="text" name="name" class="form-control" placeholder="e.g., Summer Paris Adventure" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Destination</label>
+          <input type="text" name="destination" class="form-control" placeholder="e.g., Paris, France">
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Start Date *</label>
+            <input type="date" name="startDate" class="form-control" id="startDate" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">End Date *</label>
+            <input type="date" name="endDate" class="form-control" id="endDate" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-hero w-100 mb-2">Create Trip</button>
+        <a href="/groups/<%= group.id %>" class="btn btn-outline-secondary w-100">Cancel</a>
+      </form>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/new-trip.js"></script>
+</body>
+</html>

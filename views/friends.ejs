@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find Friends – TravelBuddy</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="/css/friends.css" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <%- include('partials/navbar') %>
+    </div>
+  </nav>
+
+  <section class="hero-section">
+    <div class="container hero-content">
+      <h1>Find Travel Buddies</h1>
+      <p>Connect with friends and start planning your next adventure together</p>
+    </div>
+  </section>
+
+  <main class="container">
+    <div class="overlay">
+      <% if (message) { %>
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+          <%= message %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <div class="search-section mb-5">
+        <h4 class="fw-bold mb-3" style="color: #2d5f5d;">Search for Friends</h4>
+        <form action="/friends/search" method="POST" class="search-form">
+          <div class="input-group">
+            <input 
+              type="text" 
+              name="search" 
+              class="form-control form-control-lg" 
+              placeholder="Search by name or email..." 
+              value="<%= searchQuery %>"
+            />
+            <button type="submit" class="btn btn-primary">
+              Search
+            </button>
+          </div>
+        </form>
+
+        <% if (searchQuery) { %>
+          <div class="mt-4">
+            <h5 class="mb-3">Search Results for "<%= searchQuery %>"</h5>
+            <% if (searchResults && searchResults.length > 0) { %>
+              <div class="row g-3">
+                <% searchResults.forEach(person => { %>
+                  <div class="col-md-6 col-lg-4">
+                    <div class="friend-search-card">
+                      <div class="d-flex align-items-start gap-3">
+                        <div class="search-avatar">
+                          <% if (person.profile_picture) { %>
+                            <img src="<%= person.profile_picture %>" alt="<%= person.name %>" />
+                          <% } else { %>
+                            <img src="/images/Placeholder_pfp.png" alt="<%= person.name %>" />
+                          <% } %>
+                        </div>
+                        <div class="flex-grow-1">
+                          <h6 class="mb-1"><%= person.name %></h6>
+                          <small class="text-muted d-block mb-2"><%= person.email %></small>
+                          <% if (person.bio) { %>
+                            <p class="bio-text"><%= person.bio %></p>
+                          <% } %>
+                          
+                          <% if (person.relationship_status === 'request_sent') { %>
+                            <button class="btn btn-sm btn-secondary" disabled>
+                              Request Sent
+                            </button>
+                          <% } else if (person.relationship_status === 'request_received') { %>
+                            <span class="badge bg-info text-dark">Pending Request</span>
+                            <small class="d-block text-muted mt-1">Check your friend requests above</small>
+                          <% } else if (person.relationship_status === 'friends') { %>
+                            <button class="btn btn-sm btn-success" disabled>
+                              ✓ Already Friends
+                            </button>
+                          <% } else { %>
+                            <form action="/add-friend?search=<%= encodeURIComponent(searchQuery) %>" method="POST">
+                              <input type="hidden" name="friendEmail" value="<%= person.email %>" />
+                              <button type="submit" class="btn btn-sm btn-primary">
+                                Add Friend
+                              </button>
+                            </form>
+                          <% } %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <div class="empty-state">
+                <p class="text-muted mb-0">No users found matching "<%= searchQuery %>". Try a different search term.</p>
+              </div>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+
+      <% if (requests && requests.length > 0) { %>
+        <div class="mb-5">
+          <h4 class="fw-bold mb-3" style="color: #2d5f5d;">Friend Requests (<%= requests.length %>)</h4>
+          <div class="requests-list">
+            <% requests.forEach(request => { %>
+              <div class="friend-request-card">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong><%= request.name %></strong>
+                    <small class="text-muted d-block"><%= request.email %></small>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <form action="/accept-request/<%= request.id %>" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-success btn-sm">
+                        ✓ Accept
+                      </button>
+                    </form>
+                    <form action="/reject-request/<%= request.id %>" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-danger btn-sm">
+                        ✗ Reject
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% } %>
+
+      <div class="mb-4">
+        <h4 class="fw-bold mb-3" style="color: #2d5f5d;">Your Friends (<%= friends.length %>)</h4>
+        <% if (friends && friends.length > 0) { %>
+          <div class="row g-3">
+            <% friends.forEach(friend => { %>
+              <div class="col-md-6 col-lg-4">
+                <div class="friend-card">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div class="d-flex align-items-center gap-3 flex-grow-1">
+                      <div class="friend-avatar">
+                        <% if (friend.profile_picture) { %>
+                          <img src="<%= friend.profile_picture %>" alt="<%= friend.name %>" />
+                        <% } else { %>
+                          <img src="/images/Placeholder_pfp.png" alt="<%= friend.name %>" />
+                        <% } %>
+                      </div>
+                      <div>
+                        <h6 class="mb-1"><%= friend.name %></h6>
+                        <small class="text-muted"><%= friend.email %></small>
+                      </div>
+                    </div>
+                    <button 
+                      class="btn btn-outline-danger btn-sm" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#removeFriendModal<%= friend.id %>"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+          <% friends.forEach(friend => { %>
+            <div class="modal fade" id="removeFriendModal<%= friend.id %>" tabindex="-1" aria-labelledby="removeFriendModalLabel<%= friend.id %>" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="removeFriendModalLabel<%= friend.id %>">
+                      <i class="bi bi-exclamation-triangle"></i> Remove Friend
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="mb-3">Are you sure you want to remove <strong>"<%= friend.name %>"</strong> from your friends?</p>
+                    <div class="alert alert-warning" role="alert">
+                      <i class="bi bi-exclamation-triangle-fill"></i> <strong>Warning:</strong> This action cannot be undone. You will need to send a new friend request to reconnect.
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="/remove-friend/<%= friend.id %>?search=<%= encodeURIComponent(searchQuery) %>" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Remove Friend</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="empty-state">
+            <p class="text-muted mb-2">You haven't added any friends yet.</p>
+            <p class="text-muted">Use the search bar above to find travel buddies!</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </main>
+
+  <section class="quote-section">
+    <div class="container">
+      <blockquote class="travel-quote">
+        <p class="quote-text">"Traveling – it leaves you speechless, then turns you into a storyteller."</p>
+        <footer class="quote-footer">— Ibn Battuta</footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/friends.js"></script>
+</body>
+</html>
