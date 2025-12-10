@@ -1,3 +1,6 @@
+import dotenv from 'dotenv'
+dotenv.config();
+
 import express from "express";
 import session from "express-session";
 import path from "path";
@@ -16,6 +19,7 @@ import attachmentRoutes from "./routes/attachments.js";
 import scheduleRoutes from "./routes/schedule.js";
 import adminRoutes from "./routes/admin.js";
 import pdfRoutes from "./routes/pdf.js";
+import photoRoutes from './routes/photos.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -73,6 +77,7 @@ app.use(activityRoutes);
 app.use(attachmentRoutes);
 app.use(adminRoutes);
 app.use(pdfRoutes);
+app.use(photoRoutes);
 
 // --------------------------------------
 // ERROR HANDLING

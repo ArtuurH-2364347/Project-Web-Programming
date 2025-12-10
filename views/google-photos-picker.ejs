@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Select Photos from Google Photos</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/global.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+  <style>
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+    
+    .google-photo-item {
+      position: relative;
+      cursor: pointer;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    
+    .google-photo-item:hover {
+      transform: scale(1.05);
+    }
+    
+    .google-photo-item img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+    
+    .google-photo-item.selected {
+      outline: 4px solid #0d6efd;
+      outline-offset: 2px;
+    }
+    
+    .google-photo-item .selection-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    .google-photo-item .selection-badge i {
+      display: none;
+      color: #0d6efd;
+      font-size: 1.2rem;
+    }
+    
+    .google-photo-item.selected .selection-badge i {
+      display: block;
+    }
+    
+    .loading-spinner {
+      text-align: center;
+      padding: 40px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">TripPlanner</a>
+    </div>
+  </nav>
+
+  <main class="container mt-4">
+    <div class="overlay">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="fw-bold mb-2">
+            <i class="bi bi-google"></i> Select Photos from Google Photos
+          </h2>
+          <p class="text-muted">Click photos to select them. Selected photos will be imported to your trip.</p>
+        </div>
+        <div>
+          <span id="selectedCount" class="badge bg-primary me-2">0 selected</span>
+          <button id="cancelBtn" class="btn btn-secondary" onclick="cancelImport()">Cancel</button>
+          <button id="importBtn" class="btn btn-primary" onclick="importSelected()" disabled>
+            <i class="bi bi-download"></i> Import Selected
+          </button>
+        </div>
+      </div>
+
+      <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3">Loading your Google Photos...</p>
+      </div>
+
+      <div id="photoGrid" class="photo-grid" style="display: none;"></div>
+
+      <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const tripId = '<%= tripId %>';
+    const accessToken = '<%= accessToken %>';
+    const selectedPhotos = new Set();
+
+    async function loadGooglePhotos() {
+        try {
+            const response = await fetch('/api/google-photos');
+
+            if (!response.ok) {
+            throw new Error('Failed to load photos');
+            }
+
+            const data = await response.json();
+            displayPhotos(data.mediaItems || []);
+        } catch (error) {
+            console.error('Error loading photos:', error);
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('errorMessage').textContent = 'Failed to load photos from Google Photos. Please try again.';
+        }
+    }
+
+    function displayPhotos(photos) {
+      const grid = document.getElementById('photoGrid');
+      document.getElementById('loadingSpinner').style.display = 'none';
+      grid.style.display = 'grid';
+
+      if (photos.length === 0) {
+        grid.innerHTML = '<p class="text-center text-muted col-span-full">No photos found in your Google Photos library.</p>';
+        return;
+      }
+
+      photos.forEach(photo => {
+        const photoElement = document.createElement('div');
+        photoElement.className = 'google-photo-item';
+        photoElement.dataset.photoId = photo.id;
+        photoElement.onclick = () => toggleSelection(photo.id);
+
+        photoElement.innerHTML = `
+          <img src="${photo.baseUrl}=w300-h300-c" alt="${photo.filename || 'Photo'}">
+          <div class="selection-badge">
+            <i class="bi bi-check-lg"></i>
+          </div>
+        `;
+
+        grid.appendChild(photoElement);
+      });
+    }
+
+    function toggleSelection(photoId) {
+      const element = document.querySelector(`[data-photo-id="${photoId}"]`);
+      
+      if (selectedPhotos.has(photoId)) {
+        selectedPhotos.delete(photoId);
+        element.classList.remove('selected');
+      } else {
+        selectedPhotos.add(photoId);
+        element.classList.add('selected');
+      }
+
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      const count = selectedPhotos.size;
+      document.getElementById('selectedCount').textContent = `${count} selected`;
+      document.getElementById('importBtn').disabled = count === 0;
+    }
+
+    async function importSelected() {
+      if (selectedPhotos.size === 0) return;
+
+      const importBtn = document.getElementById('importBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+      
+      importBtn.disabled = true;
+      cancelBtn.disabled = true;
+      importBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Importing...';
+
+      try {
+        const formData = new FormData();
+        formData.append('photos', JSON.stringify(Array.from(selectedPhotos)));
+
+        const response = await fetch(`/trips/${tripId}/import-google-photos`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.redirected) {
+          window.location.href = response.url;
+        } else if (!response.ok) {
+          throw new Error('Import failed');
+        }
+      } catch (error) {
+        console.error('Error importing photos:', error);
+        alert('Failed to import photos. Please try again.');
+        importBtn.disabled = false;
+        cancelBtn.disabled = false;
+        importBtn.innerHTML = '<i class="bi bi-download"></i> Import Selected';
+      }
+    }
+
+    function cancelImport() {
+      window.location.href = `/trips/${tripId}`;
+    }
+    loadGooglePhotos();
+  </script>
+</body>
+</html>

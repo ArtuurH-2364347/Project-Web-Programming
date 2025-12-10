@@ -3,7 +3,6 @@ import db, { getUserTrips, getActivityAttachments } from '../db.js';
 
 const router = express.Router();
 
-// View schedule (legacy route)
 router.get("/schedule", (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login");

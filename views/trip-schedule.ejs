@@ -60,6 +60,207 @@
           </div>
         <div id="trip-map"></div>
       </div>
+
+      <div class="photos-section mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="fw-bold mb-0" style="color: #2d5f5d;">
+            <i class="bi bi-images"></i> Trip Photos
+            <% if (photoStats && photoStats.total_photos > 0) { %>
+              <span class="badge bg-secondary"><%= photoStats.total_photos %></span>
+            <% } %>
+          </h4>
+          <div class="btn-group">
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadPhotosModal">
+              <i class="bi bi-cloud-upload"></i> Upload Photos
+            </button>
+            <button class="btn btn-info btn-sm" onclick="connectGooglePhotos()">
+              <i class="bi bi-google"></i> Import from Google Photos
+            </button>
+          </div>
+        </div>
+
+        <% if (photos && photos.length > 0) { %>
+          <div class="photo-gallery">
+            <div class="row g-3">
+              <% photos.forEach(photo => { %>
+                <div class="col-6 col-md-4 col-lg-3">
+                  <div class="photo-card">
+                    <div class="photo-wrapper" data-bs-toggle="modal" data-bs-target="#photoModal<%= photo.id %>">
+                      <img src="<%= photo.file_path %>" alt="<%= photo.caption || 'Trip photo' %>" class="photo-thumbnail">
+                      <div class="photo-overlay">
+                        <i class="bi bi-zoom-in"></i>
+                      </div>
+                    </div>
+                    <div class="photo-info">
+                      <% if (photo.caption) { %>
+                        <small class="d-block text-truncate" title="<%= photo.caption %>">
+                          <%= photo.caption %>
+                        </small>
+                      <% } %>
+                      <small class="text-muted d-block">
+                        <img src="<%= photo.uploader_picture || '/images/default-avatar.png' %>" 
+                            alt="<%= photo.uploader_name %>" 
+                            class="rounded-circle me-1" 
+                            style="width: 16px; height: 16px; object-fit: cover;">
+                        <%= photo.uploader_name %>
+                      </small>
+                      <% if (photo.source === 'google_photos') { %>
+                        <small class="text-muted">
+                          <i class="bi bi-google"></i> Google Photos
+                        </small>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal fade" id="photoModal<%= photo.id %>" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">
+                          <%= photo.original_filename %>
+                          <% if (photo.source === 'google_photos') { %>
+                            <span class="badge bg-info ms-2">
+                              <i class="bi bi-google"></i> Google Photos
+                            </span>
+                          <% } %>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+                      <div class="modal-body">
+                        <img src="<%= photo.file_path %>" alt="<%= photo.caption || 'Trip photo' %>" class="img-fluid w-100 mb-3">
+                        
+                        <% if (photo.caption) { %>
+                          <p class="mb-2"><strong>Caption:</strong> <%= photo.caption %></p>
+                        <% } %>
+                        
+                        <div class="d-flex justify-content-between align-items-center text-muted small">
+                          <div>
+                            <i class="bi bi-person-circle"></i> Uploaded by <%= photo.uploader_name %>
+                          </div>
+                          <div>
+                            <i class="bi bi-calendar"></i> <%= new Date(photo.uploaded_at).toLocaleDateString() %>
+                          </div>
+                          <div>
+                            <i class="bi bi-file-earmark"></i> <%= (photo.file_size / 1024 / 1024).toFixed(2) %> MB
+                          </div>
+                        </div>
+
+                        <% if (photo.uploaded_by === user.id) { %>
+                          <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#editCaption<%= photo.id %>">
+                              <i class="bi bi-pencil"></i> Edit Caption
+                            </button>
+                            <div class="collapse mt-2" id="editCaption<%= photo.id %>">
+                              <form action="/photos/<%= photo.id %>/caption" method="POST">
+                                <div class="input-group">
+                                  <input type="text" name="caption" class="form-control" value="<%= photo.caption || '' %>" placeholder="Add a caption...">
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        <% } %>
+                      </div>
+                      <div class="modal-footer">
+                        <a href="/photos/<%= photo.id %>/download" class="btn btn-success">
+                          <i class="bi bi-download"></i> Download
+                        </a>
+                        <% if (isAdmin || photo.uploaded_by === user.id) { %>
+                          <form action="/photos/<%= photo.id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete this photo?')">
+                            <button type="submit" class="btn btn-danger">
+                              <i class="bi bi-trash"></i> Delete
+                            </button>
+                          </form>
+                        <% } %>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+
+          <% if (photoStats) { %>
+            <div class="mt-3 p-3 bg-light rounded">
+              <div class="row text-center">
+                <div class="col-4">
+                  <strong><%= photoStats.total_photos %></strong>
+                  <br><small class="text-muted">Total Photos</small>
+                </div>
+                <div class="col-4">
+                  <strong><%= (photoStats.total_size / 1024 / 1024).toFixed(1) %> MB</strong>
+                  <br><small class="text-muted">Total Size</small>
+                </div>
+                <div class="col-4">
+                  <strong><%= photoStats.contributors %></strong>
+                  <br><small class="text-muted">Contributors</small>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        <% } else { %>
+          <div class="text-center py-5 bg-light rounded">
+            <i class="bi bi-images" style="font-size: 3rem; color: #ccc;"></i>
+            <p class="text-muted mt-3 mb-3">No photos uploaded yet. Be the first to share memories!</p>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadPhotosModal">
+              <i class="bi bi-cloud-upload"></i> Upload Your First Photo
+            </button>
+          </div>
+        <% } %>
+      </div>
+      <div class="modal fade" id="uploadPhotosModal" tabindex="-1" aria-labelledby="uploadPhotosModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="uploadPhotosModalLabel">
+                <i class="bi bi-cloud-upload"></i> Upload Photos
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/trips/<%= trip.id %>/photos" method="POST" enctype="multipart/form-data">
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="photoFiles" class="form-label">Select Photos (max 10)</label>
+                  <input type="file" 
+                        id="photoFiles" 
+                        name="photos" 
+                        class="form-control" 
+                        accept="image/*" 
+                        multiple 
+                        required 
+                        onchange="previewPhotos(this)">
+                  <small class="text-muted">Max 20MB per photo. Formats: JPG, PNG, GIF, HEIC, WebP</small>
+                </div>
+                
+                <div id="photoPreview" class="mb-3"></div>
+
+                <div class="mb-3">
+                  <label for="photoCaption" class="form-label">Caption (optional)</label>
+                  <input type="text" 
+                        id="photoCaption" 
+                        name="caption" 
+                        class="form-control" 
+                        placeholder="Add a caption to your photo(s)...">
+                  <small class="text-muted">If uploading multiple photos, numbers will be added to the caption</small>
+                </div>
+
+                <div class="alert alert-info" role="alert">
+                  <i class="bi bi-info-circle"></i>
+                  <strong>Tip:</strong> You can select multiple photos at once by holding Ctrl (Windows) or Cmd (Mac) while clicking files.
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-upload"></i> Upload Photos
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
       <% if (suggestions && suggestions.length > 0) { %>
         <div class="mb-4">
           <h4 class="fw-bold mb-3" style="color: #2d5f5d;">Pending Activity Suggestions</h4>
@@ -360,6 +561,38 @@
   </script>
   <script src="/js/geolocation-map.js"></script>
   <script src="/js/activity-notifications.js"></script>
+
+  <script>
+  function previewPhotos(input) {
+    const preview = document.getElementById('photoPreview');
+    preview.innerHTML = '';
+    
+    if (input.files) {
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+ function connectGooglePhotos() {
+  const tripId = '<%= trip.id %>';
+  
+  fetch(`/trips/${tripId}/set-google-state`, { method: 'POST' })
+    .then(() => {
+      window.location.href = `/trips/${tripId}/connect-google-photos`;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Failed to initiate Google Photos connection');
+    });
+}
+  </script>
 
 </body>
 </html>

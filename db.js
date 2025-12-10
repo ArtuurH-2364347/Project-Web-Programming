@@ -158,6 +158,25 @@ export function InitializeDatabase() {
     )
   `).run();
 
+  // Trip Photos table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS trip_photos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      trip_id INTEGER NOT NULL,
+      filename TEXT NOT NULL,
+      original_filename TEXT NOT NULL,
+      file_path TEXT NOT NULL,
+      file_type TEXT NOT NULL,
+      file_size INTEGER NOT NULL,
+      caption TEXT,
+      uploaded_by INTEGER NOT NULL,
+      source TEXT CHECK(source IN ('upload','google_photos')) DEFAULT 'upload',
+      google_photo_id TEXT,
+      uploaded_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(trip_id) REFERENCES trips(id) ON DELETE CASCADE,
+      FOREIGN KEY(uploaded_by) REFERENCES users(id)
+    )
+  `).run();
 
   // voorbeeldaccounts toevoegen
   const count = db.prepare("SELECT COUNT(*) AS count FROM users").get().count;
@@ -755,4 +774,47 @@ export function searchUsers(searchQuery, currentUserId) {
   return users;
 }
 
+export function createTripPhoto(tripId, filename, originalFilename, filePath, fileType, fileSize, uploadedBy, caption = null, source = 'upload', googlePhotoId = null) {
+  const stmt = db.prepare(`
+    INSERT INTO trip_photos (trip_id, filename, original_filename, file_path, file_type, file_size, caption, uploaded_by, source, google_photo_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  const result = stmt.run(tripId, filename, originalFilename, filePath, fileType, fileSize, caption, uploadedBy, source, googlePhotoId);
+  return result.lastInsertRowid;
+}
+
+export function getTripPhotos(tripId) {
+  return db.prepare(`
+    SELECT p.*, u.name as uploader_name, u.profile_picture as uploader_picture
+    FROM trip_photos p
+    LEFT JOIN users u ON u.id = p.uploaded_by
+    WHERE p.trip_id = ?
+    ORDER BY p.uploaded_at DESC
+  `).all(tripId);
+}
+
+export function getPhotoById(photoId) {
+  return db.prepare("SELECT * FROM trip_photos WHERE id = ?").get(photoId);
+}
+
+export function updatePhotoCaption(photoId, caption) {
+  db.prepare("UPDATE trip_photos SET caption = ? WHERE id = ?").run(caption, photoId);
+}
+
+export function deleteTripPhoto(photoId) {
+  db.prepare("DELETE FROM trip_photos WHERE id = ?").run(photoId);
+}
+
+export function getPhotoStats(tripId) {
+  return db.prepare(`
+    SELECT 
+      COUNT(*) as total_photos,
+      SUM(file_size) as total_size,
+      COUNT(DISTINCT uploaded_by) as contributors
+    FROM trip_photos
+    WHERE trip_id = ?
+  `).get(tripId);
+}
+
 export default db;
+

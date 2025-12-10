@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import PDFDocument from 'pdfkit';
 import db, {
@@ -11,7 +13,9 @@ import db, {
   getSuggestionVotes,
   getUserVote,
   deleteTrip,
-  getActivityAttachments
+  getActivityAttachments,
+  getTripPhotos,
+  getPhotoStats
 } from '../db.js';
 
 const router = express.Router();
@@ -56,69 +60,6 @@ router.post("/groups/:id/trips", (req, res) => {
 
   const tripId = createTrip(groupId, name, destination, startDate, endDate);
   res.redirect(`/trips/${tripId}`);
-});
-
-// View specific trip
-router.get("/trips/:id", (req, res) => {
-  if (!req.session.user) {
-    return res.redirect("/login");
-  }
-
-  const tripId = parseInt(req.params.id);
-  const trip = getTripById(tripId);
-  
-  if (!trip) {
-    return res.status(404).send("Trip not found");
-  }
-
-  const membership = isGroupMember(req.session.user.id, trip.group_id);
-  if (!membership) {
-    return res.status(403).send("You are not a member of this group");
-  }
-
-  const activities = getTripActivities(tripId);
-  const group = getGroupById(trip.group_id);
-  const isAdmin = membership.role === 'admin';
-  const suggestions = getTripSuggestions(tripId);
-  const groupMembers = getGroupMembers(trip.group_id);
-  const totalMembers = groupMembers.length;
-  const votesNeeded = Math.ceil(totalMembers / 2);
-
-  activities.forEach(activity => {
-    activity.attachments = getActivityAttachments(activity.id);
-  });
-
-  suggestions.forEach(suggestion => {
-    const votes = getSuggestionVotes(suggestion.id);
-    suggestion.yesVotes = votes.filter(v => v.vote === 'yes').length;
-    suggestion.noVotes = votes.filter(v => v.vote === 'no').length;
-    suggestion.totalVotes = votes.length;
-    suggestion.votesNeeded = votesNeeded;
-    
-    const userVote = getUserVote(suggestion.id, req.session.user.id);
-    suggestion.userVote = userVote ? userVote.vote : null;
-  });
-
-  const activitiesByDate = {};
-  activities.forEach(activity => {
-    if (!activitiesByDate[activity.date]) {
-      activitiesByDate[activity.date] = [];
-    }
-    activitiesByDate[activity.date].push(activity);
-  });
-
-  res.render("trip-schedule", {
-    user: req.session.user,
-    trip: trip,
-    group: group,
-    activities: activities,
-    activitiesByDate: activitiesByDate,
-    isAdmin: isAdmin,
-    suggestions: suggestions,
-    totalMembers: totalMembers,
-    votesNeeded: votesNeeded,
-    message: null
-  });
 });
 
 // Delete trip
@@ -288,4 +229,101 @@ router.get("/trips/:id/pdf", (req, res, next) => {
     // make sure express logs it
     next(err);
   }
+});
+
+router.get("/trips/:id", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const tripId = parseInt(req.params.id);
+  const trip = getTripById(tripId);
+  
+  if (!trip) {
+    return res.status(404).send("Trip not found");
+  }
+
+  const membership = isGroupMember(req.session.user.id, trip.group_id);
+  
+  if (!membership) {
+    return res.status(403).send("You are not a member of this group");
+  }
+
+  const group = getGroupById(trip.group_id);
+  const activities = getTripActivities(tripId);
+  const suggestions = getTripSuggestions(tripId);
+  
+  const photos = getTripPhotos(tripId);
+  const photoStats = getPhotoStats(tripId);
+
+  activities.forEach(activity => {
+    activity.attachments = getActivityAttachments(activity.id);
+  });
+
+  const totalMembers = getGroupMembers(trip.group_id).length;
+  const votesNeeded = Math.ceil(totalMembers / 2);
+  
+  const processedSuggestions = suggestions.map(suggestion => {
+    const votes = getSuggestionVotes(suggestion.id);
+    const yesVotes = votes.filter(v => v.vote === 'yes').length;
+    const userVote = getUserVote(suggestion.id, req.session.user.id);
+    
+    return {
+      ...suggestion,
+      yesVotes,
+      userVote: userVote?.vote
+    };
+  });
+
+  const activitiesByDate = {};
+  activities.forEach(activity => {
+    if (!activitiesByDate[activity.date]) {
+      activitiesByDate[activity.date] = [];
+    }
+    activitiesByDate[activity.date].push(activity);
+  });
+
+  res.render("trip-schedule", {
+    trip,
+    group,
+    activities,
+    activitiesByDate,
+    suggestions: processedSuggestions,
+    photos,
+    photoStats,
+    totalMembers,
+    votesNeeded,
+    user: req.session.user,
+    isAdmin: membership.role === 'admin',
+    message: req.query.success || req.query.error || null,
+    googleClientId: process.env.GOOGLE_CLIENT_ID || ''
+  });
+});
+
+router.post("/trips/:id/set-google-state", (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  const tripId = parseInt(req.params.id);
+  req.session.googlePhotosState = { tripId };
+  res.json({ success: true });
+});
+
+router.get("/trips/:id/google-photos-picker", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const tripId = parseInt(req.params.id);
+  const accessToken = req.session.googlePhotosToken;
+
+  if (!accessToken) {
+    return res.redirect(`/trips/${tripId}?error=Google Photos session expired`);
+  }
+
+  res.render("google-photos-picker", {
+    tripId,
+    accessToken
+  });
 });
