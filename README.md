@@ -2,12 +2,15 @@
 
 ## Checklist:
 Minimum.
-    - [ ] Reisfotos uploaden (google photos?)
     - [ ] Externe bronnen kunnen zonder internet bekeken worden
 
 Diverse extras.
 
     - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
+
+Bug Fixes.
+    - [ ] Kaart werkt niet meer, table heeft geen latitude kolom
+    - [ ] deleten van reisfoto gebruikt geen warning model
 
 ## Gebruikte APIs met huidige planning:
 

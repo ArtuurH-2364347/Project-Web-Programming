@@ -8,7 +8,7 @@ import { fileURLToPath } from "url";
 
 import { InitializeDatabase } from "./db.js";
 
-// Route modules (ALLEEN deze!)
+// Route modules
 import authRoutes from "./routes/auth.js";
 import profileRoutes from "./routes/profile.js";
 import friendRoutes from "./routes/friends.js";
