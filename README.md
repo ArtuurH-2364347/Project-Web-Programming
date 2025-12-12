@@ -13,6 +13,7 @@ Bug Fixes.
     - [ ] deleten van reisfoto gebruikt geen warning model
     - [ ] index pagina fotos invoegen
     - [ ] standaard data invoegen in database (standaard accounts, admin status, standaard groep en reis,...)
+    - [ ] admin panel heeft niet dezelfde css
 
 
 ## Gebruikte APIs met huidige planning:
