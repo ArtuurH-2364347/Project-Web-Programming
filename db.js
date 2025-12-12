@@ -2,7 +2,8 @@ import Database from "better-sqlite3";
 import bcrypt from "bcrypt";
 
 const db = new Database("database.db", { verbose: console.log });
-// Voeg admin kolom toe als die nog niet bestaat
+
+// Add role column to users table if it doesn't exist
 try {
   db.prepare("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'").run();
 } catch {}
@@ -24,12 +25,11 @@ export function InitializeDatabase() {
     email TEXT UNIQUE NOT NULL,
     passwordHash TEXT NOT NULL,
     bio TEXT,
-    role TEXT DEFAULT 'user'
+    role TEXT DEFAULT 'user',
+    banner_image TEXT,
+    profile_picture TEXT
     )
   `).run();
-
-  addBannerImageColumn();
-  addProfilePictureColumn();
   
   // Symmetrische friends table
   db.prepare(`
@@ -90,7 +90,7 @@ export function InitializeDatabase() {
     )
   `).run();
 
-  // Activities table
+  // Activities table - WITH latitude and longitude
   db.prepare(`
     CREATE TABLE IF NOT EXISTS activities (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -109,7 +109,7 @@ export function InitializeDatabase() {
     )
   `).run();
 
-  // Suggestions table
+  // Suggestions table - WITH latitude and longitude
   db.prepare(`
     CREATE TABLE IF NOT EXISTS activity_suggestions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -217,32 +217,6 @@ export function InitializeDatabase() {
     }
 
     console.log("Example users created.");
-  }
-}
-
-export function addBannerImageColumn() {
-  try {
-    db.prepare(`
-      ALTER TABLE users ADD COLUMN banner_image TEXT
-    `).run();
-    console.log("Banner image column added successfully.");
-  } catch (error) {
-    if (!error.message.includes('duplicate column name')) {
-      console.error("Error adding banner_image column:", error);
-    }
-  }
-}
-
-export function addProfilePictureColumn() {
-  try {
-    db.prepare(`
-      ALTER TABLE users ADD COLUMN profile_picture TEXT
-    `).run();
-    console.log("Profile picture column added successfully.");
-  } catch (error) {
-    if (!error.message.includes("duplicate column name")) {
-      console.error("Error adding profile_picture column:", error);
-    }
   }
 }
 
