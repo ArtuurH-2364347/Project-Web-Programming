@@ -9,8 +9,11 @@ Diverse extras.
     - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
 
 Bug Fixes.
-    - [ ] Kaart werkt niet meer, table heeft geen latitude kolom
+    - [ ] Kaart werkt niet meer, table heeft geen latitude kolom?
     - [ ] deleten van reisfoto gebruikt geen warning model
+    - [ ] index pagina fotos invoegen
+    - [ ] standaard data invoegen in database (standaard accounts, admin status, standaard groep en reis,...)
+
 
 ## Gebruikte APIs met huidige planning:
 
