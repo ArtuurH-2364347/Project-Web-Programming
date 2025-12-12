@@ -9,9 +9,7 @@ Diverse extras.
     - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
 
 Bug Fixes.
-    - [ ] deleten van reisfoto gebruikt geen warning modal
-    - [ ] member uit groep verwijderen geeft geen warning modal
-    - [ ] 
+    - [ ] pfps laden niet op friends page
     - [ ] index pagina fotos invoegen
     - [ ] standaard data invoegen in database (standaard accounts, admin status, standaard groep en reis,...)
     - [ ] admin panel heeft niet dezelfde css

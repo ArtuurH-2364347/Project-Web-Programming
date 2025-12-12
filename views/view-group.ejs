@@ -170,15 +170,50 @@
                           <i class="bi bi-arrow-down-circle"></i> Demote
                         </button>
                       </form>
-                      <form action="/groups/<%= group.id %>/remove/<%= member.id %>" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this member?')">
-                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Remove from Group">
-                          <i class="bi bi-person-x"></i> Remove
-                        </button>
-                      </form>
+                      <button 
+                        type="button"
+                        class="btn btn-outline-danger btn-sm" 
+                        title="Remove from Group"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#removeMemberModal<%= member.id %>"
+                      >
+                        <i class="bi bi-person-x"></i> Remove
+                      </button>
                     </div>
                   <% } %>
                 </div>
               </div>
+
+              <!-- Remove Member Modal for Admin -->
+              <% if (isAdmin && member.id !== user.id) { %>
+                <div class="modal fade" id="removeMemberModal<%= member.id %>" tabindex="-1" aria-labelledby="removeMemberModalLabel<%= member.id %>" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="removeMemberModalLabel<%= member.id %>">
+                          Remove Member
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="mb-3">Are you sure you want to remove <strong><%= member.name %></strong> from this group?</p>
+                        <div class="mb-2">
+                          <small class="text-muted"><i class="bi bi-envelope"></i> <%= member.email %></small>
+                        </div>
+                        <div class="alert alert-warning" role="alert">
+                          <strong>Warning:</strong> This action cannot be undone. The member will lose access to all group trips and activities.
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form action="/groups/<%= group.id %>/remove/<%= member.id %>" method="POST" class="d-inline">
+                          <button type="submit" class="btn btn-danger">Remove Member</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
             <% }) %>
           <% } %>
           <% if (regularMembers.length > 0) { %>
@@ -217,15 +252,50 @@
                           <i class="bi bi-arrow-up-circle"></i> Promote
                         </button>
                       </form>
-                      <form action="/groups/<%= group.id %>/remove/<%= member.id %>" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this member?')">
-                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Remove from Group">
-                          <i class="bi bi-person-x"></i> Remove
-                        </button>
-                      </form>
+                      <button 
+                        type="button"
+                        class="btn btn-outline-danger btn-sm" 
+                        title="Remove from Group"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#removeMemberModal<%= member.id %>"
+                      >
+                        <i class="bi bi-person-x"></i> Remove
+                      </button>
                     </div>
                   <% } %>
                 </div>
               </div>
+
+              <!-- Remove Member Modal for Regular Member -->
+              <% if (isAdmin && member.id !== user.id) { %>
+                <div class="modal fade" id="removeMemberModal<%= member.id %>" tabindex="-1" aria-labelledby="removeMemberModalLabel<%= member.id %>" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="removeMemberModalLabel<%= member.id %>">
+                          Remove Member
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="mb-3">Are you sure you want to remove <strong><%= member.name %></strong> from this group?</p>
+                        <div class="mb-2">
+                          <small class="text-muted"><i class="bi bi-envelope"></i> <%= member.email %></small>
+                        </div>
+                        <div class="alert alert-warning" role="alert">
+                          <strong>Warning:</strong> This action cannot be undone. The member will lose access to all group trips and activities.
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form action="/groups/<%= group.id %>/remove/<%= member.id %>" method="POST" class="d-inline">
+                          <button type="submit" class="btn btn-danger">Remove Member</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
             <% }) %>
           <% } %>
 
