@@ -10,6 +10,8 @@ Diverse extras.
 
 Bug Fixes.
     - [ ] deleten van reisfoto gebruikt geen warning modal
+    - [ ] member uit groep verwijderen geeft geen warning modal
+    - [ ] 
     - [ ] index pagina fotos invoegen
     - [ ] standaard data invoegen in database (standaard accounts, admin status, standaard groep en reis,...)
     - [ ] admin panel heeft niet dezelfde css
