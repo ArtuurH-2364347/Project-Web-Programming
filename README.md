@@ -9,11 +9,9 @@ Diverse extras.
     - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
 
 Bug Fixes.
-    - [ ] pfps laden niet op friends page
-    - [ ] index pagina fotos invoegen
     - [ ] standaard data invoegen in database (standaard accounts, admin status, standaard groep en reis,...)
     - [ ] admin panel heeft niet dezelfde css
-    - [ ] te grote images uploaded geeft 500 in plaats van error
+    - [ ] te grote images uploaden geeft 500 in plaats van error
     - [ ] password incorrect geeft geen mooie error
 
 
