@@ -1,3 +1,4 @@
+/* PDF Button */
 .btn-pdf {
   background-color: #8b9d77;
   border: none;
@@ -22,17 +23,7 @@
   font-size: 1.1em;
 }
 
-@media (max-width: 767px) {
-  .trip-header .d-flex.gap-2 {
-    width: 100%;
-  }
-  
-  .btn-pdf,
-  .trip-header .btn-light {
-    width: 100%;
-    justify-content: center;
-  }
-}
+/* Main Layout */
 .overlay {
   background-color: white;
   border-radius: 1rem;
@@ -50,6 +41,7 @@
   margin-bottom: 2rem;
 }
 
+/* Buttons */
 .btn-light {
   background-color: #e8b4b8;
   border: none;
@@ -64,6 +56,29 @@
   transform: translateY(-2px);
 }
 
+.btn-primary {
+  background-color: #8b9d77;
+  border: none;
+  padding: 0.6rem 2rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #748361;
+  transform: translateY(-2px);
+}
+
+.btn-success {
+  background-color: #8b9d77;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #748361;
+}
+
+/* Schedule and Activities */
 .day-section {
   margin-bottom: 2rem;
 }
@@ -102,6 +117,7 @@
   font-size: 0.85rem;
 }
 
+/* Suggestions */
 .suggestion-card {
   background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
   border-left: 4px solid #ffc107;
@@ -123,15 +139,6 @@
   font-size: 0.875rem;
 }
 
-.btn-success {
-  background-color: #8b9d77;
-  border: none;
-}
-
-.btn-success:hover {
-  background-color: #748361;
-}
-
 .vote-count {
   font-size: 0.85rem;
   color: #6c757d;
@@ -146,6 +153,7 @@
   background-color: #8b9d77 !important;
 }
 
+/* Add Activity Form */
 .add-activity-form {
   background-color: #f8f9fa;
   border-radius: 0.75rem;
@@ -156,19 +164,6 @@
 
 .add-activity-form h5 {
   color: #2d5f5d;
-}
-
-.btn-primary {
-  background-color: #8b9d77;
-  border: none;
-  padding: 0.6rem 2rem;
-  font-weight: 600;
-  transition: all 0.3s;
-}
-
-.btn-primary:hover {
-  background-color: #748361;
-  transform: translateY(-2px);
 }
 
 .location-input-wrapper {
@@ -202,6 +197,7 @@
   color: #6c757d;
 }
 
+/* Map */
 .map-container {
   background-color: #f8f9fa;
   border-radius: 0.75rem;
@@ -220,18 +216,12 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-@media (max-width: 767px) {
-  .overlay {
-    padding: 1rem;
-  }
-
-  .trip-header {
-    padding: 1.5rem;
-  }
-
-  #trip-map {
-    height: 300px;
-  }
+/* Photos */
+.photos-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .photo-gallery {
@@ -292,13 +282,6 @@
   padding: 0.75rem;
 }
 
-.photos-section {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
 #photoPreview {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -312,291 +295,213 @@
   border-radius: 4px;
   border: 2px solid #ddd;
 }
+
+/* Reviews */
 .reviews-container {
-    margin-top: 50px;
-    padding-top: 30px;
-    border-top: 2px solid #e0e0e0;
-  }
-  
-  .review-form-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 15px;
-    padding: 30px;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  }
-  
-  .review-form-card h5 {
-    margin-bottom: 20px;
-    font-weight: bold;
-  }
-  
-  .review-form-card .form-label {
-    color: white;
-    font-weight: 500;
-  }
-  
-  .rating-input-group {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  
-  .rating-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
-    border: 2px solid white;
-    background: rgba(255,255,255,0.2);
-    color: white;
-    font-weight: bold;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .rating-btn:hover {
-    background: rgba(255,255,255,0.4);
-    transform: scale(1.1);
-  }
-  
-  .rating-btn.active {
-    background: white;
-    color: #667eea;
-    transform: scale(1.15);
-  }
-  
-  .existing-reviews h5 {
-    color: #2d5f5d;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
-  
-  .trip-review-card {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border-left: 5px solid #8b9d77;
-  }
-  
-  .trip-review-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .trip-review-header img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 15px;
-  }
-  
-  .trip-review-rating {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-  
-  .trip-review-rating .rating-badge {
-    background: #2d5f5d;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 25px;
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
-  
-  .trip-review-text {
-    color: #495057;
-    line-height: 1.6;
-    font-style: italic;
-    margin-bottom: 15px;
-  }
-  
-  .trip-review-date {
-    color: #6c757d;
-    font-size: 0.85rem;
-  }
-  
-  .average-rating-banner {
-    background: linear-gradient(135deg, #2d5f5d 0%, #4a7a78 100%);
-    color: white;
-    padding: 25px;
-    border-radius: 15px;
-    margin-bottom: 30px;
-    text-align: center;
-  }
-  
-  .average-rating-banner .big-rating {
-    font-size: 3rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .average-rating-banner .review-count {
-    font-size: 1rem;
-    opacity: 0.9;
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 2px solid #e0e0e0;
+}
+
+.review-form-card {
+  background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
+  color: white;
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.review-form-card h5 {
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.review-form-card .form-label {
+  color: white;
+  font-weight: 500;
+}
+
+.rating-input-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rating-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  border: 2px solid #2d5f5d;
+  background: rgba(45, 95, 93, 0.1);
+  color: #2d5f5d;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.rating-btn:hover {
+  background: rgba(45, 95, 93, 0.2);
+  transform: scale(1.1);
+}
+
+.rating-btn.active {
+  background: #2d5f5d;
+  color: white;
+  transform: scale(1.15);
+}
+
+/* Rating buttons in the review form card (white background) */
+.review-form-card .rating-btn {
+  border-color: white;
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+.review-form-card .rating-btn:hover {
+  background: rgba(255,255,255,0.4);
+}
+
+.review-form-card .rating-btn.active {
+  background: white;
+  color: #2d5f5d;
+}
+
+.existing-reviews h5 {
+  color: #2d5f5d;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.trip-review-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-left: 5px solid #8b9d77;
+}
+
+.trip-review-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.trip-review-header img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+.trip-review-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.trip-review-rating .rating-badge {
+  background: #2d5f5d;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.trip-review-text {
+  color: #495057;
+  line-height: 1.6;
+  font-style: italic;
+  margin-bottom: 15px;
+}
+
+.trip-review-date {
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.average-rating-banner {
+  background: linear-gradient(135deg, #2d5f5d 0%, #4a7a78 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.average-rating-banner .big-rating {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.average-rating-banner .review-count {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* Review Modals */
+#editReviewModal .modal-header {
+  background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
+  color: white;
+  border-radius: 15px 15px 0 0;
+  border: none;
+}
+
+#editReviewModal .modal-content {
+  border: none;
+  border-radius: 15px;
+}
+
+.review-success-modal .modal-content {
+  border: none;
+  border-radius: 15px;
+}
+
+.review-success-modal .modal-header {
+  background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
+  color: white;
+  border-radius: 15px 15px 0 0;
+  border: none;
+}
+
+.review-success-modal .success-icon {
+  font-size: 4rem;
+  color: #28a745;
+  margin: 20px 0;
+}
+
+.review-success-modal .modal-body {
+  padding: 30px;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .overlay {
+    padding: 1rem;
   }
 
-    .reviews-container {
-    margin-top: 50px;
-    padding-top: 30px;
-    border-top: 2px solid #e0e0e0;
-  }
-  
-  .review-form-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 15px;
-    padding: 30px;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  }
-  
-  .review-form-card h5 {
-    margin-bottom: 20px;
-    font-weight: bold;
-  }
-  
-  .review-form-card .form-label {
-    color: white;
-    font-weight: 500;
-  }
-  
-  .rating-input-group {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  
-  .rating-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
-    border: 2px solid white;
-    background: rgba(255,255,255,0.2);
-    color: white;
-    font-weight: bold;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .rating-btn:hover {
-    background: rgba(255,255,255,0.4);
-    transform: scale(1.1);
-  }
-  
-  .rating-btn.active {
-    background: white;
-    color: #667eea;
-    transform: scale(1.15);
-  }
-  
-  .existing-reviews h5 {
-    color: #2d5f5d;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
-  
-  .trip-review-card {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border-left: 5px solid #8b9d77;
-  }
-  
-  .trip-review-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .trip-review-header img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 15px;
-  }
-  
-  .trip-review-rating {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-  
-  .trip-review-rating .rating-badge {
-    background: #2d5f5d;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 25px;
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
-  
-  .trip-review-text {
-    color: #495057;
-    line-height: 1.6;
-    font-style: italic;
-    margin-bottom: 15px;
-  }
-  
-  .trip-review-date {
-    color: #6c757d;
-    font-size: 0.85rem;
-  }
-  
-  .average-rating-banner {
-    background: linear-gradient(135deg, #2d5f5d 0%, #4a7a78 100%);
-    color: white;
-    padding: 25px;
-    border-radius: 15px;
-    margin-bottom: 30px;
-    text-align: center;
-  }
-  
-  .average-rating-banner .big-rating {
-    font-size: 3rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .average-rating-banner .review-count {
-    font-size: 1rem;
-    opacity: 0.9;
-  }
-  
-  .review-success-modal .modal-content {
-    border: none;
-    border-radius: 15px;
-  }
-  
-  .review-success-modal .modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 15px 15px 0 0;
-    border: none;
-  }
-  
-  .review-success-modal .success-icon {
-    font-size: 4rem;
-    color: #28a745;
-    margin: 20px 0;
-  }
-  
-  .review-success-modal .modal-body {
-    padding: 30px;
-    text-align: center;
+  .trip-header {
+    padding: 1.5rem;
   }
 
+  .trip-header .d-flex.gap-2 {
+    width: 100%;
+  }
   
+  .btn-pdf,
+  .trip-header .btn-light {
+    width: 100%;
+    justify-content: center;
+  }
+
+  #trip-map {
+    height: 300px;
+  }
+}

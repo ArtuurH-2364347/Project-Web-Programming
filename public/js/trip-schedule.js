@@ -78,12 +78,11 @@ document.querySelector('.add-activity-form form').addEventListener('submit', fun
   suggestionsDiv.style.display = 'none';
 });
 
-// Map initieren
+// Map initialization
 function initializeMap(activities) {
   const locatedActivities = activities.filter(a => a.latitude && a.longitude);
   
   if (locatedActivities.length > 0) {
-    //Globale variabele
     map = L.map('trip-map').setView([locatedActivities[0].latitude, locatedActivities[0].longitude], 12);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -138,13 +137,11 @@ async function loadReviews() {
       if (data.avgRating && data.avgRating.avg_rating) {
         const avgRating = parseFloat(data.avgRating.avg_rating).toFixed(1);
         const stars = '⭐'.repeat(Math.round(avgRating / 2));
-        html += `
-          <div class="average-rating-banner">
-            <div class="big-rating">${avgRating} / 10</div>
-            <div>${stars}</div>
-            <div class="review-count">Based on ${data.avgRating.review_count} ${data.avgRating.review_count === 1 ? 'review' : 'reviews'}</div>
-          </div>
-        `;
+        html += '<div class="average-rating-banner">';
+        html += '<div class="big-rating">' + avgRating + ' / 10</div>';
+        html += '<div>' + stars + '</div>';
+        html += '<div class="review-count">Based on ' + data.avgRating.review_count + ' ' + (data.avgRating.review_count === 1 ? 'review' : 'reviews') + '</div>';
+        html += '</div>';
       }
       
       html += '<div class="existing-reviews"><h5>All Reviews</h5>';
@@ -159,44 +156,40 @@ async function loadReviews() {
         });
         
         const isOwnReview = window.reviewUserId && review.user_id === window.reviewUserId;
+        const escapedText = escapeForAttribute(review.review_text);
         
-        html += `
-          <div class="trip-review-card">
-            <div class="trip-review-header">
-              <img src="${review.reviewer_picture || '/images/default-avatar.png'}" alt="${review.reviewer_name}">
-              <div>
-                <h6 class="mb-0">${review.reviewer_name}</h6>
-                <small class="text-muted">${reviewDate}</small>
-              </div>
-              ${isOwnReview ? `
-                <div class="ms-auto">
-                  <button class="btn btn-sm btn-outline-primary" onclick="editReview(${review.id}, ${review.rating}, '${escapeHtml(review.review_text)}')">
-                    <i class="bi bi-pencil"></i> Edit
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger" onclick="deleteReview(${review.id})">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              ` : ''}
-            </div>
-            <div class="trip-review-rating">
-              <span class="rating-badge">${review.rating} / 10</span>
-              <span class="stars">${stars}</span>
-            </div>
-            <p class="trip-review-text">"${escapeHtml(review.review_text)}"</p>
-          </div>
-        `;
+        html += '<div class="trip-review-card">';
+        html += '<div class="trip-review-header">';
+        html += '<img src="' + (review.reviewer_picture || '/images/default-avatar.png') + '" alt="' + review.reviewer_name + '">';
+        html += '<div>';
+        html += '<h6 class="mb-0">' + review.reviewer_name + '</h6>';
+        html += '<small class="text-muted">' + reviewDate + '</small>';
+        html += '</div>';
+        
+        if (isOwnReview) {
+          html += '<div class="ms-auto">';
+          html += '<button class="btn btn-sm btn-outline-success" onclick="openEditReviewModal(' + review.id + ', ' + review.rating + ', \'' + escapedText + '\')" style="border-color: #8b9d77; color: #8b9d77;">';
+          html += '<i class="bi bi-pencil"></i> Edit';
+          html += '</button>';
+          html += '<button class="btn btn-sm btn-outline-danger" onclick="openDeleteReviewModal(' + review.id + ')">';
+          html += '<i class="bi bi-trash"></i>';
+          html += '</button>';
+          html += '</div>';
+        }
+        
+        html += '</div>';
+        html += '<div class="trip-review-rating">';
+        html += '<span class="rating-badge">' + review.rating + ' / 10</span>';
+        html += '<span class="stars">' + stars + '</span>';
+        html += '</div>';
+        html += '<p class="trip-review-text">"' + escapeHtml(review.review_text) + '"</p>';
+        html += '</div>';
       });
       
       html += '</div>';
       reviewsContainer.innerHTML = html;
     } else {
-      reviewsContainer.innerHTML = `
-        <div class="text-center py-5 bg-light rounded">
-          <i class="bi bi-star" style="font-size: 3rem; color: #ccc;"></i>
-          <p class="text-muted mt-3">No reviews yet. Be the first to review this trip!</p>
-        </div>
-      `;
+      reviewsContainer.innerHTML = '<div class="text-center py-5 bg-light rounded"><i class="bi bi-star" style="font-size: 3rem; color: #ccc;"></i><p class="text-muted mt-3">No reviews yet. Be the first to review this trip!</p></div>';
     }
 
     await checkReviewEligibility();
@@ -217,39 +210,30 @@ async function checkReviewEligibility() {
     const formContainer = document.getElementById('review-form-container');
     
     if (!hasReviewed) {
-      formContainer.innerHTML = `
-        <div class="review-form-card">
-          <h5><i class="bi bi-pencil-square"></i> Share Your Experience</h5>
-          <form id="review-form" onsubmit="submitReview(event)">
-            <div class="mb-3">
-              <label class="form-label">Rating (1-10) *</label>
-              <div class="rating-input-group">
-                ${[1,2,3,4,5,6,7,8,9,10].map(num => `
-                  <button type="button" class="rating-btn" onclick="selectRating(${num})" id="rating-${num}">
-                    ${num}
-                  </button>
-                `).join('')}
-              </div>
-              <input type="hidden" id="rating-value" required />
-            </div>
-            <div class="mb-3">
-              <label for="review-text" class="form-label">Your Review *</label>
-              <textarea 
-                id="review-text" 
-                class="form-control" 
-                rows="4" 
-                placeholder="Share your thoughts about this trip..." 
-                required
-                maxlength="500"
-              ></textarea>
-              <small class="text-white-50">Maximum 500 characters</small>
-            </div>
-            <button type="submit" class="btn btn-light btn-lg">
-              <i class="bi bi-send"></i> Submit Review
-            </button>
-          </form>
-        </div>
-      `;
+      let formHtml = '<div class="review-form-card">';
+      formHtml += '<h5><i class="bi bi-pencil-square"></i> Share Your Experience</h5>';
+      formHtml += '<form id="review-form" onsubmit="submitReview(event)">';
+      formHtml += '<div class="mb-3">';
+      formHtml += '<label class="form-label">Rating (1-10) *</label>';
+      formHtml += '<div class="rating-input-group">';
+      
+      for (let i = 1; i <= 10; i++) {
+        formHtml += '<button type="button" class="rating-btn" onclick="selectRating(' + i + ')" id="rating-' + i + '">' + i + '</button>';
+      }
+      
+      formHtml += '</div>';
+      formHtml += '<input type="hidden" id="rating-value" required />';
+      formHtml += '</div>';
+      formHtml += '<div class="mb-3">';
+      formHtml += '<label for="review-text" class="form-label">Your Review *</label>';
+      formHtml += '<textarea id="review-text" class="form-control" rows="4" placeholder="Share your thoughts about this trip..." required maxlength="500"></textarea>';
+      formHtml += '<small class="text-white-50">Maximum 500 characters</small>';
+      formHtml += '</div>';
+      formHtml += '<button type="submit" class="btn btn-light btn-lg"><i class="bi bi-send"></i> Submit Review</button>';
+      formHtml += '</form>';
+      formHtml += '</div>';
+      
+      formContainer.innerHTML = formHtml;
     }
   } catch (error) {
     console.error('Error checking review eligibility:', error);
@@ -261,7 +245,7 @@ function selectRating(rating) {
   document.getElementById('rating-value').value = rating;
   
   for (let i = 1; i <= 10; i++) {
-    const btn = document.getElementById(`rating-${i}`);
+    const btn = document.getElementById('rating-' + i);
     if (btn) {
       if (i === rating) {
         btn.classList.add('active');
@@ -317,52 +301,98 @@ async function submitReview(event) {
   }
 }
 
-async function editReview(reviewId, currentRating, currentText) {
-  const newRating = prompt(`Edit your rating (1-10):`, currentRating);
-  if (newRating === null) return;
+// EDIT REVIEW MODAL FUNCTIONALITY
+let currentEditReviewId = null;
+
+function openEditReviewModal(reviewId, currentRating, currentText) {
+  currentEditReviewId = reviewId;
   
-  if (newRating < 1 || newRating > 10) {
-    showErrorModal('Rating must be between 1 and 10');
+  // Set current rating
+  document.getElementById('editRatingValue').value = currentRating;
+  
+  // Update rating buttons
+  document.querySelectorAll('#editRatingGroup .rating-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.rating) === currentRating);
+  });
+  
+  // Set current text (unescape HTML entities)
+  const textarea = document.getElementById('editReviewText');
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = currentText;
+  textarea.value = tempDiv.textContent;
+  
+  // Show modal
+  const modal = new bootstrap.Modal(document.getElementById('editReviewModal'));
+  modal.show();
+}
+
+// Initialize rating button handlers for edit modal after DOM loads
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#editRatingGroup .rating-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const rating = parseInt(this.dataset.rating);
+      document.getElementById('editRatingValue').value = rating;
+      
+      document.querySelectorAll('#editRatingGroup .rating-btn').forEach(b => {
+        b.classList.toggle('active', parseInt(b.dataset.rating) === rating);
+      });
+    });
+  });
+});
+
+async function submitEditReview() {
+  const rating = document.getElementById('editRatingValue').value;
+  const text = document.getElementById('editReviewText').value.trim();
+  
+  if (!rating || !text) {
+    showErrorModal('Please provide both rating and review text');
     return;
   }
-  
-  const newText = prompt(`Edit your review:`, currentText);
-  if (!newText) return;
-  
+
   try {
-    const response = await fetch(`/api/reviews/${reviewId}`, {
+    const response = await fetch(`/api/reviews/${currentEditReviewId}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        rating: parseInt(newRating),
-        review_text: newText
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating: parseInt(rating), review_text: text })
     });
-    
-    if (response.ok) {
-      showSuccessModal('Review Updated!', 'Your review has been successfully updated.');
-      setTimeout(() => location.reload(), 1500);
-    } else {
+
+    if (!response.ok) {
       const data = await response.json();
-      showErrorModal(data.error || 'Failed to update review');
+      throw new Error(data.error || 'Failed to update review');
     }
+
+    // Close edit modal
+    const editModal = bootstrap.Modal.getInstance(document.getElementById('editReviewModal'));
+    if (editModal) editModal.hide();
+    
+    // Show success modal
+    showSuccessModal('Review Updated Successfully!', 'Your review has been updated.');
   } catch (error) {
     console.error('Error updating review:', error);
-    showErrorModal('An error occurred while updating your review');
+    showErrorModal(error.message || 'Failed to update review. Please try again.');
   }
 }
 
-async function deleteReview(reviewId) {
-  if (!confirm('Are you sure you want to delete your review? This action cannot be undone.')) return;
-  
+// DELETE REVIEW MODAL FUNCTIONALITY
+let currentDeleteReviewId = null;
+
+function openDeleteReviewModal(reviewId) {
+  currentDeleteReviewId = reviewId;
+  const modal = new bootstrap.Modal(document.getElementById('deleteReviewModal'));
+  modal.show();
+}
+
+async function confirmDeleteReview() {
   try {
-    const response = await fetch(`/api/reviews/${reviewId}`, {
+    const response = await fetch(`/api/reviews/${currentDeleteReviewId}`, {
       method: 'DELETE'
     });
     
     if (response.ok) {
+      // Close delete modal
+      const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteReviewModal'));
+      if (deleteModal) deleteModal.hide();
+      
       showSuccessModal('Review Deleted', 'Your review has been successfully removed.');
       setTimeout(() => location.reload(), 1500);
     } else {
@@ -392,6 +422,10 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+function escapeForAttribute(text) {
+  return text.replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/\\/g, '\\\\');
 }
 
 // Load reviews on page load

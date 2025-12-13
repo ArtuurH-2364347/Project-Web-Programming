@@ -1,34 +1,33 @@
-/* Index/Home page specific styles */
-
 .hero-section {
   background: linear-gradient(135deg, #2d5f5d 0%, #8b9d77 100%);
   padding: 5rem 0;
-  color: white;
+  color: #ffffff;
   text-align: center;
   position: relative;
   overflow: hidden;
 }
 
-.hero-section::before {
+.hero-section::before,
+.hero-section::after {
   content: '';
   position: absolute;
+  border-radius: 50%;
+  background-color: rgba(232, 180, 184, 0.15);
+}
+
+.hero-section::before {
   top: -50%;
   right: -10%;
   width: 500px;
   height: 500px;
-  background-color: rgba(232, 180, 184, 0.15);
-  border-radius: 50%;
 }
 
 .hero-section::after {
-  content: '';
-  position: absolute;
   bottom: -30%;
   left: -5%;
   width: 400px;
   height: 400px;
   background-color: rgba(232, 180, 184, 0.1);
-  border-radius: 50%;
 }
 
 .hero-content {
@@ -48,6 +47,8 @@
   opacity: 0.95;
 }
 
+/* ---------- Hero Button ---------- */
+
 .btn-hero {
   background-color: #e8b4b8;
   border: none;
@@ -56,32 +57,33 @@
   font-weight: 600;
   border-radius: 5px;
   color: #2d5f5d;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 }
 
 .btn-hero:hover {
   background-color: #d99fa4;
-  color: #2d5f5d;
   transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+/* ---------- Features Section ---------- */
 
 .features-section {
   padding: 4rem 0;
 }
 
 .feature-card {
+  height: 100%;
+  background: #ffffff;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
-  transition: all 0.3s;
-  background: white;
-  height: 100%;
+  transition: all 0.3s ease;
 }
 
 .feature-card:hover {
   border-color: #8b9d77;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .feature-card .card-img-top {
@@ -105,13 +107,138 @@
   background-color: #8b9d77;
   border: none;
   border-radius: 5px;
-  transition: all 0.3s;
+  transition: background-color 0.3s ease;
 }
 
 .feature-card .btn-primary:hover {
   background-color: #748361;
-  color: white;
+  color: #ffffff;
 }
+
+/* ---------- Reviews Section ---------- */
+
+.reviews-section {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.reviews-section h2 {
+  text-align: center;
+  margin-bottom: 50px;
+  font-weight: 700;
+  color: #2d5f5d;
+}
+
+/* Review Card */
+
+.review-card {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Review Header */
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.review-header img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.review-header-info h5 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d5f5d;
+}
+
+.review-header-info .reviewer-name {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.review-header-info .destination {
+  font-size: 0.85rem;
+  color: #8b9d77;
+}
+
+/* Review Rating */
+
+.review-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.rating-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2d5f5d;
+}
+
+.rating-max {
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.stars {
+  font-size: 1.3rem;
+  color: #ffc107;
+}
+
+/* Review Text */
+
+.review-text {
+  font-style: italic;
+  line-height: 1.6;
+  color: #495057;
+  margin-bottom: 15px;
+}
+
+.review-date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* No Reviews State */
+
+.no-reviews {
+  text-align: center;
+  padding: 60px 20px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.no-reviews i {
+  font-size: 4rem;
+  color: #cccccc;
+  margin-bottom: 20px;
+}
+
+/* ---------- Responsive ---------- */
 
 @media (max-width: 767px) {
   .hero-section h1 {
@@ -127,111 +254,3 @@
     display: none;
   }
 }
-  .reviews-section {
-    padding: 80px 0;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  }
-  
-  .reviews-section h2 {
-    text-align: center;
-    margin-bottom: 50px;
-    font-weight: bold;
-    color: #2d5f5d;
-  }
-  
-  .review-card {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .review-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-  }
-  
-  .review-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .review-header img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 15px;
-  }
-  
-  .review-header-info h5 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: #2d5f5d;
-    font-weight: 600;
-  }
-  
-  .review-header-info .reviewer-name {
-    color: #6c757d;
-    font-size: 0.9rem;
-  }
-  
-  .review-header-info .destination {
-    color: #8b9d77;
-    font-size: 0.85rem;
-  }
-  
-  .review-rating {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-  
-  .rating-number {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #2d5f5d;
-  }
-  
-  .rating-max {
-    font-size: 1.2rem;
-    color: #6c757d;
-  }
-  
-  .stars {
-    font-size: 1.3rem;
-    color: #ffc107;
-  }
-  
-  .review-text {
-    color: #495057;
-    line-height: 1.6;
-    margin-bottom: 15px;
-    font-style: italic;
-  }
-  
-  .review-date {
-    color: #6c757d;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .no-reviews {
-    text-align: center;
-    padding: 60px 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  }
-  
-  .no-reviews i {
-    font-size: 4rem;
-    color: #ccc;
-    margin-bottom: 20px;
-  }

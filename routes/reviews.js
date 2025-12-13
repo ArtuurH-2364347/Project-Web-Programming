@@ -10,7 +10,6 @@ import {
 
 const router = express.Router();
 
-// Middleware to check if user is authenticated
 function requireAuth(req, res, next) {
   if (!req.session.user || !req.session.user.id) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -18,8 +17,6 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// IMPORTANT: Put more specific routes BEFORE generic ones
-// Get recent reviews for homepage (must come before /:reviewId)
 router.get("/api/reviews/recent", (req, res) => {
   try {
     const reviews = getRecentReviews(4);
