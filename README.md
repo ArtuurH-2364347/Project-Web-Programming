@@ -9,7 +9,6 @@ Diverse extras.
     - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
 
 Bug Fixes.
-    - [ ] standaard data invoegen in database (standaard accounts, admin status, standaard groep en reis,...)
     - [ ] te grote images uploaden geeft 500 in plaats van error
 
 

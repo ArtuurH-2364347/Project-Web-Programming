@@ -219,6 +219,417 @@ export function InitializeDatabase() {
   }
 }
 
+// Add this function after InitializeDatabase()
+export function SeedPlaceholderData() {
+  // Check if data already exists
+  const userCount = db.prepare("SELECT COUNT(*) AS count FROM users").get().count;
+  if (userCount > 3) {
+    console.log("Placeholder data already exists, skipping seed...");
+    return;
+  }
+
+  console.log("Seeding placeholder data...");
+
+  // Get existing users
+  const artuur = getUserByEmail("artuur.heidbuchel@protonmail.com");
+  const peter = getUserByEmail("peter@example.com");
+  const jori = getUserByEmail("jori@example.com");
+
+  // Update bios for existing users
+  db.prepare("UPDATE users SET bio = ? WHERE id = ?").run(
+    "TravelBuddy developer??",
+    artuur.id
+  );
+  db.prepare("UPDATE users SET bio = ? WHERE id = ?").run(
+    "Weekend hiker and coffee lover ☕ Always planning the next trip!",
+    peter.id
+  );
+
+  // Create additional users for variety
+  const additionalUsers = [
+    {
+      name: "Emma",
+      email: "emma@example.com",
+      password: "password123",
+      bio: "Beach lover and sunset chaser 🌅"
+    },
+    {
+      name: "Lucas",
+      email: "lucas@example.com",
+      password: "password123",
+      bio: "Mountain climber seeking new peaks ⛰️"
+    },
+    {
+      name: "Sophie",
+      email: "sophie@example.com",
+      password: "password123",
+      bio: "City explorer and food critic 🍕"
+    },
+    {
+      name: "Noah",
+      email: "noah@example.com",
+      password: "password123",
+      bio: "Road trip enthusiast with a camper van 🚐"
+    }
+  ];
+
+  const newUserIds = [];
+  for (const user of additionalUsers) {
+    const passwordHash = bcrypt.hashSync(user.password, 10);
+    const result = db.prepare(
+      "INSERT INTO users (name, email, passwordHash, bio, role) VALUES (?, ?, ?, ?, 'user')"
+    ).run(user.name, user.email, passwordHash, user.bio);
+    newUserIds.push(result.lastInsertRowid);
+  }
+
+  const [emmaId, lucasId, sophieId, noahId] = newUserIds;
+
+  // Create friendships (bidirectional)
+  const friendships = [
+    [artuur.id, peter.id],
+    [artuur.id, jori.id],
+    [artuur.id, emmaId],
+    [artuur.id, lucasId],
+    [peter.id, jori.id],
+    [peter.id, sophieId],
+    [jori.id, emmaId],
+    [emmaId, lucasId],
+    [sophieId, noahId]
+  ];
+
+  for (const [user1, user2] of friendships) {
+    try {
+      db.prepare("INSERT INTO friends (user_id, friend_id) VALUES (?, ?)").run(user1, user2);
+      db.prepare("INSERT INTO friends (user_id, friend_id) VALUES (?, ?)").run(user2, user1);
+    } catch (e) {
+      // Skip if already exists
+    }
+  }
+
+  // Create pending friend request for Artuur
+  try {
+    db.prepare(
+      "INSERT INTO friend_requests (sender_id, receiver_id, status) VALUES (?, ?, 'pending')"
+    ).run(sophieId, artuur.id);
+  } catch (e) {}
+
+  // GROUP 1: Solo showcase group (Artuur only)
+  const soloGroupId = createGroup(
+    "My Personal Adventures",
+    "A private space for planning my solo trips and adventures",
+    artuur.id
+  );
+
+  const soloTripId = createTrip(
+    soloGroupId,
+    "Iceland Road Trip",
+    "Iceland",
+    "2025-08-15",
+    "2025-08-25"
+  );
+
+  // Activities for solo trip
+  createActivity(
+    soloTripId,
+    "Golden Circle Tour",
+    "Visit Þingvellir, Geysir, and Gullfoss waterfall",
+    "Golden Circle, Iceland",
+    64.3271,
+    -20.1199,
+    "2025-08-16",
+    "09:00",
+    "17:00",
+    artuur.id
+  );
+
+  createActivity(
+    soloTripId,
+    "Blue Lagoon Spa",
+    "Relax in the famous geothermal spa",
+    "Blue Lagoon, Grindavík",
+    63.8804,
+    -22.4495,
+    "2025-08-17",
+    "14:00",
+    "18:00",
+    artuur.id
+  );
+
+  // GROUP 2: Main showcase group (Artuur, Peter, Jori, Emma)
+  const mainGroupId = createGroup(
+    "Summer Squad ☀️",
+    "Friends planning epic summer adventures together!",
+    artuur.id
+  );
+
+  addGroupMember(mainGroupId, peter.id, "admin");
+  addGroupMember(mainGroupId, jori.id, "member");
+  addGroupMember(mainGroupId, emmaId, "member");
+
+  // Trip 1: Upcoming Barcelona trip (main showcase)
+  const barcelonaTripId = createTrip(
+    mainGroupId,
+    "Barcelona Adventure",
+    "Barcelona, Spain",
+    "2025-07-10",
+    "2025-07-17"
+  );
+
+  // Confirmed activities
+  createActivity(
+    barcelonaTripId,
+    "Sagrada Familia Visit",
+    "Tour Gaudí's masterpiece basilica with pre-booked tickets",
+    "Sagrada Família, Barcelona",
+    41.4036,
+    2.1744,
+    "2025-07-11",
+    "10:00",
+    "13:00",
+    artuur.id
+  );
+
+  createActivity(
+    barcelonaTripId,
+    "Beach Day at Barceloneta",
+    "Relax, swim, and enjoy beachside paella",
+    "Barceloneta Beach",
+    41.3809,
+    2.1896,
+    "2025-07-12",
+    "11:00",
+    "18:00",
+    peter.id
+  );
+
+  createActivity(
+    barcelonaTripId,
+    "Park Güell Exploration",
+    "Morning visit to Gaudí's colorful park",
+    "Park Güell, Barcelona",
+    41.4145,
+    2.1527,
+    "2025-07-13",
+    "09:00",
+    "12:00",
+    jori.id
+  );
+
+  createActivity(
+    barcelonaTripId,
+    "Tapas Tour in Gothic Quarter",
+    "Evening tapas bar hopping with local guide",
+    "Gothic Quarter, Barcelona",
+    41.3826,
+    2.1769,
+    "2025-07-13",
+    "19:00",
+    "23:00",
+    emmaId
+  );
+
+  createActivity(
+    barcelonaTripId,
+    "Montjuïc Cable Car & Castle",
+    "Ride cable car and explore historic castle with city views",
+    "Montjuïc Castle",
+    41.3644,
+    2.1660,
+    "2025-07-14",
+    "14:00",
+    "18:00",
+    artuur.id
+  );
+
+  // Activity suggestions with votes
+  const suggestion1 = createActivitySuggestion(
+    barcelonaTripId,
+    "FC Barcelona Stadium Tour",
+    "Visit Camp Nou and the FC Barcelona museum",
+    "Camp Nou, Barcelona",
+    41.3809,
+    2.1228,
+    "2025-07-15",
+    "10:00",
+    "13:00",
+    peter.id
+  );
+
+  const suggestion2 = createActivitySuggestion(
+    barcelonaTripId,
+    "Flamenco Show",
+    "Authentic flamenco performance with dinner",
+    "Tablao Flamenco Cordobes",
+    41.3788,
+    2.1746,
+    "2025-07-15",
+    "20:00",
+    "23:00",
+    emmaId
+  );
+
+  const suggestion3 = createActivitySuggestion(
+    barcelonaTripId,
+    "Day Trip to Montserrat",
+    "Visit the mountain monastery and enjoy hiking",
+    "Montserrat, Spain",
+    41.5933,
+    1.8384,
+    "2025-07-16",
+    "08:00",
+    "18:00",
+    jori.id
+  );
+
+  // Cast votes on suggestions
+  castVote(suggestion1, artuur.id, "yes");
+  castVote(suggestion1, peter.id, "yes");
+  castVote(suggestion1, jori.id, "yes");
+  castVote(suggestion1, emmaId, "no");
+
+  castVote(suggestion2, artuur.id, "yes");
+  castVote(suggestion2, emmaId, "yes");
+  castVote(suggestion2, peter.id, "no");
+
+  castVote(suggestion3, artuur.id, "yes");
+  castVote(suggestion3, jori.id, "yes");
+  castVote(suggestion3, peter.id, "yes");
+  castVote(suggestion3, emmaId, "yes");
+
+  // Trip 2: Past trip with photos
+  const parisTripId = createTrip(
+    mainGroupId,
+    "Paris Weekend",
+    "Paris, France",
+    "2024-11-15",
+    "2024-11-18"
+  );
+
+  createActivity(
+    parisTripId,
+    "Eiffel Tower Visit",
+    "Sunset view from the tower",
+    "Eiffel Tower, Paris",
+    48.8584,
+    2.2945,
+    "2024-11-15",
+    "18:00",
+    "21:00",
+    artuur.id
+  );
+
+  createActivity(
+    parisTripId,
+    "Louvre Museum",
+    "Full day exploring the museum collections",
+    "Louvre Museum",
+    48.8606,
+    2.3376,
+    "2024-11-16",
+    "10:00",
+    "17:00",
+    peter.id
+  );
+
+  // GROUP 3: Another group with different members
+  const hikingGroupId = createGroup(
+    "Mountain Lovers 🏔️",
+    "For those who love hiking and mountain adventures",
+    peter.id
+  );
+
+  addGroupMember(hikingGroupId, artuur.id, "admin");
+  addGroupMember(hikingGroupId, lucasId, "member");
+  addGroupMember(hikingGroupId, noahId, "member");
+
+  const alpsTrip = createTrip(
+    hikingGroupId,
+    "Swiss Alps Hiking",
+    "Swiss Alps",
+    "2025-09-05",
+    "2025-09-12"
+  );
+
+  createActivity(
+    alpsTrip,
+    "Matterhorn Base Hike",
+    "Trek to the base of the iconic mountain",
+    "Zermatt, Switzerland",
+    45.9763,
+    7.6586,
+    "2025-09-06",
+    "07:00",
+    "16:00",
+    peter.id
+  );
+
+  // GROUP 4: City explorers group
+  const cityGroupId = createGroup(
+    "City Hoppers 🌆",
+    "Urban adventures and city explorations",
+    jori.id
+  );
+
+  addGroupMember(cityGroupId, artuur.id, "member");
+  addGroupMember(cityGroupId, sophieId, "admin");
+  addGroupMember(cityGroupId, emmaId, "member");
+
+  const tokyoTrip = createTrip(
+    cityGroupId,
+    "Tokyo Discovery",
+    "Tokyo, Japan",
+    "2026-03-20",
+    "2026-03-28"
+  );
+
+  createActivity(
+    tokyoTrip,
+    "Shibuya Crossing & Shopping",
+    "Experience the famous crossing and explore shops",
+    "Shibuya, Tokyo",
+    35.6595,
+    139.7004,
+    "2026-03-21",
+    "14:00",
+    "19:00",
+    sophieId
+  );
+
+  createActivity(
+    tokyoTrip,
+    "TeamLab Borderless",
+    "Interactive digital art museum experience",
+    "TeamLab, Tokyo",
+    35.6247,
+    139.7781,
+    "2026-03-22",
+    "10:00",
+    "13:00",
+    jori.id
+  );
+
+  const sushiSuggestion = createActivitySuggestion(
+    tokyoTrip,
+    "Tsukiji Outer Market Food Tour",
+    "Early morning sushi and street food tasting",
+    "Tsukiji, Tokyo",
+    35.6654,
+    139.7707,
+    "2026-03-23",
+    "06:00",
+    "10:00",
+    artuur.id
+  );
+
+  castVote(sushiSuggestion, sophieId, "yes");
+  castVote(sushiSuggestion, emmaId, "yes");
+
+  console.log("✅ Placeholder data seeded successfully!");
+  console.log(`   - ${friendships.length} friendships created`);
+  console.log(`   - 4 groups created`);
+  console.log(`   - 5 trips with activities and suggestions`);
+}
+
 // gebruikers fetchen op basis van email
 export function getUserByEmail(email) {
   return db.prepare("SELECT * FROM users WHERE email = ?").get(email);

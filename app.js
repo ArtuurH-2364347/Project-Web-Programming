@@ -6,7 +6,7 @@ import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import { InitializeDatabase } from "./db.js";
+import { InitializeDatabase, SeedPlaceholderData } from "./db.js";
 
 // Route modules
 import authRoutes from "./routes/auth.js";
@@ -95,6 +95,7 @@ app.use((err, req, res, next) => {
 // START SERVER
 // --------------------------------------
 InitializeDatabase();
+SeedPlaceholderData();
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
