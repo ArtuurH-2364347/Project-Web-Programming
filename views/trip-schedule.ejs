@@ -716,6 +716,24 @@
       </script>
       <script src="/js/trip-reviews.js"></script>
     </div>
+    <div class="modal fade" id="fileSizeErrorModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title">
+              <i class="bi bi-exclamation-triangle"></i> File Size Error
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p id="fileSizeErrorMessage" class="mb-0"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <%- include('partials/footer') %>
@@ -735,35 +753,115 @@
   <script src="/js/activity-notifications.js"></script>
 
   <script>
+    function showFileSizeError(message) {
+      document.getElementById('fileSizeErrorMessage').innerHTML = message;
+      const modal = new bootstrap.Modal(document.getElementById('fileSizeErrorModal'));
+      modal.show();
+    }
+    const photoUploadForm = document.querySelector('#uploadPhotosModal form');
+    if (photoUploadForm) {
+      photoUploadForm.addEventListener('submit', function(e) {
+        const photoInput = document.getElementById('photoFiles');
+        const maxSize = 20 * 1024 * 1024;
+        
+        if (photoInput.files.length > 0) {
+          for (let i = 0; i < photoInput.files.length; i++) {
+            const file = photoInput.files[i];
+            if (file.size > maxSize) {
+              e.preventDefault();
+              showFileSizeError(`Photo <strong>"${file.name}"</strong> is too large!<br><br>Maximum size: <strong>20MB</strong><br>Your file: <strong>${(file.size / 1024 / 1024).toFixed(2)}MB</strong><br><br>Please select a smaller file.`);
+              return false;
+            }
+          }
+          
+          if (photoInput.files.length > 10) {
+            e.preventDefault();
+            showFileSizeError(`You can only upload a maximum of <strong>10 photos</strong> at once.<br><br>You selected <strong>${photoInput.files.length} photos</strong>.<br><br>Please reduce the number of files.`);
+            return false;
+          }
+        }
+      });
+    }
+
+    document.querySelectorAll('form[action*="/attachments"]').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        const fileInput = this.querySelector('input[type="file"]');
+        const maxSize = 10 * 1024 * 1024;
+        
+        if (fileInput && fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          if (file.size > maxSize) {
+            e.preventDefault();
+            showFileSizeError(`File <strong>"${file.name}"</strong> is too large!<br><br>Maximum size: <strong>10MB</strong><br>Your file: <strong>${(file.size / 1024 / 1024).toFixed(2)}MB</strong><br><br>Please select a smaller file.`);
+            return false;
+          }
+        }
+      });
+    });
+
     function previewPhotos(input) {
       const preview = document.getElementById('photoPreview');
+      const maxSize = 20 * 1024 * 1024;
       preview.innerHTML = '';
       
       if (input.files) {
+        let hasOversizedFile = false;
+        
         Array.from(input.files).forEach(file => {
+          const container = document.createElement('div');
+          container.style.position = 'relative';
+          container.style.display = 'inline-block';
+          container.style.margin = '5px';
+          
           const reader = new FileReader();
           reader.onload = function(e) {
             const img = document.createElement('img');
             img.src = e.target.result;
-            preview.appendChild(img);
+            img.style.maxWidth = '150px';
+            img.style.maxHeight = '150px';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '8px';
+            
+            if (file.size > maxSize) {
+              hasOversizedFile = true;
+              img.style.border = '3px solid red';
+              
+              const warning = document.createElement('div');
+              warning.style.cssText = 'position: absolute; top: 0; left: 0; right: 0; background: rgba(220, 53, 69, 0.9); color: white; padding: 5px; font-size: 11px; text-align: center; border-radius: 5px 5px 0 0;';
+              warning.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Too large!';
+              container.appendChild(warning);
+            }
+            
+            const filename = document.createElement('div');
+            filename.style.fontSize = '11px';
+            filename.style.textAlign = 'center';
+            filename.style.marginTop = '5px';
+            filename.textContent = file.name;
+            
+            const filesize = document.createElement('div');
+            filesize.style.fontSize = '10px';
+            filesize.style.textAlign = 'center';
+            filesize.style.color = file.size > maxSize ? 'red' : '#666';
+            filesize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            
+            container.appendChild(img);
+            container.appendChild(filename);
+            container.appendChild(filesize);
           };
           reader.readAsDataURL(file);
+          preview.appendChild(container);
         });
+        
+        if (hasOversizedFile) {
+          setTimeout(() => {
+            const warningMsg = document.createElement('div');
+            warningMsg.className = 'alert alert-danger mt-2';
+            warningMsg.innerHTML = '<i class="bi bi-exclamation-triangle"></i> <strong>Warning:</strong> Some files exceed the 20MB limit and cannot be uploaded. Please remove them or choose smaller files.';
+            preview.appendChild(warningMsg);
+          }, 100);
+        }
       }
     }
-
-    function connectGooglePhotos() {
-      const tripId = '<%= trip.id %>';
-      
-      fetch(`/trips/${tripId}/set-google-state`, { method: 'POST' })
-        .then(() => {
-          window.location.href = `/trips/${tripId}/connect-google-photos`;
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Failed to initiate Google Photos connection');
-        });
-    }
-  </script>
+    </script>
 </body>
 </html>
