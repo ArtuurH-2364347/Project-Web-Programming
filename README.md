@@ -14,6 +14,7 @@ Bug Fixes.
     - [ ] standaard data invoegen in database (standaard accounts, admin status, standaard groep en reis,...)
     - [ ] admin panel heeft niet dezelfde css
     - [ ] te grote images uploaded geeft 500 in plaats van error
+    - [ ] password incorrect geeft geen mooie error
 
 
 ## Gebruikte APIs met huidige planning:

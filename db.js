@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 
 const db = new Database("database.db", { verbose: console.log });
 
-// Add role column to users table if it doesn't exist
 try {
   db.prepare("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'").run();
 } catch {}
@@ -325,7 +324,7 @@ export function rejectFriendRequest(id) {
 //vrienden opvragen
 export function getFriends(userId) {
   return db.prepare(`
-    SELECT u.id, u.name, u.email 
+    SELECT u.id, u.name, u.email, u.profile_picture
     FROM users u
     JOIN friends f ON u.id = f.friend_id
     WHERE f.user_id = ?
