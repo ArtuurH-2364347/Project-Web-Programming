@@ -5,12 +5,8 @@
 Minimum.
     - [ ] Externe bronnen kunnen zonder internet bekeken worden
 
-Diverse extras.
-    - [ ] Reis toevoegen aan website als template voor andere gebruikers samen met een review + geuploade fotos
-
 Bug Fixes.
     - [ ] te grote images uploaden geeft 500 in plaats van error
-    - [ ] review deleten gaat niet
 
 
 ## Gebruikte APIs met huidige planning:
