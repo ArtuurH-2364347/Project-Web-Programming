@@ -570,6 +570,82 @@
         </form>
       </div>
     </div>
+      <div class="reviews-container">
+        <h4 class="fw-bold mb-4" style="color: #2d5f5d;">
+          <i class="bi bi-star-fill"></i> Trip Reviews
+        </h4>
+
+        <% 
+          const reviewToday = new Date().toISOString().split('T')[0];
+          const reviewTripEnded = trip.end_date < reviewToday;
+        %>
+
+        <% if (reviewTripEnded) { %>
+          <div id="review-form-container"></div>
+          <div id="existing-reviews-container">
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading reviews...</span>
+              </div>
+            </div>
+          </div>
+        <% } else { %>
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Reviews will be available after the trip ends on <strong><%= new Date(trip.end_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></strong>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Success Modal -->
+      <div class="modal fade review-success-modal" id="reviewSuccessModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><i class="bi bi-check-circle"></i> Success!</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="success-icon">
+                <i class="bi bi-check-circle-fill"></i>
+              </div>
+              <h4 id="successTitle">Review Submitted Successfully!</h4>
+              <p class="text-muted" id="successMessage">Thank you for sharing your experience. Your review has been posted and will help others plan their trips.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" onclick="location.reload()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh Page
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Modal -->
+      <div class="modal fade" id="reviewErrorModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+              <h5 class="modal-title"><i class="bi bi-exclamation-triangle"></i> Error</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <p id="errorMessage" class="mb-0"></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        // Pass trip data to the reviews script
+        window.reviewTripId = <%= trip.id %>;
+        window.reviewUserId = <%= user ? user.id : 'null' %>;
+        window.reviewTripEnded = '<%= trip.end_date %>' < new Date().toISOString().split('T')[0];
+      </script>
+      <script src="/js/trip-reviews.js"></script>
   </main>
 
   <%- include('partials/footer') %>
@@ -621,5 +697,6 @@
 }
   </script>
 
+</script>
 </body>
 </html>

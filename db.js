@@ -176,6 +176,21 @@ export function InitializeDatabase() {
       FOREIGN KEY(uploaded_by) REFERENCES users(id)
     )
   `).run();
+  // Add this to your InitializeDatabase() function in db.js
+
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS trip_reviews (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      trip_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 10),
+      review_text TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(trip_id) REFERENCES trips(id) ON DELETE CASCADE,
+      FOREIGN KEY(user_id) REFERENCES users(id),
+      UNIQUE(trip_id, user_id)
+    )
+  `).run();
 
   // voorbeeldaccounts toevoegen
   const count = db.prepare("SELECT COUNT(*) AS count FROM users").get().count;
@@ -1202,3 +1217,117 @@ export function getPhotoStats(tripId) {
 
 export default db;
 
+// Create a review (only if trip has ended)
+export function createTripReview(tripId, userId, rating, reviewText) {
+  const trip = getTripById(tripId);
+  if (!trip) return { success: false, message: "Trip not found" };
+  
+  // Check if trip has ended
+  const today = new Date().toISOString().split('T')[0];
+  if (trip.end_date >= today) {
+    return { success: false, message: "Cannot review a trip that hasn't ended yet" };
+  }
+  
+  // Check if user is a member of the group
+  const membership = isGroupMember(userId, trip.group_id);
+  if (!membership) {
+    return { success: false, message: "You must be a group member to review this trip" };
+  }
+  
+  const stmt = db.prepare(`
+    INSERT INTO trip_reviews (trip_id, user_id, rating, review_text)
+    VALUES (?, ?, ?, ?)
+  `);
+  
+  try {
+    const result = stmt.run(tripId, userId, rating, reviewText);
+    return { success: true, reviewId: result.lastInsertRowid };
+  } catch (error) {
+    if (error.message.includes('UNIQUE constraint')) {
+      return { success: false, message: "You have already reviewed this trip" };
+    }
+    return { success: false, message: "Failed to create review" };
+  }
+}
+
+// Get reviews for a specific trip
+export function getTripReviews(tripId) {
+  return db.prepare(`
+    SELECT 
+      r.*,
+      u.name as reviewer_name,
+      u.profile_picture as reviewer_picture
+    FROM trip_reviews r
+    LEFT JOIN users u ON u.id = r.user_id
+    WHERE r.trip_id = ?
+    ORDER BY r.created_at DESC
+  `).all(tripId);
+}
+
+// Get the 4 most recent reviews for homepage
+export function getRecentReviews(limit = 4) {
+  return db.prepare(`
+    SELECT 
+      r.*,
+      u.name as reviewer_name,
+      u.profile_picture as reviewer_picture,
+      t.name as trip_name,
+      t.destination,
+      t.start_date,
+      t.end_date
+    FROM trip_reviews r
+    LEFT JOIN users u ON u.id = r.user_id
+    LEFT JOIN trips t ON t.id = r.trip_id
+    ORDER BY r.created_at DESC
+    LIMIT ?
+  `).all(limit);
+}
+
+// Get average rating for a trip
+export function getTripAverageRating(tripId) {
+  return db.prepare(`
+    SELECT 
+      AVG(rating) as avg_rating,
+      COUNT(*) as review_count
+    FROM trip_reviews
+    WHERE trip_id = ?
+  `).get(tripId);
+}
+
+// Check if user has reviewed a trip
+export function hasUserReviewedTrip(tripId, userId) {
+  const review = db.prepare(`
+    SELECT id FROM trip_reviews
+    WHERE trip_id = ? AND user_id = ?
+  `).get(tripId, userId);
+  return !!review;
+}
+
+// Update a review
+export function updateTripReview(reviewId, userId, rating, reviewText) {
+  const stmt = db.prepare(`
+    UPDATE trip_reviews
+    SET rating = ?, review_text = ?
+    WHERE id = ? AND user_id = ?
+  `);
+  const result = stmt.run(rating, reviewText, reviewId, userId);
+  
+  if (result.changes === 0) {
+    return { success: false, message: "Review not found or unauthorized" };
+  }
+  return { success: true };
+}
+
+// Delete a review
+export function deleteTripReview(reviewId, userId) {
+  const stmt = db.prepare(`
+    DELETE FROM trip_reviews
+    WHERE id = ? AND user_id = ?
+  `);
+  const result = stmt.run(reviewId, userId);
+  
+  if (result.changes === 0) {
+    return { success: false, message: "Review not found or unauthorized" };
+  }
+  return { success: true };
+}

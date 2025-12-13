@@ -10,6 +10,8 @@ Diverse extras.
 
 Bug Fixes.
     - [ ] te grote images uploaden geeft 500 in plaats van error
+    - [ ] review edit geeft lelijke browser modal dinge
+    - [ ] reviews op index pagina moeten pfps gebruiken
 
 
 ## Gebruikte APIs met huidige planning:

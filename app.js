@@ -1,11 +1,9 @@
 import dotenv from 'dotenv'
 dotenv.config();
-
 import express from "express";
 import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
-
 import { InitializeDatabase, SeedPlaceholderData } from "./db.js";
 
 // Route modules
@@ -20,6 +18,7 @@ import scheduleRoutes from "./routes/schedule.js";
 import adminRoutes from "./routes/admin.js";
 import pdfRoutes from "./routes/pdf.js";
 import photoRoutes from './routes/photos.js';
+import reviewRoutes from './routes/reviews.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,7 +31,6 @@ const port = process.env.PORT || 8080;
 // --------------------------------------
 app.set("view engine", "ejs");
 app.set("views", "./views");
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
@@ -78,6 +76,7 @@ app.use(attachmentRoutes);
 app.use(adminRoutes);
 app.use(pdfRoutes);
 app.use(photoRoutes);
+app.use(reviewRoutes);
 
 // --------------------------------------
 // ERROR HANDLING
@@ -96,6 +95,7 @@ app.use((err, req, res, next) => {
 // --------------------------------------
 InitializeDatabase();
 SeedPlaceholderData();
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });

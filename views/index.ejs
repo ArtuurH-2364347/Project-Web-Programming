@@ -1,77 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TravelBuddy</title>
-  <link href="css/bootstrap.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css">
-  <link href="css/index.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TravelBuddy</title>
+<link href="css/bootstrap.css" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+<link href="css/index.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
 </head>
 <body class="home-page">
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-      <%- include('partials/navbar') %>
-    </div>
-  </nav>
+<nav class="navbar navbar-expand-lg navbar-dark">
+<div class="container">
+<%- include('partials/navbar') %>
+</div>
+</nav>
+<section class="hero-section">
+<div class="container hero-content">
+<h1>Discover Your Next Adventure</h1>
+<p>Connect with travelers and explore the world together</p>
+<a href="/login" class="btn btn-hero">Get Started</a>
+</div>
+</section>
+<section class="features-section">
+<div class="container">
+<div class="row g-4">
+<div class="col-md-4">
+<div class="feature-card card">
+<img src="images/plannen.png" class="card-img-top" alt="Planning">
+<div class="card-body">
+<h5 class="card-title">Planning</h5>
+<p class="card-text">Plan trips with friends and coordinate your adventures.</p>
+<a href="/groups" class="btn btn-primary">Plan a trip!</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="feature-card card">
+<img src="images/schedule.png" class="card-img-top" alt="schedule">
+<div class="card-body">
+<h5 class="card-title">Daily Schedule</h5>
+<p class="card-text">Your daily schedule updates automatically with group plans.</p>
+<a href="/personal-schedule" class="btn btn-primary">Today's Schedule</a>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="feature-card card">
+<img src="images/friends.png" class="card-img-top" alt="Friends">
+<div class="card-body">
+<h5 class="card-title">Travel Buddies</h5>
+<p class="card-text">Find Friends and go on wonderful trips.</p>
+<a href="/friends" class="btn btn-primary">Find Friends</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-  <section class="hero-section">
-    <div class="container hero-content">
-      <h1>Discover Your Next Adventure</h1>
-      <p>Connect with travelers and explore the world together</p>
-      <a href="/login" class="btn btn-hero">Get Started</a>
-    </div>
-  </section>
-
-  <section class="features-section">
-    <div class="container">
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="feature-card card">
-            <img src="images/plannen.png" class="card-img-top" alt="Planning">
-            <div class="card-body">
-              <h5 class="card-title">Planning</h5>
-              <p class="card-text">Plan trips with friends and coordinate your adventures.</p>
-              <a href="/groups" class="btn btn-primary">Plan a trip!</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="feature-card card">
-            <img src="images/schedule.png" class="card-img-top" alt="schedule">
-            <div class="card-body">
-              <h5 class="card-title">Daily Schedule</h5>
-              <p class="card-text">Your daily schedule updates automatically with group plans.</p>
-              <a href="/personal-schedule" class="btn btn-primary">Today's Schedule</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="feature-card card">
-            <img src="images/friends.png" class="card-img-top" alt="Friends">
-            <div class="card-body">
-              <h5 class="card-title">Travel Buddies</h5>
-              <p class="card-text">Find Friends and go on wonderful trips.</p>
-              <a href="/friends" class="btn btn-primary">Find Friends</a>
-            </div>
-          </div>
+<!-- Recent Reviews Section -->
+<section class="reviews-section">
+  <div class="container">
+    <h2><i class="bi bi-star-fill"></i> Recent Trip Reviews</h2>
+    <div id="reviews-container">
+      <!-- Reviews will be loaded here via JavaScript -->
+      <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
       </div>
     </div>
-  </section>
-
-    <div class="quote-section">
-    <div class="container">
-      <blockquote class="travel-quote">
-        <p class="quote-text">"Travel makes one modest. You see what a tiny place you occupy in the world."</p>
-        <footer class="quote-footer">— Gustave Flaubert</footer>
-      </blockquote>
-    </div>
   </div>
+</section>
 
-  <%- include('partials/footer') %>
+<div class="quote-section">
+<div class="container">
+<blockquote class="travel-quote">
+<p class="quote-text">"Travel makes one modest. You see what a tiny place you occupy in the world."</p>
+<footer class="quote-footer">— Gustave Flaubert</footer>
+</blockquote>
+</div>
+</div>
+<%- include('partials/footer') %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Load recent reviews on page load
+  async function loadRecentReviews() {
+    try {
+      const response = await fetch('/api/reviews/recent');
+      const data = await response.json();
+      
+      const container = document.getElementById('reviews-container');
+      
+      if (data.reviews && data.reviews.length > 0) {
+        container.innerHTML = '<div class="row">' + data.reviews.map(review => {
+          const stars = '⭐'.repeat(Math.round(review.rating / 2));
+          const reviewDate = new Date(review.created_at).toLocaleDateString('en-US', { 
+            month: 'long', 
+            day: 'numeric', 
+            year: 'numeric' 
+          });
+          
+          return `
+            <div class="col-md-6">
+              <div class="review-card">
+                <div class="review-header">
+                  <img src="${review.reviewer_picture || '/images/default-avatar.png'}" alt="${review.reviewer_name}">
+                  <div class="review-header-info">
+                    <h5>${review.trip_name}</h5>
+                    <p class="reviewer-name mb-0">by ${review.reviewer_name}</p>
+                    <p class="destination mb-0"><i class="bi bi-geo-alt-fill"></i> ${review.destination}</p>
+                  </div>
+                </div>
+                <div class="review-rating">
+                  <span class="rating-number">${review.rating}</span>
+                  <span class="rating-max">/10</span>
+                  <span class="stars">${stars}</span>
+                </div>
+                <p class="review-text">"${review.review_text}"</p>
+                <p class="review-date">
+                  <i class="bi bi-calendar3"></i> ${reviewDate}
+                </p>
+              </div>
+            </div>
+          `;
+        }).join('') + '</div>';
+      } else {
+        container.innerHTML = `
+          <div class="no-reviews">
+            <i class="bi bi-star"></i>
+            <h4>No Reviews Yet</h4>
+            <p class="text-muted">Be the first to share your travel experience!</p>
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Error loading reviews:', error);
+      document.getElementById('reviews-container').innerHTML = `
+        <div class="alert alert-danger text-center" role="alert">
+          <i class="bi bi-exclamation-triangle"></i> Failed to load reviews. Please try again later.
+        </div>
+      `;
+    }
+  }
 
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  // Call on page load
+  document.addEventListener('DOMContentLoaded', loadRecentReviews);
+</script>
 </body>
 </html>
