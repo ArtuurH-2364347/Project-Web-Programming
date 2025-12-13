@@ -9,23 +9,27 @@ router.get("/login", (req, res) => {
   if (req.session.user) {
     return res.redirect("/profile");
   }
-  res.render("login", { user: null });
+  
+  // Get error or success messages from query params
+  const error = req.query.error || null;
+  const success = req.query.success || null;
+  
+  res.render("login", { user: null, error, success });
 });
 
 // Login form
 router.post("/login", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  
-  const user = getUserByEmail(email);
 
+  const user = getUserByEmail(email);
   if (!user) {
-    return res.status(400).send("<h3>User not found. <a href='/login'>Try again</a></h3>");
+    return res.redirect("/login?error=" + encodeURIComponent("User not found. Please check your email address."));
   }
 
   const match = await bcrypt.compare(password, user.passwordHash);
   if (!match) {
-    return res.status(401).send("<h3>Incorrect password. <a href='/login'>Try again</a></h3>");
+    return res.redirect("/login?error=" + encodeURIComponent("Incorrect password. Please try again."));
   }
 
   req.session.user = user;

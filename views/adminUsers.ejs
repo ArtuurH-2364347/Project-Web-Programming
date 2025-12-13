@@ -4,16 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin User Management – TravelBuddy</title>
-
-  <link rel="stylesheet" href="/css/bootstrap.css" />
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .container {
-      margin-top: 2rem;
-    }
-  </style>
+  <link href="/css/bootstrap.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/adminUsers.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark">
@@ -22,55 +16,107 @@
     </div>
   </nav>
 
-  <div class="container">
-    <h1 class="mb-4">Admin – User Management</h1>
+  <section class="hero-section">
+    <div class="container hero-content">
+      <h1>Admin Dashboard</h1>
+      <p>Manage users and permissions</p>
+    </div>
+  </section>
 
-    <a href="/profile" class="btn btn-secondary mb-3">Back to Profile</a>
+  <main class="container admin-container">
+    <div class="mb-3">
+      <a href="/profile" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Profile
+      </a>
+    </div>
 
-    <table class="table table-bordered table-striped">
-      <thead class="table-dark">
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% users.forEach(u => { %>
-          <tr>
-            <td><%= u.id %></td>
-            <td><%= u.name %></td>
-            <td><%= u.email %></td>
-            <td><%= u.role %></td>
-            <td class="d-flex gap-2">
+    <div class="stats-row">
+      <div class="stat-box">
+        <h3><%= users.length %></h3>
+        <p>Total Users</p>
+      </div>
+      <div class="stat-box">
+        <h3><%= users.filter(u => u.role === 'admin').length %></h3>
+        <p>Administrators</p>
+      </div>
+      <div class="stat-box">
+        <h3><%= users.filter(u => u.role === 'user').length %></h3>
+        <p>Regular Users</p>
+      </div>
+    </div>
 
-              <% if (u.role === "user") { %>
-                <form action="/admin/promote/<%= u.id %>" method="POST">
-                  <button class="btn btn-success btn-sm">Promote</button>
-                </form>
-              <% } %>
+    <div class="admin-card">
+      <h4>User Management</h4>
+      
+      <div class="table-responsive">
+        <table class="table user-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach(u => { %>
+              <tr>
+                <td><strong>#<%= u.id %></strong></td>
+                <td><%= u.name %></td>
+                <td><%= u.email %></td>
+                <td>
+                  <span class="role-badge <%= u.role === 'admin' ? 'role-admin' : 'role-user' %>">
+                    <%= u.role.charAt(0).toUpperCase() + u.role.slice(1) %>
+                  </span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <% if (u.role === "user") { %>
+                      <form action="/admin/promote/<%= u.id %>" method="POST" class="d-inline">
+                        <button class="btn btn-success btn-sm">
+                          <i class="bi bi-arrow-up-circle"></i> Promote
+                        </button>
+                      </form>
+                    <% } %>
+                    <% if (u.role === "admin" && u.id !== user.id) { %>
+                      <form action="/admin/demote/<%= u.id %>" method="POST" class="d-inline">
+                        <button class="btn btn-warning btn-sm">
+                          <i class="bi bi-arrow-down-circle"></i> Demote
+                        </button>
+                      </form>
+                    <% } %>
+                    <% if (u.id !== user.id) { %>
+                      <form action="/admin/delete/<%= u.id %>" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this user?');">
+                        <button class="btn btn-danger btn-sm">
+                          <i class="bi bi-trash"></i> Delete
+                        </button>
+                      </form>
+                    <% } else { %>
+                      <span class="badge bg-secondary">You</span>
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
 
-              <% if (u.role === "admin" && u.id !== user.id) { %>
-                <form action="/admin/demote/<%= u.id %>" method="POST">
-                  <button class="btn btn-warning btn-sm">Demote</button>
-                </form>
-              <% } %>
-
-              <% if (u.id !== user.id) { %>
-                <form action="/admin/delete/<%= u.id %>" method="POST">
-                  <button class="btn btn-danger btn-sm">Delete</button>
-                </form>
-              <% } %>
-
-            </td>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
+  <div class="quote-section">
+    <div class="container">
+      <blockquote class="travel-quote">
+        <p class="quote-text">"The world is a book, and those who do not travel read only one page."</p>
+        <footer class="quote-footer">— Saint Augustine</footer>
+      </blockquote>
+    </div>
   </div>
+
   <%- include('partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
